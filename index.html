@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Mosunmola Cooperative Multipurpose Society | Wealth, Savings & Investments</title>
+    
+    <!-- Meta Tags & SEO -->
+    <meta name="description" content="Mosunmola Cooperative Multipurpose Society empowers members with high-yield target thrift savings, zero-collateral member loans, agro/real estate asset co-ownership, and digital ID card verification." />
+    <meta name="theme-color" content="#00C853" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Mosunmola Coop" />
+    
+    <!-- OpenGraph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mosunmola Cooperative Multipurpose Society" />
+    <meta property="og:description" content="Modern financial empowerment: Target Savings, Low-interest Loans, Real Estate Co-ownership, and Digital ID." />
+    <meta property="og:image" content="/icons/icon.svg" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/icon.svg" />
+
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-brand-500 selection:text-white min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(
+            (registration) => {
+              console.log('Mosunmola Coop ServiceWorker registered:', registration.scope);
+            },
+            (err) => {
+              console.log('Mosunmola Coop ServiceWorker registration failed:', err);
+            }
+          );
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "name": "Mosunmola Cooperative Multipurpose Society",
+  "short_name": "Mosunmola Coop",
+  "description": "Empowering members through target thrift, asset financing, zero-collateral loans, and agricultural investments.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A2540",
+  "theme_color": "#00C853",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Member Portal",
+      "url": "/?portal=member",
+      "description": "Access your digital ID, savings and loans"
+    },
+    {
+      "name": "Verify Physical Card",
+      "url": "/?portal=member&action=verify",
+      "description": "Activate membership with your physical card"
+    },
+    {
+      "name": "Savings Calculator",
+      "url": "/#calculator",
+      "description": "Calculate your ROI and loan eligibility"
+    }
+  ]
+}
