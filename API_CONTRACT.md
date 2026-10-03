@@ -546,7 +546,169 @@
 
 ---
 
-## 4. Error Format & HTTP Status Codes
+## 4. Prospective Membership Application & Super Admin Review Endpoints
+
+### 4.1 Submit Prospective Membership Application (Public Landing Page)
+* **Endpoint:** `POST /membership/apply`
+* **Description:** Public submission by prospective members applying to join Mosunmola Cooperative Multipurpose Society. Submits directly into the Super Admin and Board vetting queue.
+* **Headers:** `Content-Type: application/json`
+
+**Request Body:**
+```json
+{
+  "fullName": "Babatunde Alabi",
+  "email": "b.alabi@enterprise.ng",
+  "phone": "+234 803 445 9901",
+  "gender": "male",
+  "dateOfBirth": "1988-06-14",
+  "occupation": "Senior Software Architect",
+  "monthlyIncome": 1200000,
+  "monthlyThriftTarget": 150000,
+  "homeAddress": "12 Admiralty Way, Lekki Phase 1, Lagos",
+  "state": "Lagos",
+  "lga": "Eti-Osa",
+  "idType": "NIN",
+  "idNumber": "78291048291",
+  "nextOfKinName": "Funke Alabi",
+  "nextOfKinPhone": "+234 802 119 4433",
+  "nextOfKinRelationship": "Spouse",
+  "referralSource": "Online Landing Page"
+}
+```
+
+**Success Response (`201 Created`):**
+```json
+{
+  "success": true,
+  "message": "Your membership application has been submitted to the Board & Super Admin! Reference: APP-2026-9281",
+  "data": {
+    "id": "APP-2026-9281",
+    "fullName": "Babatunde Alabi",
+    "email": "b.alabi@enterprise.ng",
+    "phone": "+234 803 445 9901",
+    "monthlyThriftTarget": 150000,
+    "status": "pending_approval",
+    "submittedAt": "2026-10-04 10:45:00"
+  }
+}
+```
+
+---
+
+### 4.2 Super Admin: Fetch Prospective Applications Queue
+* **Endpoint:** `GET /admin/membership-applications`
+* **Description:** Retrieves all prospective membership applications, filterable by status (`pending_approval`, `approved`, `rejected`).
+* **Headers:** `Authorization: Bearer <super_admin_token>`
+
+**Success Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Membership applications retrieved.",
+  "data": [
+    {
+      "id": "APP-2026-9281",
+      "fullName": "Babatunde Alabi",
+      "email": "b.alabi@enterprise.ng",
+      "phone": "+234 803 445 9901",
+      "gender": "male",
+      "dateOfBirth": "1988-06-14",
+      "occupation": "Senior Software Architect",
+      "monthlyIncome": 1200000,
+      "monthlyThriftTarget": 150000,
+      "homeAddress": "12 Admiralty Way, Lekki Phase 1, Lagos",
+      "state": "Lagos",
+      "lga": "Eti-Osa",
+      "idType": "NIN",
+      "idNumber": "78291048291",
+      "nextOfKinName": "Funke Alabi",
+      "nextOfKinPhone": "+234 802 119 4433",
+      "nextOfKinRelationship": "Spouse",
+      "referralSource": "Online Landing Page",
+      "status": "pending_approval",
+      "submittedAt": "2026-10-04 10:45:00"
+    }
+  ]
+}
+```
+
+---
+
+### 4.3 Super Admin: Approve Application & Allocate Physical Card
+* **Endpoint:** `POST /admin/membership-applications/:id/approve`
+* **Description:** Approves a prospective applicant and allocates an official physical member RFID card ID (`MCS-2026-XXXX`). Makes the card ready for the applicant to self-activate on `members.mosunmolacoop.com`.
+* **Headers:** 
+  * `Authorization: Bearer <super_admin_token>`
+  * `Content-Type: application/json`
+
+**Request Body:**
+```json
+{
+  "assignedCardId": "MCS-2026-7842",
+  "issuingBranch": "Victoria Island Regional Office"
+}
+```
+
+**Success Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Application APP-2026-9281 approved and allocated to Physical Card MCS-2026-7842. Notification dispatched to applicant.",
+  "data": {
+    "id": "APP-2026-9281",
+    "fullName": "Babatunde Alabi",
+    "status": "approved",
+    "assignedCardId": "MCS-2026-7842",
+    "reviewedBy": "Dr. Olayinka Adeleke (Super Admin)",
+    "reviewedAt": "2026-10-04 11:00:00"
+  }
+}
+```
+
+---
+
+### 4.4 Super Admin: Reject Application
+* **Endpoint:** `POST /admin/membership-applications/:id/reject`
+* **Description:** Rejects an application with statutory audit reasoning.
+* **Headers:** 
+  * `Authorization: Bearer <super_admin_token>`
+  * `Content-Type: application/json`
+
+**Request Body:**
+```json
+{
+  "rejectionReason": "Unable to verify state residence or employment within statutory cooperative boundaries."
+}
+```
+
+**Success Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Application APP-2026-9281 has been rejected.",
+  "data": {
+    "id": "APP-2026-9281",
+    "status": "rejected",
+    "rejectionReason": "Unable to verify state residence or employment within statutory cooperative boundaries.",
+    "reviewedBy": "Dr. Olayinka Adeleke (Super Admin)",
+    "reviewedAt": "2026-10-04 11:02:00"
+  }
+}
+```
+
+---
+
+## 5. Multi-Subdomain Service Architecture
+
+| Subdomain | Target Audience | Primary Functionality | Installable (PWA) |
+| :--- | :--- | :--- | :--- |
+| `mosunmolacoop.ng` | Prospective Members & Public | Institutional profile, 5% loan solutions, savings calculator, Board credibility, **Online Membership Application Modal** | No (Standard Web) |
+| `members.mosunmolacoop.ng` | Enrolled Cooperative Members | Physical card self-activation, 3D flippable digital pass with QR, Savings goals, 5% low-interest loans, Asset portfolio, Transaction receipts | **Yes (PWA)** |
+| `admin.mosunmolacoop.ng` | Executive Board & Staff (RBAC) | **Super Admin:** Prospective applications vetting & card issuance, RFID batch importer, Role permissions; **Treasurer:** Liquidity vaults & disbursements; **PA:** Secretariat KYC & verification | No (Restricted Console) |
+
+---
+
+## 6. Error Format & HTTP Status Codes
 All responses conform strictly to:
 ```json
 {
@@ -557,10 +719,10 @@ All responses conform strictly to:
 }
 ```
 * `200 OK`: Successful retrieval or synchronous update
-* `201 Created`: Entity created (Member registered, Card batch imported, Loan applied)
+* `201 Created`: Entity created (Member registered, Card batch imported, Application submitted)
 * `202 Accepted`: Asynchronous submission pending approval (Deposit proof uploaded)
 * `400 Bad Request`: Validation failure (Missing parameters, bad formatting)
 * `401 Unauthorized`: Missing or invalid Bearer token
 * `403 Forbidden`: Role does not have permission (e.g. PA attempting to disburse loan)
-* `404 Not Found`: Member ID, Card ID or Loan ID not found
+* `404 Not Found`: Member ID, Card ID, Application ID, or Loan ID not found
 * `500 Internal Server Error`: Server failure

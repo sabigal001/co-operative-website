@@ -16,11 +16,13 @@ import {
   User, 
   ShieldCheck, 
   LogOut,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
+import { navigateToService } from '../../utils/subdomainRouter';
 
 export const MemberPortalView: React.FC = () => {
-  const { currentMember, logoutMember } = useApp();
+  const { currentMember, logoutMember, openRegisterModal } = useApp();
 
   const [activeTab, setActiveTab] = useState<'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile'>('card');
 
@@ -36,8 +38,48 @@ export const MemberPortalView: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 md:pb-16">
       
+      {/* Standalone Member Subdomain Navbar */}
+      <div className="bg-[#07192C] text-white border-b border-white/10 px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-emerald-300 p-0.5 shadow-glow">
+              <div className="w-full h-full bg-[#0A2540] rounded-[10px] flex items-center justify-center">
+                <span className="font-display font-black text-base text-brand-400">M</span>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-black text-sm text-white tracking-tight">MOSUNMOLA COOP</span>
+                <span className="bg-brand-500/20 text-brand-400 text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border border-brand-500/30">
+                  MEMBER WEB APP (PWA)
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">members.mosunmolacoop.com</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => openRegisterModal()}
+              className="px-3 py-1.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
+              title="Activate newly acquired physical RFID plastic card"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Activate Physical Card</span>
+            </button>
+            <button
+              onClick={() => navigateToService('landing')}
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3 text-brand-400" />
+              <span className="hidden sm:inline">Public Website</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Top Welcome Strip */}
-      <div className="bg-[#0A2540] text-white border-b border-white/10 pt-8 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#0A2540] text-white border-b border-white/10 pt-6 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <img

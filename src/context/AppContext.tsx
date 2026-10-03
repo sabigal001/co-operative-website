@@ -47,12 +47,14 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+import { resolveCurrentService } from '../utils/subdomainRouter';
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Navigation
+  // Navigation based on subdomain & query resolver
   const [currentPortal, setCurrentPortalState] = useState<'landing' | 'member' | 'admin'>(() => {
-    const params = new URLSearchParams(window.location.search);
-    const p = params.get('portal');
-    if (p === 'member' || p === 'admin' || p === 'landing') return p;
+    const service = resolveCurrentService();
+    if (service === 'members') return 'member';
+    if (service === 'admin') return 'admin';
     return 'landing';
   });
 
@@ -62,8 +64,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const url = new URL(window.location.href);
     if (portal === 'landing') {
       url.searchParams.delete('portal');
+      url.searchParams.delete('app');
     } else {
-      url.searchParams.set('portal', portal);
+      url.searchParams.set('app', portal === 'member' ? 'members' : 'admin');
+      url.searchParams.delete('portal');
     }
     window.history.pushState({}, '', url.toString());
   };

@@ -1,35 +1,38 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
-import { CreditCard, QrCode, ShieldCheck, ArrowRight, Smartphone, Sparkles, CheckCircle2 } from 'lucide-react';
+import { CreditCard, QrCode, ShieldCheck, ArrowRight, UserPlus, Sparkles, Building2 } from 'lucide-react';
+import { navigateToService } from '../../utils/subdomainRouter';
 
-export const PhysicalCardBanner: React.FC = () => {
-  const { openRegisterModal } = useApp();
+interface PhysicalCardBannerProps {
+  onOpenApplyModal?: () => void;
+}
+
+export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenApplyModal }) => {
 
   const steps = [
     {
       step: '01',
-      title: 'Collect Physical Plastic ID',
-      desc: 'Obtain your official RFID-chipped Mosunmola Cooperative Member Card from any designated Secretariat branch in Lagos or Ogun.'
+      title: 'Submit Online Application',
+      desc: 'Complete the prospective membership form with your identification, monthly savings target, and preferred branch.'
     },
     {
       step: '02',
-      title: 'Enter Member ID Number',
-      desc: 'Type the 12-character ID (e.g. MCS-2026-8942) found on the front of your card into the activation portal.'
+      title: 'Board Review & Approval',
+      desc: 'The Executive Committee and Super Admin review your credentials and allocate your verified RFID card ID.'
     },
     {
       step: '03',
-      title: 'Complete Profile & OTP',
-      desc: 'Our system auto-verifies your branch record. Confirm your email, password, and attach your facial photo for your digital wallet pass.'
+      title: 'Collect Physical Member Card',
+      desc: 'Obtain your physical tamper-proof membership card at any designated Secretariat in Lagos or Ogun State.'
     },
     {
       step: '04',
-      title: 'Digital Card & Wallet Live',
-      desc: 'Instantly access your digital card with dynamic QR code, apply for low-interest loans, and track your daily thrift contributions.'
+      title: 'Unlock Wealth & 5% Loans',
+      desc: 'Sign into the Member Web App (members.mosunmolacoop.com) for target savings, thrift dividends, and low-interest credit.'
     }
   ];
 
   return (
-    <section className="py-20 bg-[#07192C] text-white border-b border-white/10 relative overflow-hidden">
+    <section id="how-it-works" className="py-20 bg-[#07192C] text-white border-b border-white/10 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="bg-gradient-to-br from-[#0F2F4F] to-[#0A2540] rounded-4xl p-8 sm:p-12 lg:p-16 border-2 border-brand-500/20 shadow-2xl relative overflow-hidden">
@@ -42,18 +45,18 @@ export const PhysicalCardBanner: React.FC = () => {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-xs font-bold border border-brand-500/20 uppercase tracking-wider">
                 <CreditCard className="w-3.5 h-3.5" />
-                Physical ID Card Technology
+                Statutory Member Identity System
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-display tracking-tight text-white leading-tight">
-                One Physical Card.<br />
+                How to Become a Verified<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-300">
-                  Infinite Cooperative Privileges.
+                  Mosunmola Cooperative Member.
                 </span>
               </h2>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Mosunmola Cooperative bridges the physical and digital divide. Every member is issued a secure, tamper-proof plastic identity card that seamlessly activates their web PWA account.
+                Joining Mosunmola Cooperative is transparent and legally structured under Lagos State Cooperative laws. Every member is issued a unique plastic identity card linked directly to their personal cooperative ledger.
               </p>
 
               {/* 4 Steps Grid */}
@@ -73,14 +76,21 @@ export const PhysicalCardBanner: React.FC = () => {
                 ))}
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <button
-                  onClick={() => openRegisterModal()}
-                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-emerald-400 hover:from-brand-400 hover:to-emerald-300 text-slate-950 font-black text-sm rounded-2xl flex items-center gap-2 shadow-glow transition-all hover:scale-105 active:scale-95"
+                  onClick={onOpenApplyModal}
+                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-emerald-400 hover:from-brand-400 hover:to-emerald-300 text-slate-950 font-black text-sm rounded-2xl flex items-center justify-center gap-2 shadow-glow transition-all hover:scale-105 active:scale-95"
                 >
-                  <CreditCard className="w-4 h-4 text-slate-950" />
-                  <span>Activate Your Card Now</span>
+                  <UserPlus className="w-4 h-4 text-slate-950" />
+                  <span>Register as a Member</span>
                   <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  onClick={() => navigateToService('members')}
+                  className="px-6 py-4 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white text-xs font-bold rounded-2xl border border-white/10 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <span>Already Issued a Card? Member Login</span>
                 </button>
               </div>
             </div>

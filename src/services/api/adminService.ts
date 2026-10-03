@@ -9,7 +9,9 @@ import type {
   PayoutRequest, 
   PhysicalMemberCard, 
   SystemMetrics,
-  Transaction
+  Transaction,
+  MembershipApplication,
+  CreateMembershipApplicationPayload
 } from '../../types';
 import { 
   initialAuditLogs, 
@@ -22,6 +24,7 @@ import { initialPhysicalCards } from '../../mocks/cards';
 import { initialMembersRegistry } from '../../mocks/members';
 import { initialLoans } from '../../mocks/loans';
 import { initialTransactions } from '../../mocks/transactions';
+import { initialMembershipApplications } from '../../mocks/applications';
 import { getFromStorage, saveToStorage } from './storageHelper';
 
 const CARDS_STORAGE_KEY = 'physical_cards';
@@ -33,6 +36,7 @@ const AUDIT_STORAGE_KEY = 'audit_logs';
 const METRICS_STORAGE_KEY = 'system_metrics';
 const ADMINS_STORAGE_KEY = 'admin_users';
 const TXN_STORAGE_KEY = 'transactions_registry';
+const APPLICATIONS_STORAGE_KEY = 'membership_applications';
 
 export const adminService = {
   // Shared / General
@@ -81,6 +85,128 @@ export const adminService = {
   // -------------------------------------------------------------
   // 1. MASTER ADMIN (SUPER ADMIN) CAPABILITIES
   // -------------------------------------------------------------
+  async submitMembershipApplication(payload: CreateMembershipApplicationPayload): Promise<ApiResponse<MembershipApplication>> {
+    await new Promise((r) => setTimeout(r, 600));
+    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
+
+    const newApp: MembershipApplication = {
+      ...payload,
+      id: `APP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      status: 'pending_approval',
+      submittedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+    };
+
+    saveToStorage(APPLICATIONS_STORAGE_KEY, [newApp, ...apps]);
+
+    return {
+      success: true,
+      message: `Your membership application has been submitted to the Board & Super Admin! Reference: ${newApp.id}`,
+      data: newApp
+    };
+  },
+
+  async getMembershipApplications(): Promise<ApiResponse<MembershipApplication[]>> {
+    await new Promise((r) => setTimeout(r, 250));
+    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
+    return {
+      success: true,
+      message: 'Membership applications retrieved.',
+      data: apps
+    };
+  },
+
+  async approveMembershipApplication(
+    appId: string, 
+    assignedCardId: string, 
+    superAdminName: string
+  ): Promise<ApiResponse<MembershipApplication>> {
+    await new Promise((r) => setTimeout(r, 500));
+    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
+    const app = apps.find((a) => a.id === appId);
+
+    if (!app) {
+      return { success: false, message: 'Application not found', data: apps[0] };
+    }
+
+    app.status = 'approved';
+    app.reviewedBy = superAdminName;
+    app.reviewedAt = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    app.assignedCardId = assignedCardId;
+
+    saveToStorage(APPLICATIONS_STORAGE_KEY, apps);
+
+    // Register card in cards storage
+    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
+    const card = cards.find((c) => c.cardId.toUpperCase() === assignedCardId.toUpperCase());
+    if (card) {
+      card.assignedMemberName = app.fullName;
+      card.assignedEmail = app.email;
+      card.assignedPhone = app.phone;
+      card.status = 'unassigned'; // ready for the member to activate
+      saveToStorage(CARDS_STORAGE_KEY, cards);
+    } else {
+      // create new allocated card
+      cards.push({
+        cardId: assignedCardId,
+        batchNumber: 'BATCH-2026-NEW-MEMBERS',
+        assignedMemberName: app.fullName,
+        assignedEmail: app.email,
+        assignedPhone: app.phone,
+        status: 'unassigned',
+        issuedDate: new Date().toISOString().split('T')[0],
+        securityHash: `sha256-${assignedCardId}-hash`,
+        branch: `${app.lga || 'Ikeja'} Secretariat`
+      });
+      saveToStorage(CARDS_STORAGE_KEY, cards);
+    }
+
+    await this.logAction(
+      superAdminName,
+      'master_admin',
+      'APPROVE_MEMBERSHIP_APPLICATION',
+      `Approved application ${app.id} for ${app.fullName}. Assigned Card ID: ${assignedCardId}`
+    );
+
+    return {
+      success: true,
+      message: `Application ${app.id} approved! Physical Member ID ${assignedCardId} allocated to ${app.fullName}.`,
+      data: app
+    };
+  },
+
+  async rejectMembershipApplication(
+    appId: string, 
+    reason: string, 
+    superAdminName: string
+  ): Promise<ApiResponse<MembershipApplication>> {
+    await new Promise((r) => setTimeout(r, 400));
+    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
+    const app = apps.find((a) => a.id === appId);
+
+    if (!app) {
+      return { success: false, message: 'Application not found', data: apps[0] };
+    }
+
+    app.status = 'rejected';
+    app.rejectionReason = reason;
+    app.reviewedBy = superAdminName;
+    app.reviewedAt = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    saveToStorage(APPLICATIONS_STORAGE_KEY, apps);
+
+    await this.logAction(
+      superAdminName,
+      'master_admin',
+      'REJECT_MEMBERSHIP_APPLICATION',
+      `Rejected application ${app.id} for ${app.fullName}. Reason: ${reason}`
+    );
+
+    return {
+      success: true,
+      message: `Application ${app.id} has been rejected.`,
+      data: app
+    };
+  },
   async getAdminUsers(): Promise<ApiResponse<AdminUser[]>> {
     await new Promise((r) => setTimeout(r, 200));
     const admins = getFromStorage<AdminUser[]>(ADMINS_STORAGE_KEY, mockAdminUsers);

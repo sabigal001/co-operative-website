@@ -1,7 +1,8 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { ShieldCheck, Coins, UserCheck } from 'lucide-react';
+import { ShieldCheck, Coins, UserCheck, ExternalLink, CreditCard } from 'lucide-react';
 import type { SystemMetrics } from '../../types';
+import { navigateToService } from '../../utils/subdomainRouter';
 
 interface AdminHeaderProps {
   metrics: SystemMetrics | null;
@@ -32,8 +33,47 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
   }[activeAdminRole];
 
   return (
-    <div className="bg-[#0A2540] text-white border-b border-white/10 pt-8 pb-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="bg-[#0A2540] text-white border-b border-white/10">
+      
+      {/* Standalone Admin Subdomain Top Strip */}
+      <div className="bg-[#07192C] border-b border-white/10 px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/40 flex items-center justify-center font-display font-black text-base">
+              M
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-black text-sm text-white tracking-tight">MOSUNMOLA COOP</span>
+                <span className="bg-purple-900/60 text-purple-300 text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border border-purple-500/40">
+                  SUPER ADMIN CONSOLE
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">admin.mosunmolacoop.com</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => navigateToService('members')}
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
+            >
+              <CreditCard className="w-3 h-3 text-brand-400" />
+              <span className="hidden sm:inline">Member Portal</span>
+            </button>
+            <button
+              onClick={() => navigateToService('landing')}
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3 text-brand-400" />
+              <span className="hidden sm:inline">Public Website</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-6 pb-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Top Info Row */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -131,5 +171,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
 
       </div>
     </div>
+  </div>
   );
 };

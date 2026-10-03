@@ -270,3 +270,44 @@ export interface RegisterMemberPayload {
     address: string;
   };
 }
+
+export type MembershipApplicationStatus = 'pending_approval' | 'approved' | 'rejected';
+
+export interface MembershipApplication {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  state: string;
+  lga: string;
+  occupation: string;
+  monthlyThriftTarget: number;
+  idType: 'NIN' | 'Drivers License' | 'International Passport' | 'Voters Card';
+  idNumber: string;
+  reasonForJoining: string;
+  nextOfKinName?: string;
+  nextOfKinPhone?: string;
+  status: MembershipApplicationStatus;
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  assignedCardId?: string;
+  rejectionReason?: string;
+}
+
+export interface CreateMembershipApplicationPayload {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  state: string;
+  lga: string;
+  occupation: string;
+  monthlyThriftTarget: number;
+  idType: 'NIN' | 'Drivers License' | 'International Passport' | 'Voters Card';
+  idNumber: string;
+  reasonForJoining: string;
+  nextOfKinName?: string;
+  nextOfKinPhone?: string;
+}

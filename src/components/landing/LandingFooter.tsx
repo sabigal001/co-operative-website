@@ -1,10 +1,12 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
-import { CreditCard, Download, ShieldCheck, Phone, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { UserPlus, ArrowRight, ExternalLink, ShieldCheck, CreditCard, MapPin, Phone, Mail } from 'lucide-react';
+import { navigateToService } from '../../utils/subdomainRouter';
 
-export const LandingFooter: React.FC = () => {
-  const { setCurrentPortal, openRegisterModal, triggerInstallPrompt } = useApp();
+interface LandingFooterProps {
+  onOpenApplyModal?: () => void;
+}
 
+export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }) => {
   return (
     <footer className="bg-[#061626] text-slate-300 border-t border-white/10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,30 +15,31 @@ export const LandingFooter: React.FC = () => {
         <div className="bg-gradient-to-r from-brand-600 via-emerald-600 to-[#0A2540] rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-2 text-center md:text-left">
             <span className="text-xs font-black uppercase tracking-wider text-slate-900 bg-white/90 px-3 py-1 rounded-full">
-              PWA Available on iOS & Android
+              Statutory Cooperative Membership
             </span>
             <h3 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-white">
               Ready to take charge of your financial future?
             </h3>
             <p className="text-xs sm:text-sm text-emerald-100 max-w-xl">
-              Activate your plastic ID card today or join 14,850+ forward-thinking Nigerians building sustainable wealth.
+              Join 14,850+ forward-thinking Nigerians building sustainable wealth with 5% low-interest loans, high-yield thrift, and collective empowerment.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
             <button
-              onClick={() => openRegisterModal()}
-              className="px-6 py-3.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all active:scale-95"
+              onClick={onOpenApplyModal}
+              className="px-8 py-4 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95"
             >
-              <CreditCard className="w-4 h-4 text-brand-400" />
-              <span>Activate Member Card</span>
+              <UserPlus className="w-4 h-4 text-brand-400" />
+              <span>Register as a Member</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
             <button
-              onClick={triggerInstallPrompt}
-              className="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-2xl flex items-center gap-2 transition-all"
+              onClick={() => navigateToService('members')}
+              className="px-5 py-4 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-2xl flex items-center gap-2 transition-all"
             >
-              <Download className="w-4 h-4" />
-              <span>Install PWA App</span>
+              <ExternalLink className="w-4 h-4" />
+              <span>Member Portal Login</span>
             </button>
           </div>
         </div>
@@ -71,19 +74,14 @@ export const LandingFooter: React.FC = () => {
             <h4 className="font-bold text-sm text-white uppercase tracking-wider">Solutions</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
-                <button onClick={() => setCurrentPortal('member')} className="hover:text-brand-400 transition-colors">
+                <a href="#products" className="hover:text-brand-400 transition-colors">
                   Target Savings & Thrift (Ajo)
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => setCurrentPortal('member')} className="hover:text-brand-400 transition-colors">
+                <a href="#products" className="hover:text-brand-400 transition-colors">
                   5% Low-Interest Member Loans
-                </button>
-              </li>
-              <li>
-                <button onClick={() => openRegisterModal()} className="hover:text-brand-400 transition-colors">
-                  Physical Card Verification Portal
-                </button>
+                </a>
               </li>
               <li>
                 <a href="#calculator" className="hover:text-brand-400 transition-colors">
@@ -95,35 +93,40 @@ export const LandingFooter: React.FC = () => {
                   Agro & Real Estate Co-Ownership
                 </a>
               </li>
+              <li>
+                <a href="#how-it-works" className="hover:text-brand-400 transition-colors">
+                  Membership Onboarding Process
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Col 3: Portal Navigation */}
           <div className="space-y-3">
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider">Access Portals</h4>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider">Access Subdomains</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
-                <button onClick={() => setCurrentPortal('member')} className="hover:text-brand-400 transition-colors flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5 text-brand-400" />
-                  <span>Member Self-Service Dashboard (PWA)</span>
+                <button 
+                  onClick={() => navigateToService('members')} 
+                  className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                  <div>
+                    <span className="block font-medium">Member Portal</span>
+                    <span className="text-[10px] text-slate-500 font-mono">members.mosunmolacoop.com</span>
+                  </div>
                 </button>
               </li>
-              <li>
-                <button onClick={() => setCurrentPortal('admin')} className="hover:text-brand-400 transition-colors flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Master Admin Portal</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => { setCurrentPortal('admin'); }} className="hover:text-brand-400 transition-colors flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Treasurer Disbursement Console</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => { setCurrentPortal('admin'); }} className="hover:text-brand-400 transition-colors flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-                  <span>PA & Secretariat KYC Desk</span>
+              <li className="pt-1">
+                <button 
+                  onClick={() => navigateToService('admin')} 
+                  className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <div>
+                    <span className="block font-medium">Super Admin Console</span>
+                    <span className="text-[10px] text-slate-500 font-mono">admin.mosunmolacoop.com</span>
+                  </div>
                 </button>
               </li>
             </ul>

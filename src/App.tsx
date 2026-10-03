@@ -1,10 +1,8 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
-import { GlobalRoleBar } from './components/common/GlobalRoleBar';
-import { Navbar } from './components/common/Navbar';
-import { PwaInstallBanner } from './components/common/PwaInstallBanner';
 import { ToastContainer } from './components/common/ToastContainer';
 import { RegisterCardModal } from './components/common/RegisterCardModal';
+import { PwaInstallBanner } from './components/common/PwaInstallBanner';
 import { LandingPageView } from './components/landing/LandingPageView';
 import { MemberPortalView } from './components/member/MemberPortalView';
 import { AdminPortalView } from './components/admin/AdminPortalView';
@@ -14,22 +12,25 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-brand-500 selection:text-white">
-      {/* Global RBAC Role Bar for Testing / Demo */}
-      <GlobalRoleBar />
-
-      {/* Main Top Navigation */}
-      <Navbar />
-
-      {/* Dynamic Portal Body */}
+      {/* Dynamic Portal Body based on isolated service / subdomain */}
       <div className="flex-1">
+        {/* 1. PUBLIC LANDING SERVICE (mosunmolacoop.com) */}
         {currentPortal === 'landing' && <LandingPageView />}
-        {currentPortal === 'member' && <MemberPortalView />}
+
+        {/* 2. MEMBER PORTAL PWA SERVICE (members.mosunmolacoop.com) */}
+        {currentPortal === 'member' && (
+          <>
+            <MemberPortalView />
+            <RegisterCardModal />
+            <PwaInstallBanner />
+          </>
+        )}
+
+        {/* 3. SUPER ADMIN CONSOLE SERVICE (admin.mosunmolacoop.com) */}
         {currentPortal === 'admin' && <AdminPortalView />}
       </div>
 
-      {/* Global Modals & Notifications */}
-      <RegisterCardModal />
-      <PwaInstallBanner />
+      {/* Global Notifications */}
       <ToastContainer />
     </div>
   );

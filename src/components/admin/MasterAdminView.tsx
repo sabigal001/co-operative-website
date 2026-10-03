@@ -4,7 +4,8 @@ import type {
   AdminUser, 
   AuditLog, 
   PhysicalMemberCard, 
-  SystemMetrics 
+  SystemMetrics,
+  MembershipApplication
 } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
@@ -16,7 +17,13 @@ import {
   Sparkles, 
   Search, 
   X, 
-  Clock 
+  Clock,
+  UserPlus,
+  Check,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  ShieldCheck
 } from 'lucide-react';
 
 interface MasterAdminViewProps {
@@ -26,16 +33,19 @@ interface MasterAdminViewProps {
 export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => {
   const { currentAdmin, showToast, fireConfetti, dataVersion, refreshData } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'cards' | 'roles' | 'dividends' | 'audit'>('cards');
+  const [activeTab, setActiveTab] = useState<'applications' | 'cards' | 'roles' | 'dividends' | 'audit'>('applications');
   const [cards, setCards] = useState<PhysicalMemberCard[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [applications, setApplications] = useState<MembershipApplication[]>([]);
   const [cardSearch, setCardSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
   // Modals
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [showDividendModal, setShowDividendModal] = useState(false);
+  const [selectedAppForApproval, setSelectedAppForApproval] = useState<MembershipApplication | null>(null);
+  const [assignedCardInput, setAssignedCardInput] = useState('MCS-2026-');
 
   // Batch Form
   const [batchName, setBatchName] = useState('BATCH-2026-Q3-LAGOS');
@@ -49,15 +59,17 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
   const loadAll = async () => {
     try {
-      const [cardsRes, adminsRes, logsRes] = await Promise.all([
+      const [cardsRes, adminsRes, logsRes, appsRes] = await Promise.all([
         adminService.getPhysicalCards(),
         adminService.getAdminUsers(),
-        adminService.getAuditLogs()
+        adminService.getAuditLogs(),
+        adminService.getMembershipApplications()
       ]);
 
       if (cardsRes.success) setCards(cardsRes.data);
       if (adminsRes.success) setAdmins(adminsRes.data);
       if (logsRes.success) setAuditLogs(logsRes.data);
+      if (appsRes.success) setApplications(appsRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -119,11 +131,53 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     }
   };
 
+  // Handle Membership Application Decision
+  const handleApproveApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAppForApproval || !assignedCardInput) return;
+
+    try {
+      const res = await adminService.approveMembershipApplication(
+        selectedAppForApproval.id,
+        assignedCardInput.trim().toUpperCase(),
+        currentAdmin.name
+      );
+
+      if (res.success) {
+        showToast(res.message, 'success');
+        fireConfetti();
+        setSelectedAppForApproval(null);
+        refreshData();
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Error approving application', 'error');
+    }
+  };
+
+  const handleRejectApplication = async (appId: string) => {
+    try {
+      const res = await adminService.rejectMembershipApplication(
+        appId,
+        'Does not meet statutory cooperative residency or identification criteria',
+        currentAdmin.name
+      );
+
+      if (res.success) {
+        showToast(res.message, 'info');
+        refreshData();
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Error rejecting application', 'error');
+    }
+  };
+
   const filteredCards = cards.filter((c) => 
     c.cardId.toLowerCase().includes(cardSearch.toLowerCase()) ||
     c.assignedMemberName.toLowerCase().includes(cardSearch.toLowerCase()) ||
     c.batchNumber.toLowerCase().includes(cardSearch.toLowerCase())
   );
+
+  const pendingAppsCount = applications.filter((a) => a.status === 'pending_approval').length;
 
   return (
     <div className="space-y-8">
@@ -132,6 +186,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1">
           {[
+            { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
             { id: 'cards', label: 'Physical ID Card Batch Manager', icon: <CreditCard className="w-4 h-4" /> },
             { id: 'roles', label: 'Staff Role Management (RBAC)', icon: <Users className="w-4 h-4" /> },
             { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
@@ -175,6 +230,104 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
           </button>
         )}
       </div>
+
+      {/* TAB 0: PROSPECTIVE MEMBERSHIP APPLICATIONS (FROM LANDING PAGE) */}
+      {activeTab === 'applications' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="font-bold text-base text-slate-900 font-display">
+                Prospective Membership Applications ({applications.length})
+              </h3>
+              <p className="text-xs text-slate-500">
+                Applicants who registered through the public landing page awaiting Board and Super Admin approval and physical card allocation.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+            {applications.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-xs">
+                No prospective applications currently submitted.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[10px] uppercase">
+                    <tr>
+                      <th className="py-3 px-4">Application ID</th>
+                      <th className="py-3 px-4">Applicant Name</th>
+                      <th className="py-3 px-4">Contact & Location</th>
+                      <th className="py-3 px-4">Occupation</th>
+                      <th className="py-3 px-4">Thrift Target</th>
+                      <th className="py-3 px-4">ID Document</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-right">Super Admin Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                    {applications.map((app) => (
+                      <tr key={app.id} className="hover:bg-slate-50/70">
+                        <td className="py-3.5 px-4 font-bold text-slate-900">{app.id}</td>
+                        <td className="py-3.5 px-4 font-sans font-bold text-slate-800">
+                          {app.fullName}
+                          <span className="block text-[10px] text-slate-400 font-mono font-normal">{app.email}</span>
+                        </td>
+                        <td className="py-3.5 px-4 font-sans text-slate-600 text-[10px]">
+                          <div>{app.phone}</div>
+                          <div>{app.lga}, {app.state}</div>
+                        </td>
+                        <td className="py-3.5 px-4 font-sans text-slate-700">{app.occupation}</td>
+                        <td className="py-3.5 px-4 font-bold text-emerald-700">
+                          ₦{app.monthlyThriftTarget.toLocaleString()}/mo
+                        </td>
+                        <td className="py-3.5 px-4 font-sans text-[10px]">
+                          <span className="font-semibold block">{app.idType}</span>
+                          <span className="font-mono text-slate-500">{app.idNumber}</span>
+                        </td>
+                        <td className="py-3.5 px-4 font-sans">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            app.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                            app.status === 'pending_approval' ? 'bg-amber-100 text-amber-800' :
+                            'bg-rose-100 text-rose-800'
+                          }`}>
+                            {app.status.replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right font-sans">
+                          {app.status === 'pending_approval' ? (
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                onClick={() => {
+                                  setSelectedAppForApproval(app);
+                                  setAssignedCardInput(`MCS-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+                                }}
+                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-sm"
+                              >
+                                <Check className="w-3.5 h-3.5" /> Approve & Issue ID
+                              </button>
+                              <button
+                                onClick={() => handleRejectApplication(app.id)}
+                                className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-slate-400">
+                              {app.status === 'approved' ? `Assigned: ${app.assignedCardId}` : 'Rejected'}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: PHYSICAL CARD BATCH MANAGER */}
       {activeTab === 'cards' && (
@@ -562,6 +715,101 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl"
                 >
                   Authorize Allocation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: PROSPECTIVE APPLICANT APPROVAL & CARD ISSUANCE ================= */}
+      {selectedAppForApproval && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0A2540] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base text-white">Approve Member & Allocate Card</h3>
+                  <p className="text-[11px] text-slate-400">Application: {selectedAppForApproval.id}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedAppForApproval(null)} 
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Applicant Summary */}
+            <div className="bg-[#07192C] border border-white/10 rounded-2xl p-4 mb-5 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Full Legal Name:</span>
+                <span className="font-bold text-white font-sans">{selectedAppForApproval.fullName}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Email & Phone:</span>
+                <span className="text-slate-300 font-mono text-[11px]">{selectedAppForApproval.email} • {selectedAppForApproval.phone}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Occupation:</span>
+                <span className="text-slate-300">{selectedAppForApproval.occupation}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Location:</span>
+                <span className="text-slate-300">{selectedAppForApproval.lga}, {selectedAppForApproval.state}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Committed Monthly Thrift:</span>
+                <span className="text-emerald-400 font-bold font-mono">₦{selectedAppForApproval.monthlyThriftTarget.toLocaleString()}/month</span>
+              </div>
+              <div className="flex justify-between items-center pt-1 border-t border-white/5">
+                <span className="text-slate-400">Govt ID ({selectedAppForApproval.idType}):</span>
+                <span className="text-slate-200 font-mono">{selectedAppForApproval.idNumber}</span>
+              </div>
+              {selectedAppForApproval.nextOfKinName && (
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Next of Kin:</span>
+                  <span className="text-slate-300">{selectedAppForApproval.nextOfKinName} ({selectedAppForApproval.nextOfKinPhone})</span>
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleApproveApplication} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Assign Physical Member Card ID
+                </label>
+                <input
+                  type="text"
+                  value={assignedCardInput}
+                  onChange={(e) => setAssignedCardInput(e.target.value)}
+                  placeholder="e.g. MCS-2026-7842"
+                  className="w-full bg-[#07192C] border border-brand-500/40 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-brand-400 font-mono font-bold tracking-wider"
+                  required
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  This plastic RFID card code will be tied to this applicant. They can use it to self-activate on the Member Portal (members.mosunmolacoop.com).
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setSelectedAppForApproval(null)}
+                  className="px-4 py-2 text-slate-400 hover:text-white font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Confirm Approval & Allocate Card</span>
                 </button>
               </div>
             </form>
