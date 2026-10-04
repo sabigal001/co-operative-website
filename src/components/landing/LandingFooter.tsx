@@ -12,33 +12,36 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top CTA Banner in Footer */}
-        <div className="bg-gradient-to-r from-brand-600 via-emerald-700 to-black rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-brand-500/30">
-          <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-black uppercase tracking-wider text-black bg-white/90 px-3 py-1 rounded-full">
-              Statutory Cooperative Membership
-            </span>
+        <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-white/10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="space-y-2 text-center md:text-left relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-white/10 text-white text-xs font-semibold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Statutory Cooperative Membership</span>
+            </div>
             <h3 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-white">
               Ready to take charge of your financial future?
             </h3>
-            <p className="text-xs sm:text-sm text-emerald-100 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
               Join 14,850+ forward-thinking Nigerians building sustainable wealth with 5% low-interest loans, high-yield thrift, and collective empowerment.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 relative z-10">
             <button
               onClick={onOpenApplyModal}
-              className="px-8 py-4 bg-black hover:bg-neutral-900 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 border border-white/10"
+              className="liquid-btn liquid-btn-white py-2.5 px-5 text-xs flex items-center gap-2"
             >
-              <UserPlus className="w-4 h-4 text-brand-400" />
+              <UserPlus className="w-3.5 h-3.5 text-black" />
               <span>Register as a Member</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => navigateToService('members')}
-              className="px-5 py-4 bg-white/15 hover:bg-white/25 text-white font-bold text-xs rounded-2xl flex items-center gap-2 transition-all border border-white/15"
+              className="liquid-btn liquid-btn-default py-2.5 px-5 text-xs flex items-center gap-2"
             >
-              <ExternalLink className="w-4 h-4 text-brand-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
               <span>Member Portal Login</span>
             </button>
           </div>
@@ -49,7 +52,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-brand-500 text-black font-black flex items-center justify-center text-lg font-display shadow-glow">
+              <div className="w-10 h-10 rounded-2xl liquid-glass border border-white/15 text-white font-black flex items-center justify-center text-lg font-display shadow-sm">
                 M
               </div>
               <div>
@@ -64,8 +67,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
             <p className="text-slate-400 leading-relaxed text-xs">
               Pioneering modern cooperative banking, target thrift digitization, zero-collateral micro-credit, and real estate co-ownership in West Africa.
             </p>
-            <div className="text-[11px] text-brand-400 font-mono">
-              Reg. No: LSCS/2018/8941 (Lagos State)
+            <div className="text-[11px] text-slate-400 font-mono">
+              Reg. No: <span className="text-emerald-400">LSCS/2018/8941</span> (Lagos State)
             </div>
           </div>
 

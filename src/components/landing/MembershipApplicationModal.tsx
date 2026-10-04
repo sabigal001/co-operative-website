@@ -84,15 +84,13 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-[#0A0A0A] border border-white/15 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
+      <div className="liquid-glass-card border border-white/15 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
         
         {/* Top Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-[#141414]">
+        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-black/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-400 p-0.5 flex items-center justify-center shadow-glow">
-              <div className="w-full h-full bg-black rounded-[14px] flex items-center justify-center">
-                <UserPlus className="w-5 h-5 text-brand-400" />
-              </div>
+            <div className="w-10 h-10 rounded-2xl liquid-glass border border-white/15 flex items-center justify-center shadow-sm">
+              <UserPlus className="w-5 h-5 text-white" />
             </div>
             <div>
               <h3 className="font-display font-bold text-lg text-white leading-tight">
@@ -114,25 +112,25 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
         {/* Success View */}
         {successAppId ? (
           <div className="p-8 text-center space-y-6">
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 shadow-glow">
+            <div className="w-16 h-16 mx-auto rounded-3xl liquid-glass border border-white/15 flex items-center justify-center text-emerald-400 shadow-sm">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-300 liquid-glass px-3 py-1 rounded-full border border-white/10">
                 Application Received by Secretariat
               </span>
               <h4 className="font-display font-black text-2xl text-white">
-                Application Reference: <span className="text-brand-400 font-mono">{successAppId}</span>
+                Application Reference: <span className="text-white font-mono">{successAppId}</span>
               </h4>
               <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
                 Thank you for applying to join Mosunmola Cooperative Multipurpose Society. Your application has been logged directly into the <strong>Master Admin (Super Admin)</strong> executive review queue.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#141414] border border-white/10 text-xs text-slate-400 max-w-md mx-auto space-y-2 text-left">
-              <div className="flex items-center gap-2 text-slate-200 font-bold">
-                <ShieldCheck className="w-4 h-4 text-brand-400" />
+            <div className="p-4 rounded-2xl liquid-glass border border-white/10 text-xs text-slate-300 max-w-md mx-auto space-y-2 text-left">
+              <div className="flex items-center gap-2 text-white font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>Next Onboarding Steps:</span>
               </div>
               <p>1. The Board & Super Admin will review your applicant profile and statutory identification.</p>
@@ -142,7 +140,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
             <button
               onClick={handleResetAndClose}
-              className="px-8 py-3.5 bg-brand-500 hover:bg-brand-400 text-black font-bold text-xs rounded-2xl transition-all shadow-glow"
+              className="liquid-btn liquid-btn-white py-2 px-6 text-xs"
             >
               Done, Return to Website
             </button>
@@ -150,8 +148,8 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
         ) : (
           /* Application Form */
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-            <div className="p-3.5 rounded-2xl bg-[#141414] border border-brand-500/20 text-xs text-slate-300 flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl liquid-glass border border-white/10 text-xs text-slate-300 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span>
                 Membership is open to individuals of good repute residing or doing business in Nigeria. Regulated under Lagos State Directorate of Cooperatives.
               </span>
@@ -322,16 +320,16 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
               <button
                 type="button"
                 onClick={handleResetAndClose}
-                className="px-4 py-2.5 text-xs text-slate-400 hover:text-white"
+                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-7 py-3 bg-brand-500 hover:bg-brand-400 text-black font-bold text-xs rounded-2xl flex items-center gap-2 shadow-glow transition-all"
+                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
                 <span>Submit Membership Application</span>
               </button>
             </div>

@@ -40,6 +40,11 @@ interface AppContextType {
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   fireConfetti: () => void;
   
+  // Theme Mode
+  theme: 'dark' | 'light';
+  setTheme: (theme: 'dark' | 'light') => void;
+  toggleTheme: () => void;
+  
   // Refresh Signal
   dataVersion: number;
   refreshData: () => void;
@@ -47,7 +52,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-import { resolveCurrentService } from '../utils/subdomainRouter';
+import { resolveCurrentService, navigateToService } from '../utils/subdomainRouter';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Navigation based on subdomain & query resolver
@@ -97,11 +102,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`Welcome, ${member.fullName}!`, 'success');
   };
 
-  const logoutMember = () => {
-    authService.logoutMember();
+  // Theme Mode: Dark (Obsidian) vs Light (Sleek Clean White/Gray)
+  const [theme, setThemeState] = useState<'dark' | 'light'>(() => {
+    try {
+      const savedTheme = localStorage.getItem('mosunmola_theme');
+      return (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+
+  const setTheme = (newTheme: 'dark' | 'light') => {
+    setThemeState(newTheme);
+    try {
+      localStorage.setItem('mosunmola_theme', newTheme);
+    } catch (e) {
+      console.warn('Could not save theme:', e);
+    }
+  };
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    showToast(`Switched to ${next === 'dark' ? 'Dark Obsidian' : 'Clean Light'} theme`, 'info');
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      document.body.style.backgroundColor = '#000000';
+      document.body.style.color = '#F8FAFC';
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+      document.body.style.backgroundColor = '#FAFAFA';
+      document.body.style.color = '#0F172A';
+    }
+  }, [theme]);
+
+  const logoutMember = async () => {
+    try {
+      const res = await authService.logout();
+      showToast(res.message || 'You have signed out of your member account.', 'info');
+    } catch (e) {
+      authService.logoutMember();
+      showToast('You have signed out of your member account.', 'info');
+    }
     setIsLoggedIn(false);
     setCurrentPortal('landing');
-    showToast('You have signed out of your member account.', 'info');
+    navigateToService('landing');
   };
 
   // Registration Modal with Physical Card verification
@@ -217,6 +268,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toasts,
         showToast,
         fireConfetti,
+        theme,
+        setTheme,
+        toggleTheme,
         dataVersion,
         refreshData
       }}

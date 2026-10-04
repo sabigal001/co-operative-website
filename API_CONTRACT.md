@@ -130,6 +130,26 @@
 
 ---
 
+### 1.4 Member Logout Session Revocation
+* **Endpoint:** `POST /auth/logout`
+* **Description:** Invalidates active session tokens, revokes client bearer authorization, and clears secure persistence storage.
+* **Headers:** 
+  * `Authorization: Bearer <token>`
+  * `Content-Type: application/json`
+
+**Success Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "You have been securely signed out of your Mosunmola member session.",
+  "data": {
+    "loggedOut": true
+  }
+}
+```
+
+---
+
 ## 2. Member Portal Endpoints
 
 ### 2.1 Get Member Profile & Digital Card

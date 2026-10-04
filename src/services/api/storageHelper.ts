@@ -17,3 +17,11 @@ export function saveToStorage<T>(key: string, value: T): void {
     console.warn(`Error writing ${key} to storage:`, e);
   }
 }
+
+export function removeFromStorage(key: string): void {
+  try {
+    localStorage.removeItem(`mosunmola_${key}`);
+  } catch (e) {
+    console.warn(`Error removing ${key} from storage:`, e);
+  }
+}

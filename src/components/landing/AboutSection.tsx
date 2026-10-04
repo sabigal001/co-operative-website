@@ -31,58 +31,59 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
         </div>
 
         {/* 3 Story Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center border border-brand-500/20">
-              <Target className="w-6 h-6" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <div className="liquid-glass-card rounded-3xl p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/15">
+              <Target className="w-5 h-5 text-brand-400" />
             </div>
-            <h3 className="font-display font-bold text-xl text-white">Our Mission</h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <h3 className="font-display font-bold text-lg text-white">Our Mission</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
               To liberate everyday Nigerian professionals, business owners, and artisans from predatory bank rates through pooled community savings, low-interest micro-credit, and transparent asset co-ownership.
             </p>
           </div>
 
-          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-              <Scale className="w-6 h-6" />
+          <div className="liquid-glass-card rounded-3xl p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/15">
+              <Scale className="w-5 h-5 text-brand-400" />
             </div>
-            <h3 className="font-display font-bold text-xl text-white">Legal & Audited Solvency</h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <h3 className="font-display font-bold text-lg text-white">Legal & Audited Solvency</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
               We operate under strict statutory fiduciary guidelines. Accounts are independently audited every financial year, maintaining a 42.8% liquid reserve ratio to ensure instant member withdrawals and loan payouts.
             </p>
           </div>
 
-          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center border border-brand-500/20">
-              <Users className="w-6 h-6" />
+          <div className="liquid-glass-card rounded-3xl p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/15">
+              <Users className="w-5 h-5 text-brand-400" />
             </div>
-            <h3 className="font-display font-bold text-xl text-white">The Co-Member Guarantor Model</h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <h3 className="font-display font-bold text-lg text-white">The Co-Member Guarantor Model</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
               Members borrow up to ₦5,000,000 at a flat 5% interest rate with zero physical collateral. Approvals are backed simply by two fellow financial members who vouch for your integrity and track record.
             </p>
           </div>
         </div>
 
         {/* How to Join Banner */}
-        <div className="bg-gradient-to-r from-[#141414] via-[#0E0E0E] to-black rounded-3xl p-8 sm:p-12 border border-brand-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="liquid-glass-card rounded-3xl p-7 sm:p-10 border border-white/15 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-400 block">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200 text-[10px] font-bold uppercase tracking-wider border border-white/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
               Admission Procedure
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-bold font-display text-white">
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold font-display text-white">
               How to Become a Registered Member
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-slate-300">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1 text-xs text-slate-300">
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
+                <span className="w-4 h-4 rounded-full bg-white text-black font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>
                 <span>Submit online membership application with government ID.</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
+                <span className="w-4 h-4 rounded-full bg-white text-black font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>
                 <span>Super Admin reviews credentials and allocates physical Member ID card.</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
+                <span className="w-4 h-4 rounded-full bg-white text-black font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>
                 <span>Access Member Web App, activate wallet, and start building wealth.</span>
               </div>
             </div>
@@ -90,10 +91,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
 
           <button
             onClick={onOpenApplyModal}
-            className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-glow shrink-0 transition-all active:scale-95"
+            className="liquid-btn liquid-btn-white shrink-0 py-2.5 px-5 text-xs font-bold"
           >
             <span>Apply to Join Today</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 

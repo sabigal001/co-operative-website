@@ -110,42 +110,42 @@ export const ProductOfferings: React.FC = () => {
         </div>
 
         {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {products.map((p) => (
             <div
               key={p.id}
-              className={`rounded-3xl p-8 bg-[#0E0E0E] border border-white/10 transition-all duration-300 hover:-translate-y-1.5 shadow-xl flex flex-col justify-between relative overflow-hidden group ${p.accentColor}`}
+              className="liquid-glass-card rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl"
             >
               {p.highlight && (
-                <div className="absolute top-0 right-0 bg-gradient-to-l from-brand-500 to-emerald-400 text-black font-black text-[10px] uppercase tracking-widest px-4 py-1 rounded-bl-xl shadow-md">
-                  Most Popular
+                <div className="absolute top-0 right-0 bg-white text-black font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-bl-xl shadow-md border-b border-l border-white/20">
+                  Featured Program
                 </div>
               )}
 
               <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center group-hover:scale-105 transition-transform text-white">
                     {p.icon}
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${p.badgeColor}`}>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/15">
                     {p.badge}
                   </span>
                 </div>
 
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                   {p.subtitle}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold font-display text-white mb-3">
+                <h3 className="text-lg sm:text-xl font-bold font-display text-white mb-2">
                   {p.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                <p className="text-xs text-slate-300 leading-relaxed mb-5">
                   {p.description}
                 </p>
 
-                <div className="space-y-2.5 mb-8">
+                <div className="space-y-2 mb-6">
                   {p.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                      <CheckCircle2 className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -161,10 +161,10 @@ export const ProductOfferings: React.FC = () => {
                       openRegisterModal();
                     }
                   }}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-white/5 hover:bg-brand-500 text-white hover:text-slate-950 font-bold text-xs flex items-center justify-center gap-2 border border-white/10 hover:border-brand-400 transition-all active:scale-95 group/btn"
+                  className="liquid-btn liquid-btn-white w-full py-2.5"
                 >
                   <span>{p.cta}</span>
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

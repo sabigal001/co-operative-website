@@ -142,23 +142,23 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl sm:text-2xl font-black font-display text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-black font-display text-white">
               Cooperative Loan Hub
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-700 border border-amber-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider liquid-glass text-amber-300 border border-white/10">
               Flat 5% Interest
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Zero collateral credit backed by fellow member trust and voluntary savings.
           </p>
         </div>
 
         <button
           onClick={() => setShowApplyModal(true)}
-          className="px-5 py-3 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-glow transition-all active:scale-95"
+          className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center justify-center gap-2"
         >
-          <Plus className="w-4 h-4 text-slate-950" />
+          <Plus className="w-3.5 h-3.5 text-black" />
           <span>Apply for New Loan</span>
         </button>
       </div>
@@ -166,15 +166,15 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
       {/* Loans List */}
       <div className="space-y-6">
         {loans.length === 0 ? (
-          <div className="bg-white rounded-3xl p-10 text-center border border-slate-200">
-            <Coins className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="font-bold text-slate-800 text-base mb-1">No Active Loans Found</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+          <div className="liquid-glass-card rounded-3xl p-10 text-center border border-white/10">
+            <Coins className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+            <h3 className="font-bold text-white text-base mb-1">No Active Loans Found</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
               As an active member with verified physical card ID, you are eligible for up to ₦5,000,000 at 5% flat interest.
             </p>
             <button
               onClick={() => setShowApplyModal(true)}
-              className="px-6 py-2.5 bg-brand-500 text-slate-950 font-bold text-xs rounded-xl"
+              className="liquid-btn liquid-btn-white py-2 px-4 text-xs"
             >
               Apply Now
             </button>
@@ -190,29 +190,29 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
             return (
               <div
                 key={loan.id}
-                className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6"
+                className="liquid-glass-card rounded-3xl p-6 sm:p-8 border border-white/10 shadow-sm space-y-6"
               >
                 {/* Top Status Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-sm font-bold text-slate-900">{loan.id}</span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                        loan.status === 'approved_disbursed' ? 'bg-emerald-100 text-emerald-800' :
-                        loan.status === 'vetted_pending_treasurer' ? 'bg-amber-100 text-amber-800' :
-                        loan.status === 'pending_vetting' ? 'bg-blue-100 text-blue-800' :
-                        loan.status === 'repaid' ? 'bg-slate-100 text-slate-700' :
-                        'bg-rose-100 text-rose-800'
+                      <span className="font-mono text-sm font-bold text-white">{loan.id}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider liquid-glass border border-white/10 ${
+                        loan.status === 'approved_disbursed' ? 'text-emerald-400' :
+                        loan.status === 'vetted_pending_treasurer' ? 'text-amber-400' :
+                        loan.status === 'pending_vetting' ? 'text-blue-400' :
+                        loan.status === 'repaid' ? 'text-slate-300' :
+                        'text-rose-400'
                       }`}>
                         {loan.status.replace(/_/g, ' ')}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium">{loan.purpose}</p>
+                    <p className="text-xs text-slate-400 font-medium">{loan.purpose}</p>
                   </div>
 
                   <div className="text-left sm:text-right">
                     <span className="text-xs text-slate-400 block">Total Repayment</span>
-                    <span className="text-2xl font-black font-display text-slate-900">
+                    <span className="text-2xl font-black font-display text-white">
                       ₦{loan.totalRepayment.toLocaleString()}
                     </span>
                   </div>
@@ -221,14 +221,14 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                 {/* Progress Bar & Repayment Metric */}
                 <div>
                   <div className="flex justify-between items-center text-xs mb-2">
-                    <span className="text-slate-500 font-medium">
-                      Repayment Progress: <strong className="text-slate-900">₦{loan.totalPaid.toLocaleString()} paid</strong> of ₦{loan.totalRepayment.toLocaleString()}
+                    <span className="text-slate-400 font-medium">
+                      Repayment Progress: <strong className="text-white">₦{loan.totalPaid.toLocaleString()} paid</strong> of ₦{loan.totalRepayment.toLocaleString()}
                     </span>
-                    <span className="font-mono font-bold text-brand-600">{percentPaid}%</span>
+                    <span className="font-mono font-bold text-emerald-400">{percentPaid}%</span>
                   </div>
-                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-brand-500 to-emerald-400 rounded-full transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-white rounded-full transition-all duration-500"
                       style={{ width: `${percentPaid}%` }}
                     />
                   </div>
@@ -236,13 +236,13 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
 
                 {/* Vetting & Guarantors Pill */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="p-3.5 rounded-2xl liquid-glass border border-white/10 space-y-1">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Verified Guarantors</span>
                     <div className="space-y-1">
                       {loan.guarantors.map((g, idx) => (
-                        <div key={idx} className="flex items-center justify-between text-slate-700">
+                        <div key={idx} className="flex items-center justify-between text-slate-300">
                           <span className="font-medium truncate max-w-[160px]">{g.name}</span>
-                          <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                          <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" /> Confirmed
                           </span>
                         </div>
@@ -250,33 +250,33 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                     </div>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="p-3.5 rounded-2xl liquid-glass border border-white/10 space-y-1">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Next Installment</span>
                     {nextPending ? (
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-base font-bold text-slate-900 font-mono">
+                          <div className="text-base font-bold text-white font-mono">
                             ₦{nextPending.amount.toLocaleString()}
                           </div>
-                          <span className="text-[10px] text-slate-500">Due Date: {nextPending.dueDate}</span>
+                          <span className="text-[10px] text-slate-400">Due Date: {nextPending.dueDate}</span>
                         </div>
                         {loan.status === 'approved_disbursed' && (
                           <button
                             onClick={() => handlePayInstallment(loan)}
                             disabled={repayingLoanId === loan.id}
-                            className="px-3.5 py-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                            className="liquid-btn liquid-btn-white py-1.5 px-3 text-xs flex items-center gap-1.5"
                           >
                             {repayingLoanId === loan.id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <Loader2 className="w-3 h-3 animate-spin" />
                             ) : (
-                              <CreditCard className="w-3.5 h-3.5" />
+                              <CreditCard className="w-3 h-3 text-black" />
                             )}
                             <span>Pay Installment</span>
                           </button>
                         )}
                       </div>
                     ) : (
-                      <div className="text-emerald-700 font-bold flex items-center gap-1.5 py-1">
+                      <div className="text-emerald-400 font-bold flex items-center gap-1.5 py-1">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>All installments fully settled!</span>
                       </div>
@@ -287,12 +287,12 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                 {/* Repayment Schedule Collapsible */}
                 {loan.repaymentSchedule.length > 0 && (
                   <div className="pt-2">
-                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block mb-2">
+                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
                       Repayment Schedule Breakdown
                     </span>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border border-slate-100 rounded-xl overflow-hidden">
-                        <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                      <table className="w-full text-left text-xs border border-white/10 rounded-xl overflow-hidden">
+                        <thead className="bg-black/50 text-slate-400 font-semibold border-b border-white/10">
                           <tr>
                             <th className="py-2.5 px-3">#</th>
                             <th className="py-2.5 px-3">Due Date</th>
@@ -301,20 +301,20 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                             <th className="py-2.5 px-3">Payment Date</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 font-mono">
+                        <tbody className="divide-y divide-white/5 font-mono">
                           {loan.repaymentSchedule.map((item, idx) => (
-                            <tr key={item.id} className="hover:bg-slate-50/50">
-                              <td className="py-2 px-3 text-slate-400">{idx + 1}</td>
-                              <td className="py-2 px-3 text-slate-700">{item.dueDate}</td>
-                              <td className="py-2 px-3 font-bold text-slate-900">₦{item.amount.toLocaleString()}</td>
+                            <tr key={item.id} className="hover:bg-white/5">
+                              <td className="py-2 px-3 text-slate-500">{idx + 1}</td>
+                              <td className="py-2 px-3 text-slate-300">{item.dueDate}</td>
+                              <td className="py-2 px-3 font-bold text-white">₦{item.amount.toLocaleString()}</td>
                               <td className="py-2 px-3">
                                 <span className={`px-2 py-0.5 rounded text-[10px] font-sans font-bold uppercase ${
-                                  item.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                  item.status === 'paid' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
                                 }`}>
                                   {item.status}
                                 </span>
                               </td>
-                              <td className="py-2 px-3 text-slate-500 text-[11px] font-sans">
+                              <td className="py-2 px-3 text-slate-400 text-[11px] font-sans">
                                 {item.paidDate || 'Pending'}
                               </td>
                             </tr>
@@ -441,20 +441,20 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="px-4 py-2.5 text-slate-400 hover:text-white"
+                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl flex items-center gap-1.5 shadow-glow"
+                  className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs flex items-center gap-1.5"
                 >
-                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-black" />}
                   <span>Submit for PA Vetting</span>
                 </button>
               </div>

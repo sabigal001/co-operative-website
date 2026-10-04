@@ -35,9 +35,10 @@ export const TrustGovernance: React.FC = () => {
         
         {/* Compliance Badges Row */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-xs font-bold border border-brand-500/20 uppercase tracking-wider">
-            <Scale className="w-3.5 h-3.5" />
-            Institutional Integrity & Legal Backing
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-white/10 text-white text-xs font-semibold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <Scale className="w-3.5 h-3.5 text-slate-300" />
+            <span>Institutional Integrity & Legal Backing</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display tracking-tight text-white">
             Trust Built on Statutory Governance.
@@ -49,9 +50,9 @@ export const TrustGovernance: React.FC = () => {
 
         {/* 4 Pillars of Trust */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20">
-          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="p-6 rounded-3xl liquid-glass-card border border-white/10 space-y-3 transition-all duration-300 hover:border-white/20">
+            <div className="w-11 h-11 rounded-2xl liquid-glass border border-white/10 text-emerald-400 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-base text-white">Statutory Registration</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -59,9 +60,9 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
-              <FileCheck2 className="w-6 h-6" />
+          <div className="p-6 rounded-3xl liquid-glass-card border border-white/10 space-y-3 transition-all duration-300 hover:border-white/20">
+            <div className="w-11 h-11 rounded-2xl liquid-glass border border-white/10 text-emerald-400 flex items-center justify-center">
+              <FileCheck2 className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-base text-white">Annual Audits</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -69,9 +70,9 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
-              <Award className="w-6 h-6" />
+          <div className="p-6 rounded-3xl liquid-glass-card border border-white/10 space-y-3 transition-all duration-300 hover:border-white/20">
+            <div className="w-11 h-11 rounded-2xl liquid-glass border border-white/10 text-emerald-400 flex items-center justify-center">
+              <Award className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-base text-white">NDPR Compliant</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -79,9 +80,9 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
-              <Building className="w-6 h-6" />
+          <div className="p-6 rounded-3xl liquid-glass-card border border-white/10 space-y-3 transition-all duration-300 hover:border-white/20">
+            <div className="w-11 h-11 rounded-2xl liquid-glass border border-white/10 text-emerald-400 flex items-center justify-center">
+              <Building className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-base text-white">Dedicated Secretariats</h4>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -93,7 +94,7 @@ export const TrustGovernance: React.FC = () => {
         {/* Board of Trustees Section */}
         <div className="border-t border-white/10 pt-16">
           <div className="text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-400 block mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
               Leadership & Trustees
             </span>
             <h3 className="text-2xl sm:text-3xl font-bold font-display text-white">
@@ -105,15 +106,15 @@ export const TrustGovernance: React.FC = () => {
             {trustees.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-[#0E0E0E] rounded-3xl p-5 border border-white/10 hover:border-brand-500/40 transition-all text-center group"
+                className="liquid-glass-card rounded-3xl p-5 border border-white/10 hover:border-white/25 transition-all text-center group"
               >
                 <img
                   src={t.image}
                   alt={t.name}
-                  className="w-20 h-20 rounded-full mx-auto object-cover mb-4 border-2 border-brand-500/40 group-hover:scale-105 transition-transform"
+                  className="w-20 h-20 rounded-full mx-auto object-cover mb-4 border border-white/20 group-hover:scale-105 transition-transform"
                 />
                 <h4 className="font-bold text-sm text-white mb-0.5">{t.name}</h4>
-                <div className="text-xs text-brand-400 font-medium mb-3">{t.role}</div>
+                <div className="text-xs text-emerald-400 font-medium mb-2">{t.role}</div>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   {t.desc}
                 </p>

@@ -201,14 +201,12 @@ export const RegisterCardModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-[#0A0A0A] border border-white/10 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
+      <div className="liquid-glass-card border border-white/15 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
         {/* Top Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-black">
+        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-black/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-300 p-0.5 flex items-center justify-center shadow-glow">
-              <div className="w-full h-full bg-black rounded-[14px] flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-brand-400" />
-              </div>
+            <div className="w-10 h-10 rounded-2xl liquid-glass border border-white/15 flex items-center justify-center shadow-sm">
+              <CreditCard className="w-5 h-5 text-white" />
             </div>
             <div>
               <h3 className="font-display font-bold text-lg text-white leading-tight">
@@ -228,7 +226,7 @@ export const RegisterCardModal: React.FC = () => {
         </div>
 
         {/* Step Progress Pills */}
-        <div className="px-6 py-3 bg-[#081F35] border-b border-white/5 flex items-center justify-between text-xs">
+        <div className="px-6 py-3 bg-white/[0.02] border-b border-white/10 flex items-center justify-between text-xs">
           {[
             { num: 1, title: 'Card Lookup' },
             { num: 2, title: 'Verification' },
@@ -242,10 +240,10 @@ export const RegisterCardModal: React.FC = () => {
                 <span
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
                     isCompleted
-                      ? 'bg-brand-500 text-slate-950 font-black'
+                      ? 'liquid-btn-white text-black font-black'
                       : isCurrent
-                      ? 'bg-brand-500/20 text-brand-400 border border-brand-500 font-black ring-2 ring-brand-500/20'
-                      : 'bg-white/5 text-slate-400'
+                      ? 'liquid-glass text-emerald-400 border border-emerald-400/40 font-black'
+                      : 'bg-white/5 text-slate-500'
                   }`}
                 >
                   {isCompleted ? '✓' : item.num}
@@ -322,9 +320,9 @@ export const RegisterCardModal: React.FC = () => {
                 type="button"
                 onClick={() => handleVerifyCard()}
                 disabled={loading}
-                className="w-full sm:w-auto px-6 py-3.5 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-slate-950 font-bold rounded-2xl flex items-center justify-center gap-2 shadow-glow transition-all"
+                className="w-full sm:w-auto liquid-btn liquid-btn-white py-2 px-5 text-xs flex items-center justify-center gap-2"
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-black" />}
                 <span>Verify Card Details</span>
               </button>
             </div>
@@ -334,9 +332,9 @@ export const RegisterCardModal: React.FC = () => {
         {/* STEP 2: VERIFICATION PREVIEW */}
         {step === 2 && verifiedInfo && (
           <div className="p-6 space-y-6">
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-brand-950/40 to-black border border-brand-500/30 space-y-4">
-              <div className="flex items-center gap-2 text-brand-400 font-bold text-sm">
-                <CheckCircle2 className="w-5 h-5 text-brand-400" />
+            <div className="liquid-glass-card rounded-2xl p-5 border border-white/10 space-y-4">
+              <div className="flex items-center gap-2 text-white font-bold text-sm">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Physical Member ID Validated in Registry</span>
               </div>
 
@@ -356,7 +354,7 @@ export const RegisterCardModal: React.FC = () => {
                 <div>
                   <span className="text-slate-400 block">Security Chip Status:</span>
                   <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Ready for Linking
+                    <Sparkles className="w-3 h-3 text-emerald-400" /> Ready for Linking
                   </span>
                 </div>
               </div>
@@ -370,17 +368,17 @@ export const RegisterCardModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-4 py-2.5 text-xs text-slate-400 hover:text-white font-semibold transition-colors"
+                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={handleProceedToAccount}
-                className="px-6 py-3.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-2xl flex items-center gap-2 shadow-glow transition-all"
+                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
               >
                 <span>Continue to Profile Setup</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -535,16 +533,16 @@ export const RegisterCardModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="px-4 py-2.5 text-xs text-slate-400 hover:text-white font-semibold"
+                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-2xl flex items-center gap-2 shadow-glow transition-all"
+                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5 text-black" />}
                 <span>Send Verification OTP</span>
               </button>
             </div>
@@ -554,14 +552,14 @@ export const RegisterCardModal: React.FC = () => {
         {/* STEP 4: OTP ACTIVATION MODAL */}
         {step === 4 && (
           <div className="p-6 space-y-6 text-center">
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 shadow-glow">
+            <div className="w-16 h-16 mx-auto rounded-3xl liquid-glass border border-white/15 flex items-center justify-center text-emerald-400 shadow-sm">
               <KeyRound className="w-8 h-8" />
             </div>
 
             <div>
               <h4 className="font-display font-bold text-lg text-white">Enter 6-Digit OTP Code</h4>
               <p className="text-xs text-slate-300 mt-1 max-w-sm mx-auto">
-                A simulated verification code has been dispatched to <strong className="text-brand-400">{phone}</strong> and <strong className="text-brand-400">{email}</strong>.
+                A simulated verification code has been dispatched to <strong className="text-white">{phone}</strong> and <strong className="text-white">{email}</strong>.
               </p>
             </div>
 
@@ -571,7 +569,7 @@ export const RegisterCardModal: React.FC = () => {
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-black border-2 border-brand-500 rounded-2xl py-3 text-brand-400 focus:outline-none shadow-inner"
+                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-black border border-white/20 rounded-2xl py-3 text-white focus:outline-none focus:border-white/40 shadow-inner"
               />
               <span className="text-[11px] text-slate-400 block mt-2">
                 Demo helper: Pre-filled with code <strong>894201</strong> (or enter any 6 digits).
@@ -582,7 +580,7 @@ export const RegisterCardModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="px-4 py-2.5 text-xs text-slate-400 hover:text-white font-semibold"
+                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
               >
                 Back
               </button>
@@ -590,9 +588,9 @@ export const RegisterCardModal: React.FC = () => {
                 type="button"
                 onClick={handleVerifyOtp}
                 disabled={loading}
-                className="px-8 py-3.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-sm rounded-2xl flex items-center gap-2 shadow-glow transition-all active:scale-95 mx-auto"
+                className="liquid-btn liquid-btn-white py-2 px-5 text-xs flex items-center gap-1.5"
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-black" />}
                 <span>Activate Account & Digital Card</span>
               </button>
             </div>

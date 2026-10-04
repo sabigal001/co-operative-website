@@ -10,7 +10,7 @@ import type {
 import { initialPhysicalCards } from '../../mocks/cards';
 import { initialMembersRegistry, primaryDemoMember } from '../../mocks/members';
 import { mockAdminUsers } from '../../mocks/admins';
-import { getFromStorage, saveToStorage } from './storageHelper';
+import { getFromStorage, saveToStorage, removeFromStorage } from './storageHelper';
 
 const CARDS_STORAGE_KEY = 'physical_cards';
 const MEMBERS_STORAGE_KEY = 'members_registry';
@@ -217,7 +217,21 @@ export const authService = {
     return mockAdminUsers.find((a) => a.role === role) || mockAdminUsers[0];
   },
 
+  // Member Logout API endpoint simulation (POST /api/v1/auth/logout)
+  async logout(): Promise<ApiResponse<{ loggedOut: boolean }>> {
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    removeFromStorage(AUTH_MEMBER_KEY);
+    removeFromStorage('auth_token');
+    removeFromStorage('session_expiry');
+    return {
+      success: true,
+      message: 'You have been securely signed out of your Mosunmola member session.',
+      data: { loggedOut: true }
+    };
+  },
+
   logoutMember(): void {
-    localStorage.removeItem('mosunmola_current_member_id');
+    removeFromStorage(AUTH_MEMBER_KEY);
+    removeFromStorage('auth_token');
   }
 };

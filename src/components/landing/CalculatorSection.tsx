@@ -33,8 +33,9 @@ export const CalculatorSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-xs font-bold border border-brand-500/20 uppercase tracking-wider">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold border border-white/15 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
             <Calculator className="w-3.5 h-3.5" />
             Transparent Financial Simulator
           </div>
@@ -47,36 +48,36 @@ export const CalculatorSection: React.FC = () => {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="flex justify-center mb-10">
-          <div className="bg-[#121212] p-1.5 rounded-full border border-white/10 flex items-center shadow-inner">
+        <div className="flex justify-center mb-8">
+          <div className="liquid-glass p-1 rounded-full border border-white/15 flex items-center shadow-lg">
             <button
               onClick={() => setActiveTab('savings')}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
+              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
                 activeTab === 'savings'
-                  ? 'bg-brand-500 text-black shadow-glow font-black'
+                  ? 'bg-white text-black shadow-sm font-black'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <TrendingUp className="w-4 h-4" />
+              <TrendingUp className="w-3.5 h-3.5" />
               <span>Target Savings & Thrift ROI</span>
             </button>
 
             <button
               onClick={() => setActiveTab('loan')}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
+              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
                 activeTab === 'loan'
-                  ? 'bg-brand-500 text-black shadow-glow font-black'
+                  ? 'bg-white text-black shadow-sm font-black'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Coins className="w-4 h-4" />
+              <Coins className="w-3.5 h-3.5" />
               <span>Low-Interest Member Loan</span>
             </button>
           </div>
         </div>
 
         {/* Calculator Body */}
-        <div className="bg-[#0E0E0E] rounded-3xl border border-white/10 p-6 sm:p-10 shadow-2xl max-w-4xl mx-auto">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-9 shadow-2xl max-w-4xl mx-auto">
           {activeTab === 'savings' ? (
             /* SAVINGS CALCULATOR */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -134,9 +135,9 @@ export const CalculatorSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141414] border border-white/5 space-y-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2 text-brand-400 font-semibold">
-                    <Sparkles className="w-4 h-4" />
+                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-300">
+                  <div className="flex items-center gap-2 text-white font-semibold">
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
                     <span>Projected Dividend Bonus: 18.5% p.a.</span>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
@@ -146,9 +147,9 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Yield Card Summary */}
-              <div className="lg:col-span-5 bg-[#141414] p-6 sm:p-8 rounded-3xl border border-brand-500/30 shadow-glow flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-white/10 flex flex-col justify-between space-y-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     Projected Maturity Payout
                   </span>
                   <div className="text-3xl sm:text-4xl font-black text-white font-display">
@@ -176,10 +177,10 @@ export const CalculatorSection: React.FC = () => {
 
                 <button
                   onClick={() => navigateToService('members')}
-                  className="w-full py-3.5 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                  className="w-full liquid-btn liquid-btn-white py-2.5 text-xs flex items-center justify-center gap-2"
                 >
                   <span>Start This Savings Goal</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -194,7 +195,7 @@ export const CalculatorSection: React.FC = () => {
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                       Desired Loan Amount
                     </span>
-                    <span className="font-mono text-xl font-black text-brand-400">
+                    <span className="font-mono text-xl font-black text-white">
                       ₦{loanAmount.toLocaleString()}
                     </span>
                   </div>
@@ -205,7 +206,7 @@ export const CalculatorSection: React.FC = () => {
                     step="50000"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-400 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
                     <span>₦100,000</span>
@@ -231,7 +232,7 @@ export const CalculatorSection: React.FC = () => {
                     step="1"
                     value={loanTenureMonths}
                     onChange={(e) => setLoanTenureMonths(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-400 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
                     <span>1 Month (Express)</span>
@@ -240,9 +241,9 @@ export const CalculatorSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141414] border border-white/5 space-y-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2 text-brand-400 font-semibold">
-                    <CheckCircle2 className="w-4 h-4" />
+                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-300">
+                  <div className="flex items-center gap-2 text-white font-semibold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>Flat 5.0% Cooperative Interest Rate</span>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
@@ -252,9 +253,9 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Repayment Card Summary */}
-              <div className="lg:col-span-5 bg-[#141414] p-6 sm:p-8 rounded-3xl border border-brand-500/30 shadow-glow flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-white/10 flex flex-col justify-between space-y-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     Monthly Installment
                   </span>
                   <div className="text-3xl sm:text-4xl font-black text-white font-display">
@@ -273,7 +274,7 @@ export const CalculatorSection: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Total Flat Interest (5%):</span>
-                    <span className="font-mono font-bold text-brand-400">₦{totalInterest.toLocaleString()}</span>
+                    <span className="font-mono font-bold text-emerald-400">₦{totalInterest.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Total Repayment:</span>
@@ -283,10 +284,10 @@ export const CalculatorSection: React.FC = () => {
 
                 <button
                   onClick={() => navigateToService('members')}
-                  className="w-full py-3.5 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                  className="w-full liquid-btn liquid-btn-white py-2.5 text-xs flex items-center justify-center gap-2"
                 >
                   <span>Apply for This Loan</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

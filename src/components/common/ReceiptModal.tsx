@@ -22,9 +22,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white text-slate-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden my-6 border border-slate-200 animate-slide-up relative">
         {/* Top Control Bar (Hidden on print) */}
-        <div className="no-print bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="no-print bg-black text-white px-6 py-3.5 flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20">
+            <span className="text-[10px] font-bold text-white liquid-glass px-2.5 py-0.5 rounded-full border border-white/15">
               OFFICIAL RECEIPT
             </span>
             <span className="text-xs text-slate-300 font-mono">{transaction.reference}</span>
@@ -32,21 +32,23 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="liquid-btn liquid-btn-default py-1.5 px-2.5 text-xs flex items-center gap-1.5"
               title="Print Receipt"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Print</span>
             </button>
             <button
               onClick={handleDownload}
-              className="p-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold transition-colors"
+              className="liquid-btn liquid-btn-white py-1.5 px-2.5 text-xs flex items-center gap-1.5"
               title="Download PDF"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5 text-black" />
+              <span className="hidden sm:inline">Download</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+              className="liquid-btn liquid-btn-default p-1.5 text-xs"
               title="Close"
             >
               <X className="w-4 h-4" />
