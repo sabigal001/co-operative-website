@@ -91,7 +91,7 @@ export const ProductOfferings: React.FC = () => {
   ];
 
   return (
-    <section id="products" className="py-20 lg:py-28 bg-[#07192C] text-white border-b border-white/10 relative">
+    <section id="products" className="py-20 lg:py-28 bg-black text-white border-b border-white/10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -114,10 +114,10 @@ export const ProductOfferings: React.FC = () => {
           {products.map((p) => (
             <div
               key={p.id}
-              className={`rounded-3xl p-8 bg-[#0A2540] border border-white/10 transition-all duration-300 hover:-translate-y-1.5 shadow-xl flex flex-col justify-between relative overflow-hidden group ${p.accentColor}`}
+              className={`rounded-3xl p-8 bg-[#0E0E0E] border border-white/10 transition-all duration-300 hover:-translate-y-1.5 shadow-xl flex flex-col justify-between relative overflow-hidden group ${p.accentColor}`}
             >
               {p.highlight && (
-                <div className="absolute top-0 right-0 bg-gradient-to-l from-brand-500 to-emerald-400 text-slate-950 font-black text-[10px] uppercase tracking-widest px-4 py-1 rounded-bl-xl shadow-md">
+                <div className="absolute top-0 right-0 bg-gradient-to-l from-brand-500 to-emerald-400 text-black font-black text-[10px] uppercase tracking-widest px-4 py-1 rounded-bl-xl shadow-md">
                   Most Popular
                 </div>
               )}

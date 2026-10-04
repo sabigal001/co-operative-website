@@ -228,7 +228,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
         </div>
 
         {/* PWA & Device Status */}
-        <div className="bg-[#0A2540] text-white rounded-3xl p-6 border border-white/10 flex items-center justify-between gap-4">
+        <div className="bg-black text-white rounded-3xl p-6 border border-white/15 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Smartphone className="w-8 h-8 text-brand-400 shrink-0" />
             <div>

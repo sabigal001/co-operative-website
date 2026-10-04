@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Award, FileCheck2, Scale, Users, Building, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Award, FileCheck2, Scale, Building } from 'lucide-react';
 
 export const TrustGovernance: React.FC = () => {
   const trustees = [
@@ -30,7 +30,7 @@ export const TrustGovernance: React.FC = () => {
   ];
 
   return (
-    <section id="trust" className="py-20 lg:py-28 bg-[#0A2540] text-white border-b border-white/10">
+    <section id="trust" className="py-20 lg:py-28 bg-black text-white border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Compliance Badges Row */}
@@ -49,7 +49,7 @@ export const TrustGovernance: React.FC = () => {
 
         {/* 4 Pillars of Trust */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20">
-          <div className="p-6 rounded-3xl bg-[#07192C] border border-white/10 space-y-3">
+          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -59,8 +59,8 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#07192C] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
               <FileCheck2 className="w-6 h-6" />
             </div>
             <h4 className="font-bold text-base text-white">Annual Audits</h4>
@@ -69,8 +69,8 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#07192C] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
               <Award className="w-6 h-6" />
             </div>
             <h4 className="font-bold text-base text-white">NDPR Compliant</h4>
@@ -79,8 +79,8 @@ export const TrustGovernance: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#07192C] border border-white/10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+          <div className="p-6 rounded-3xl bg-[#0E0E0E] border border-white/10 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center">
               <Building className="w-6 h-6" />
             </div>
             <h4 className="font-bold text-base text-white">Dedicated Secretariats</h4>
@@ -105,7 +105,7 @@ export const TrustGovernance: React.FC = () => {
             {trustees.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-[#07192C] rounded-3xl p-5 border border-white/10 hover:border-brand-500/40 transition-all text-center group"
+                className="bg-[#0E0E0E] rounded-3xl p-5 border border-white/10 hover:border-brand-500/40 transition-all text-center group"
               >
                 <img
                   src={t.image}

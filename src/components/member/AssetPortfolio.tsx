@@ -31,7 +31,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
   return (
     <div className="space-y-8">
       {/* Top Banner */}
-      <div className="bg-gradient-to-br from-[#0F2F4F] to-[#0A2540] text-white p-6 sm:p-8 rounded-3xl border border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-gradient-to-br from-black via-zinc-950 to-neutral-900 text-white p-6 sm:p-8 rounded-3xl border border-white/15 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-1">
             Real Estate & Agro Equity Portfolio
@@ -201,10 +201,10 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
             </button>
 
             <div className="text-center border-b border-slate-200 pb-5 mb-5">
-              <div className="w-10 h-10 rounded-2xl bg-[#0A2540] text-brand-400 font-display font-black text-base flex items-center justify-center mx-auto mb-2">
+              <div className="w-10 h-10 rounded-2xl bg-black text-brand-400 font-display font-black text-base flex items-center justify-center mx-auto mb-2">
                 M
               </div>
-              <h3 className="font-display font-black text-lg text-[#0A2540]">
+              <h3 className="font-display font-black text-lg text-black">
                 MOSUNMOLA COOPERATIVE MULTIPURPOSE SOCIETY
               </h3>
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
@@ -250,7 +250,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
 
               <button
                 onClick={() => window.print()}
-                className="w-full py-3 bg-[#0A2540] text-white font-bold rounded-2xl hover:bg-slate-800 transition-colors"
+                className="w-full py-3 bg-black text-white font-bold rounded-2xl hover:bg-zinc-800 transition-colors"
               >
                 Print Official Deed Slip
               </button>

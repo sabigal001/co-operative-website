@@ -1,14 +1,10 @@
 import React from 'react';
 import { 
   Building, 
-  ShieldCheck, 
   Target, 
   Users, 
   Scale, 
-  Coins, 
-  FileCheck2, 
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from 'lucide-react';
 
 interface AboutSectionProps {
@@ -17,7 +13,7 @@ interface AboutSectionProps {
 
 export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) => {
   return (
-    <section id="about" className="py-20 lg:py-28 bg-[#07192C] text-white border-b border-white/10 relative">
+    <section id="about" className="py-20 lg:py-28 bg-black text-white border-b border-white/10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -36,7 +32,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
 
         {/* 3 Story Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-[#0A2540] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
+          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
             <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center border border-brand-500/20">
               <Target className="w-6 h-6" />
             </div>
@@ -46,8 +42,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
             </p>
           </div>
 
-          <div className="bg-[#0A2540] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
               <Scale className="w-6 h-6" />
             </div>
             <h3 className="font-display font-bold text-xl text-white">Legal & Audited Solvency</h3>
@@ -56,8 +52,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
             </p>
           </div>
 
-          <div className="bg-[#0A2540] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+          <div className="bg-[#0E0E0E] rounded-3xl p-8 border border-white/10 space-y-4 hover:border-brand-500/40 transition-colors">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center border border-brand-500/20">
               <Users className="w-6 h-6" />
             </div>
             <h3 className="font-display font-bold text-xl text-white">The Co-Member Guarantor Model</h3>
@@ -68,7 +64,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
         </div>
 
         {/* How to Join Banner */}
-        <div className="bg-gradient-to-r from-[#0F2F4F] via-[#0A2540] to-[#07192C] rounded-3xl p-8 sm:p-12 border border-brand-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="bg-gradient-to-r from-[#141414] via-[#0E0E0E] to-black rounded-3xl p-8 sm:p-12 border border-brand-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-brand-400 block">
               Admission Procedure
@@ -78,15 +74,15 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-slate-300">
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-slate-950 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
+                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
                 <span>Submit online membership application with government ID.</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-slate-950 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
+                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
                 <span>Super Admin reviews credentials and allocates physical Member ID card.</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-slate-950 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
+                <span className="w-5 h-5 rounded-full bg-brand-500 text-black font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
                 <span>Access Member Web App, activate wallet, and start building wealth.</span>
               </div>
             </div>
@@ -94,7 +90,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
 
           <button
             onClick={onOpenApplyModal}
-            className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-slate-950 font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-glow shrink-0 transition-all active:scale-95"
+            className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-glow shrink-0 transition-all active:scale-95"
           >
             <span>Apply to Join Today</span>
             <ArrowRight className="w-4 h-4" />

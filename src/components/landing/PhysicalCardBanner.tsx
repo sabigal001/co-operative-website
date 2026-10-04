@@ -1,5 +1,5 @@
 import React from 'react';
-import { CreditCard, QrCode, ShieldCheck, ArrowRight, UserPlus, Sparkles, Building2 } from 'lucide-react';
+import { CreditCard, QrCode, ShieldCheck, ArrowRight, UserPlus } from 'lucide-react';
 import { navigateToService } from '../../utils/subdomainRouter';
 
 interface PhysicalCardBannerProps {
@@ -32,10 +32,10 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-[#07192C] text-white border-b border-white/10 relative overflow-hidden">
+    <section id="how-it-works" className="py-20 bg-black text-white border-b border-white/10 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="bg-gradient-to-br from-[#0F2F4F] to-[#0A2540] rounded-4xl p-8 sm:p-12 lg:p-16 border-2 border-brand-500/20 shadow-2xl relative overflow-hidden">
+        <div className="bg-[#0E0E0E] rounded-4xl p-8 sm:p-12 lg:p-16 border-2 border-brand-500/20 shadow-2xl relative overflow-hidden">
           {/* Background Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -62,7 +62,7 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
               {/* 4 Steps Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {steps.map((s) => (
-                  <div key={s.step} className="p-4 rounded-2xl bg-[#061626]/70 border border-white/5 space-y-1.5">
+                  <div key={s.step} className="p-4 rounded-2xl bg-black/80 border border-white/10 space-y-1.5">
                     <div className="text-xs font-mono font-black text-brand-400">
                       STEP {s.step}
                     </div>
@@ -79,32 +79,32 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
               <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <button
                   onClick={onOpenApplyModal}
-                  className="px-8 py-4 bg-gradient-to-r from-brand-500 to-emerald-400 hover:from-brand-400 hover:to-emerald-300 text-slate-950 font-black text-sm rounded-2xl flex items-center justify-center gap-2 shadow-glow transition-all hover:scale-105 active:scale-95"
+                  className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-black font-black text-sm rounded-2xl flex items-center justify-center gap-2 shadow-glow transition-all hover:scale-105 active:scale-95"
                 >
-                  <UserPlus className="w-4 h-4 text-slate-950" />
+                  <UserPlus className="w-4 h-4 text-black" />
                   <span>Register as a Member</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
                   onClick={() => navigateToService('members')}
-                  className="px-6 py-4 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white text-xs font-bold rounded-2xl border border-white/10 flex items-center justify-center gap-2 transition-colors"
+                  className="px-6 py-4 bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-bold rounded-2xl border border-white/15 flex items-center justify-center gap-2 transition-colors"
                 >
                   <span>Already Issued a Card? Member Login</span>
                 </button>
               </div>
             </div>
 
-            {/* Right Graphic: Physical Card Holographic Render */}
+            {/* Right Graphic: Physical Card Render in Black & Green */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-sm rounded-3xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-[#0A2540] p-1 shadow-2xl">
-                <div className="bg-[#0A2540] rounded-[22px] p-6 space-y-5 text-white relative overflow-hidden">
+              <div className="w-full max-w-sm rounded-3xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-black p-1 shadow-2xl">
+                <div className="bg-[#121212] rounded-[22px] p-6 space-y-5 text-white relative overflow-hidden border border-white/10">
                   
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 rounded-full bg-brand-400" />
-                        <span className="font-display font-black text-xs tracking-wider">MOSUNMOLA COOP</span>
+                        <span className="w-3 h-3 rounded-full bg-brand-400 shadow-glow" />
+                        <span className="font-display font-black text-xs tracking-wider">MOSUNMOLA</span>
                       </div>
                       <span className="text-[9px] text-slate-400 uppercase tracking-widest block">Official Member Pass</span>
                     </div>
@@ -113,12 +113,12 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                     </div>
                   </div>
 
-                  <div className="w-10 h-7 rounded bg-gradient-to-r from-amber-300 to-amber-500 p-1 flex flex-col justify-around">
-                    <div className="h-0.5 bg-amber-700/40 w-full" />
-                    <div className="h-0.5 bg-amber-700/40 w-full" />
+                  <div className="w-10 h-7 rounded bg-gradient-to-r from-amber-400 to-amber-600 p-1 flex flex-col justify-around shadow-sm">
+                    <div className="h-0.5 bg-black/40 w-full" />
+                    <div className="h-0.5 bg-black/40 w-full" />
                   </div>
 
-                  <div className="font-mono text-xl font-bold tracking-widest text-center py-2 bg-[#061626]/80 rounded-xl border border-white/5 text-brand-300">
+                  <div className="font-mono text-xl font-bold tracking-widest text-center py-2 bg-black rounded-xl border border-brand-500/20 text-brand-400 shadow-inner">
                     MCS-2026-8942
                   </div>
 
@@ -128,7 +128,7 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                       <span className="font-bold text-white">CHIEF ADELEKE BALOGUN</span>
                     </div>
                     <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
-                      <QrCode className="w-10 h-10 text-slate-950" />
+                      <QrCode className="w-10 h-10 text-black" />
                     </div>
                   </div>
 

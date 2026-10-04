@@ -14,7 +14,7 @@ export const ToastContainer: React.FC = () => {
           key={toast.id}
           className={`pointer-events-auto flex items-start gap-3 p-4 rounded-2xl shadow-chowdeck-dark border transition-all duration-300 animate-slide-up ${
             toast.type === 'success'
-              ? 'bg-[#0A2540] text-white border-brand-500/40 shadow-glow'
+              ? 'bg-black text-white border-brand-500/50 shadow-glow'
               : toast.type === 'error'
               ? 'bg-rose-900 text-white border-rose-500/40'
               : 'bg-white text-slate-800 border-slate-200'

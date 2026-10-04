@@ -22,7 +22,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white text-slate-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden my-6 border border-slate-200 animate-slide-up relative">
         {/* Top Control Bar (Hidden on print) */}
-        <div className="no-print bg-[#0A2540] text-white px-6 py-4 flex items-center justify-between">
+        <div className="no-print bg-black text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20">
               OFFICIAL RECEIPT
@@ -59,10 +59,10 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
           {/* Cooperative Header */}
           <div className="text-center border-b border-slate-200 pb-5">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-[#0A2540] text-brand-400 font-black flex items-center justify-center text-sm">
+              <div className="w-8 h-8 rounded-xl bg-black text-brand-400 font-black flex items-center justify-center text-sm">
                 M
               </div>
-              <h2 className="font-display font-extrabold text-lg text-[#0A2540] tracking-tight">
+              <h2 className="font-display font-extrabold text-lg text-black tracking-tight">
                 MOSUNMOLA COOPERATIVE
               </h2>
             </div>
@@ -83,7 +83,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>PAYMENT CONFIRMED & AUDITED</span>
             </div>
-            <div className="text-3xl font-extrabold text-[#0A2540] font-display">
+            <div className="text-3xl font-extrabold text-black font-display">
               ₦{transaction.amount.toLocaleString()}
             </div>
             <p className="text-xs text-slate-500 font-medium capitalize mt-1">

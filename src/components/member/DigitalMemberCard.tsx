@@ -92,7 +92,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         >
           {/* ================= CARD FRONT ================= */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-br from-[#0F2F4F] via-[#0A2540] to-[#051322] border-2 border-brand-500/40 shadow-glow flex flex-col justify-between"
+            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-br from-black via-zinc-950 to-neutral-900 border-2 border-brand-500/50 shadow-glow flex flex-col justify-between"
             style={{ backfaceVisibility: 'hidden' }}
           >
             {/* Hologram Sheen */}
@@ -102,7 +102,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-400 to-emerald-300 p-0.5 shadow-md">
-                  <div className="w-full h-full bg-[#0A2540] rounded-[10px] flex items-center justify-center font-display font-black text-sm text-brand-400">
+                  <div className="w-full h-full bg-black rounded-[10px] flex items-center justify-center font-display font-black text-sm text-brand-400">
                     M
                   </div>
                 </div>
@@ -182,7 +182,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
 
           {/* ================= CARD BACK ================= */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-bl from-[#051322] via-[#0A2540] to-[#0F2F4F] border-2 border-white/20 shadow-2xl flex flex-col justify-between"
+            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-bl from-neutral-900 via-zinc-950 to-black border-2 border-brand-500/30 shadow-2xl flex flex-col justify-between"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'

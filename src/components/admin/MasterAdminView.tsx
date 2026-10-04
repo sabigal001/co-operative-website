@@ -199,8 +199,8 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 onClick={() => setActiveTab(t.id as any)}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
                   isActive
-                    ? 'bg-purple-900 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm'
+                    : 'text-slate-600 hover:text-black hover:bg-slate-100'
                 }`}
               >
                 {t.icon}
@@ -586,8 +586,8 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
       {/* ================= MODAL: CSV BATCH IMPORT SIMULATION ================= */}
       {showBatchModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
               <h3 className="font-display font-bold text-lg text-white">Import Physical Card Batch</h3>
               <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-white">
@@ -602,7 +602,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   type="text"
                   value={batchName}
                   onChange={(e) => setBatchName(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
                   required
                 />
               </div>
@@ -613,7 +613,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   type="text"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
                   required
                 />
               </div>
@@ -626,7 +626,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   max="500"
                   value={batchCount}
                   onChange={(e) => setBatchCount(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
                   required
                 />
               </div>
@@ -636,7 +636,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
                 >
                   <option value="Ikeja Central Secretariat">Ikeja Central Secretariat</option>
                   <option value="Victoria Island Regional Office">Victoria Island Regional Office</option>
@@ -667,8 +667,8 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
       {/* ================= MODAL: DIVIDEND ALLOCATION ================= */}
       {showDividendModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
               <h3 className="font-display font-bold text-lg text-white">Trigger Dividend Pool</h3>
               <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-white">
@@ -685,7 +685,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   step="500000"
                   value={dividendPool}
                   onChange={(e) => setDividendPool(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
                   required
                 />
               </div>
@@ -697,7 +697,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   step="0.1"
                   value={dividendPercent}
                   onChange={(e) => setDividendPercent(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
                   required
                 />
               </div>
@@ -712,7 +712,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl"
+                  className="px-6 py-2.5 bg-brand-500 hover:bg-brand-400 text-black font-bold rounded-xl"
                 >
                   Authorize Allocation
                 </button>
@@ -724,11 +724,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
       {/* ================= MODAL: PROSPECTIVE APPLICANT APPROVAL & CARD ISSUANCE ================= */}
       {selectedAppForApproval && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center border border-brand-500/30">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
@@ -745,7 +745,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </div>
 
             {/* Applicant Summary */}
-            <div className="bg-[#07192C] border border-white/10 rounded-2xl p-4 mb-5 space-y-2 text-xs">
+            <div className="bg-[#141414] border border-white/10 rounded-2xl p-4 mb-5 space-y-2 text-xs">
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Full Legal Name:</span>
                 <span className="font-bold text-white font-sans">{selectedAppForApproval.fullName}</span>
@@ -788,7 +788,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   value={assignedCardInput}
                   onChange={(e) => setAssignedCardInput(e.target.value)}
                   placeholder="e.g. MCS-2026-7842"
-                  className="w-full bg-[#07192C] border border-brand-500/40 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-brand-400 font-mono font-bold tracking-wider"
+                  className="w-full bg-black border border-brand-500/40 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-brand-400 font-mono font-bold tracking-wider focus:outline-none"
                   required
                 />
                 <p className="text-[10px] text-slate-400 mt-1">

@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Calculator, ArrowRight, TrendingUp, Coins, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Calculator, TrendingUp, Coins, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { navigateToService } from '../../utils/subdomainRouter';
 
 export const CalculatorSection: React.FC = () => {
-  const { openRegisterModal, setCurrentPortal } = useApp();
+  const { setCurrentPortal } = useApp();
 
   const [activeTab, setActiveTab] = useState<'savings' | 'loan'>('savings');
 
   // Savings Calculator State
-  const [savingsMonthly, setSavingsMonthly] = useState<number>(100000);
+  const [monthlyDeposit, setMonthlyDeposit] = useState<number>(50000);
   const [savingsMonths, setSavingsMonths] = useState<number>(12);
-  const annualSavingsReturn = 18.5; // 18.5%
+  const annualDividendRate = 18.5; // 18.5% p.a.
 
-  // Savings Math: simple approximation of monthly accumulation + dividend
-  const totalPrincipalSaved = savingsMonthly * savingsMonths;
-  const estimatedDividend = Math.round(totalPrincipalSaved * (annualSavingsReturn / 100) * (savingsMonths / 12) * 0.55);
+  // Savings Math
+  const totalPrincipalSaved = monthlyDeposit * savingsMonths;
+  const estimatedDividend = Math.round(totalPrincipalSaved * (annualDividendRate / 100) * (savingsMonths / 12));
   const totalSavingsPayout = totalPrincipalSaved + estimatedDividend;
 
   // Loan Calculator State
-  const [loanAmount, setLoanAmount] = useState<number>(1500000);
+  const [loanAmount, setLoanAmount] = useState<number>(750000);
   const [loanTenureMonths, setLoanTenureMonths] = useState<number>(6);
-  const flatInterestRate = 5.0; // 5% cooperative rate
+  const flatInterestRate = 5.0; // 5% flat cooperative rate
 
   // Loan Math
   const totalInterest = Math.round(loanAmount * (flatInterestRate / 100) * (loanTenureMonths / 12));
@@ -28,7 +29,7 @@ export const CalculatorSection: React.FC = () => {
   const monthlyLoanRepayment = Math.round(totalLoanRepayment / loanTenureMonths);
 
   return (
-    <section id="calculator" className="py-20 lg:py-28 bg-[#0A2540] text-white border-b border-white/10 relative">
+    <section id="calculator" className="py-20 lg:py-28 bg-black text-white border-b border-white/10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -47,12 +48,12 @@ export const CalculatorSection: React.FC = () => {
 
         {/* Tab Switcher Pills */}
         <div className="flex justify-center mb-10">
-          <div className="bg-[#07192C] p-1.5 rounded-full border border-white/10 flex items-center shadow-inner">
+          <div className="bg-[#121212] p-1.5 rounded-full border border-white/10 flex items-center shadow-inner">
             <button
               onClick={() => setActiveTab('savings')}
               className={`px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                 activeTab === 'savings'
-                  ? 'bg-brand-500 text-slate-950 shadow-glow font-black'
+                  ? 'bg-brand-500 text-black shadow-glow font-black'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -64,7 +65,7 @@ export const CalculatorSection: React.FC = () => {
               onClick={() => setActiveTab('loan')}
               className={`px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${
                 activeTab === 'loan'
-                  ? 'bg-brand-500 text-slate-950 shadow-glow font-black'
+                  ? 'bg-brand-500 text-black shadow-glow font-black'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -75,7 +76,7 @@ export const CalculatorSection: React.FC = () => {
         </div>
 
         {/* Calculator Body */}
-        <div className="bg-[#07192C] rounded-3xl border border-white/10 p-6 sm:p-10 shadow-2xl max-w-4xl mx-auto">
+        <div className="bg-[#0E0E0E] rounded-3xl border border-white/10 p-6 sm:p-10 shadow-2xl max-w-4xl mx-auto">
           {activeTab === 'savings' ? (
             /* SAVINGS CALCULATOR */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -85,10 +86,10 @@ export const CalculatorSection: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      Monthly Contribution
+                      Monthly Contribution (₦)
                     </span>
                     <span className="font-mono text-xl font-black text-brand-400">
-                      ₦{savingsMonthly.toLocaleString()}
+                      ₦{monthlyDeposit.toLocaleString()}
                     </span>
                   </div>
                   <input
@@ -96,14 +97,14 @@ export const CalculatorSection: React.FC = () => {
                     min="10000"
                     max="1000000"
                     step="10000"
-                    value={savingsMonthly}
-                    onChange={(e) => setSavingsMonthly(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-[#0A2540] rounded-lg cursor-pointer"
+                    value={monthlyDeposit}
+                    onChange={(e) => setMonthlyDeposit(Number(e.target.value))}
+                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
-                    <span>₦10,000</span>
-                    <span>₦500,000</span>
-                    <span>₦1,000,000</span>
+                    <span>₦10,000/mo</span>
+                    <span>₦500,000/mo</span>
+                    <span>₦1,000,000/mo</span>
                   </div>
                 </div>
 
@@ -111,7 +112,7 @@ export const CalculatorSection: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      Savings Tenure (Months)
+                      Savings Tenure
                     </span>
                     <span className="font-mono text-xl font-black text-white">
                       {savingsMonths} Months
@@ -121,10 +122,10 @@ export const CalculatorSection: React.FC = () => {
                     type="range"
                     min="3"
                     max="36"
-                    step="1"
+                    step="3"
                     value={savingsMonths}
                     onChange={(e) => setSavingsMonths(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-[#0A2540] rounded-lg cursor-pointer"
+                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
                     <span>3 Months (Short)</span>
@@ -133,7 +134,7 @@ export const CalculatorSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#0A2540] border border-white/5 space-y-2 text-xs text-slate-300">
+                <div className="p-4 rounded-2xl bg-[#141414] border border-white/5 space-y-2 text-xs text-slate-300">
                   <div className="flex items-center gap-2 text-brand-400 font-semibold">
                     <Sparkles className="w-4 h-4" />
                     <span>Projected Dividend Bonus: 18.5% p.a.</span>
@@ -145,7 +146,7 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Yield Card Summary */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-[#0A2540] to-[#0D2F52] p-6 sm:p-8 rounded-3xl border border-brand-500/30 shadow-glow flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 bg-[#141414] p-6 sm:p-8 rounded-3xl border border-brand-500/30 shadow-glow flex flex-col justify-between space-y-6">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 block mb-1">
                     Projected Maturity Payout
@@ -174,8 +175,8 @@ export const CalculatorSection: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => setCurrentPortal('member')}
-                  className="w-full py-3.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                  onClick={() => navigateToService('members')}
+                  className="w-full py-3.5 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
                 >
                   <span>Start This Savings Goal</span>
                   <ArrowRight className="w-4 h-4" />
@@ -193,7 +194,7 @@ export const CalculatorSection: React.FC = () => {
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                       Desired Loan Amount
                     </span>
-                    <span className="font-mono text-xl font-black text-amber-400">
+                    <span className="font-mono text-xl font-black text-brand-400">
                       ₦{loanAmount.toLocaleString()}
                     </span>
                   </div>
@@ -204,7 +205,7 @@ export const CalculatorSection: React.FC = () => {
                     step="50000"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(Number(e.target.value))}
-                    className="w-full accent-amber-400 h-2 bg-[#0A2540] rounded-lg cursor-pointer"
+                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
                     <span>₦100,000</span>
@@ -230,7 +231,7 @@ export const CalculatorSection: React.FC = () => {
                     step="1"
                     value={loanTenureMonths}
                     onChange={(e) => setLoanTenureMonths(Number(e.target.value))}
-                    className="w-full accent-amber-400 h-2 bg-[#0A2540] rounded-lg cursor-pointer"
+                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
                     <span>1 Month (Express)</span>
@@ -239,8 +240,8 @@ export const CalculatorSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#0A2540] border border-white/5 space-y-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2 text-amber-400 font-semibold">
+                <div className="p-4 rounded-2xl bg-[#141414] border border-white/5 space-y-2 text-xs text-slate-300">
+                  <div className="flex items-center gap-2 text-brand-400 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Flat 5.0% Cooperative Interest Rate</span>
                   </div>
@@ -251,27 +252,28 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Repayment Card Summary */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-[#0A2540] to-[#0D2F52] p-6 sm:p-8 rounded-3xl border border-amber-500/30 shadow-glow flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 bg-[#141414] p-6 sm:p-8 rounded-3xl border border-brand-500/30 shadow-glow flex flex-col justify-between space-y-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 block mb-1">
                     Monthly Installment
                   </span>
                   <div className="text-3xl sm:text-4xl font-black text-white font-display">
                     ₦{monthlyLoanRepayment.toLocaleString()}
+                    <span className="text-xs text-slate-400 font-normal"> / mo</span>
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
-                    Deducted monthly from wallet or linked bank account.
+                    Low interest rates designed for member prosperity.
                   </p>
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Principal Disbursed:</span>
+                    <span className="text-slate-400">Principal Borrowed:</span>
                     <span className="font-mono font-bold text-white">₦{loanAmount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Total Flat Interest (5%):</span>
-                    <span className="font-mono font-bold text-amber-400">₦{totalInterest.toLocaleString()}</span>
+                    <span className="font-mono font-bold text-brand-400">₦{totalInterest.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Total Repayment:</span>
@@ -280,10 +282,10 @@ export const CalculatorSection: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => setCurrentPortal('member')}
-                  className="w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                  onClick={() => navigateToService('members')}
+                  className="w-full py-3.5 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
                 >
-                  <span>Apply for this Loan</span>
+                  <span>Apply for This Loan</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>

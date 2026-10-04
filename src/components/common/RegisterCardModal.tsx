@@ -200,13 +200,13 @@ export const RegisterCardModal: React.FC = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#061626]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-[#0A2540] border border-white/10 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-[#0A0A0A] border border-white/10 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
         {/* Top Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-[#07192C]">
+        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-black">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-300 p-0.5 flex items-center justify-center shadow-glow">
-              <div className="w-full h-full bg-[#0A2540] rounded-[14px] flex items-center justify-center">
+              <div className="w-full h-full bg-black rounded-[14px] flex items-center justify-center">
                 <CreditCard className="w-5 h-5 text-brand-400" />
               </div>
             </div>
@@ -279,7 +279,7 @@ export const RegisterCardModal: React.FC = () => {
                   value={cardId}
                   onChange={(e) => setCardId(e.target.value.toUpperCase())}
                   placeholder="e.g. MCS-2026-1033"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-2xl px-4 py-3.5 text-base font-mono font-bold text-white tracking-widest focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 uppercase"
+                  className="w-full bg-black border border-white/15 rounded-2xl px-4 py-3.5 text-base font-mono font-bold text-white tracking-widest focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 uppercase"
                 />
                 <CreditCard className="w-5 h-5 text-slate-400 absolute right-4 top-3.5 pointer-events-none" />
               </div>
@@ -334,7 +334,7 @@ export const RegisterCardModal: React.FC = () => {
         {/* STEP 2: VERIFICATION PREVIEW */}
         {step === 2 && verifiedInfo && (
           <div className="p-6 space-y-6">
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/40 to-[#07192C] border border-brand-500/30 space-y-4">
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-brand-950/40 to-black border border-brand-500/30 space-y-4">
               <div className="flex items-center gap-2 text-brand-400 font-bold text-sm">
                 <CheckCircle2 className="w-5 h-5 text-brand-400" />
                 <span>Physical Member ID Validated in Registry</span>
@@ -390,7 +390,7 @@ export const RegisterCardModal: React.FC = () => {
         {step === 3 && (
           <form onSubmit={handleSubmitAccount} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
             {/* Photo Upload / Avatar Preview */}
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#07192C] border border-white/5">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black border border-white/10">
               <div className="relative">
                 <img
                   src={avatarUrl}
@@ -432,7 +432,7 @@ export const RegisterCardModal: React.FC = () => {
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -444,7 +444,7 @@ export const RegisterCardModal: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@email.com"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -456,7 +456,7 @@ export const RegisterCardModal: React.FC = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+234 800 000 0000"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -468,7 +468,7 @@ export const RegisterCardModal: React.FC = () => {
                   value={nin}
                   onChange={(e) => setNin(e.target.value)}
                   placeholder="11 digits NIN"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 font-mono"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 font-mono"
                   required
                 />
               </div>
@@ -479,7 +479,7 @@ export const RegisterCardModal: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -490,7 +490,7 @@ export const RegisterCardModal: React.FC = () => {
                   type="text"
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
             </div>
@@ -507,7 +507,7 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokName}
                     onChange={(e) => setNokName(e.target.value)}
                     placeholder="Beneficiary Full Name"
-                    className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -516,7 +516,7 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokRel}
                     onChange={(e) => setNokRel(e.target.value)}
                     placeholder="Relationship (e.g. Spouse)"
-                    className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -525,7 +525,7 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokPhone}
                     onChange={(e) => setNokPhone(e.target.value)}
                     placeholder="Beneficiary Phone"
-                    className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
               </div>
@@ -571,7 +571,7 @@ export const RegisterCardModal: React.FC = () => {
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-[#07192C] border-2 border-brand-500 rounded-2xl py-3 text-brand-400 focus:outline-none shadow-inner"
+                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-black border-2 border-brand-500 rounded-2xl py-3 text-brand-400 focus:outline-none shadow-inner"
               />
               <span className="text-[11px] text-slate-400 block mt-2">
                 Demo helper: Pre-filled with code <strong>894201</strong> (or enter any 6 digits).

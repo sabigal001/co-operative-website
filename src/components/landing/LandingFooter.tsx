@@ -8,13 +8,13 @@ interface LandingFooterProps {
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }) => {
   return (
-    <footer className="bg-[#061626] text-slate-300 border-t border-white/10 pt-16 pb-12">
+    <footer className="bg-black text-slate-300 border-t border-white/10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top CTA Banner in Footer */}
-        <div className="bg-gradient-to-r from-brand-600 via-emerald-600 to-[#0A2540] rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+        <div className="bg-gradient-to-r from-brand-600 via-emerald-700 to-black rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-brand-500/30">
           <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-900 bg-white/90 px-3 py-1 rounded-full">
+            <span className="text-xs font-black uppercase tracking-wider text-black bg-white/90 px-3 py-1 rounded-full">
               Statutory Cooperative Membership
             </span>
             <h3 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-white">
@@ -28,7 +28,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
           <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
             <button
               onClick={onOpenApplyModal}
-              className="px-8 py-4 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95"
+              className="px-8 py-4 bg-black hover:bg-neutral-900 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 border border-white/10"
             >
               <UserPlus className="w-4 h-4 text-brand-400" />
               <span>Register as a Member</span>
@@ -36,9 +36,9 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
             </button>
             <button
               onClick={() => navigateToService('members')}
-              className="px-5 py-4 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-2xl flex items-center gap-2 transition-all"
+              className="px-5 py-4 bg-white/15 hover:bg-white/25 text-white font-bold text-xs rounded-2xl flex items-center gap-2 transition-all border border-white/15"
             >
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-4 h-4 text-brand-400" />
               <span>Member Portal Login</span>
             </button>
           </div>
@@ -49,7 +49,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-brand-500 text-slate-950 font-black flex items-center justify-center text-lg font-display">
+              <div className="w-10 h-10 rounded-2xl bg-brand-500 text-black font-black flex items-center justify-center text-lg font-display shadow-glow">
                 M
               </div>
               <div>

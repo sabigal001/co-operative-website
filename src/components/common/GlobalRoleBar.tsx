@@ -37,7 +37,7 @@ export const GlobalRoleBar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#061626] border-b border-white/10 text-white py-1.5 px-3 sm:px-6 text-xs sticky top-0 z-50 backdrop-blur-md">
+    <div className="bg-black border-b border-white/10 text-white py-1.5 px-3 sm:px-6 text-xs sticky top-0 z-50 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Left: Role Switcher indicator */}
         <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export const GlobalRoleBar: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center bg-[#0A2540] rounded-xl p-0.5 border border-white/10 shadow-inner">
+          <div className="flex items-center bg-zinc-900 rounded-xl p-0.5 border border-white/10 shadow-inner">
             {roles.map((item) => {
               const isActive = activeAdminRole === item.role;
               return (

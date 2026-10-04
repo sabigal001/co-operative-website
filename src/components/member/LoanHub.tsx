@@ -333,7 +333,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
       {/* Apply Loan Modal */}
       {showApplyModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0A2540] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
               <div>
                 <h3 className="font-display font-bold text-lg text-white">Apply for Member Loan</h3>
@@ -354,7 +354,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                   step="50000"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -364,7 +364,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                 <select
                   value={durationMonths}
                   onChange={(e) => setDurationMonths(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value={3}>3 Months</option>
                   <option value={6}>6 Months</option>
@@ -380,14 +380,14 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
                   placeholder="e.g. Agro commodity trade financing"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               {/* Guarantors */}
               <div className="pt-2 border-t border-white/10 space-y-3">
-                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">
+                <span className="text-[11px] font-bold text-brand-400 uppercase tracking-wider block">
                   Assign 2 Verified Cooperative Guarantors
                 </span>
 
@@ -398,13 +398,13 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                       type="text"
                       value={guarantor1Id}
                       onChange={(e) => setGuarantor1Id(e.target.value)}
-                      className="bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white font-mono"
+                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brand-500"
                     />
                     <input
                       type="text"
                       value={guarantor1Name}
                       onChange={(e) => setGuarantor1Name(e.target.value)}
-                      className="bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white"
+                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>
@@ -416,13 +416,13 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                       type="text"
                       value={guarantor2Id}
                       onChange={(e) => setGuarantor2Id(e.target.value)}
-                      className="bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white font-mono"
+                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brand-500"
                     />
                     <input
                       type="text"
                       value={guarantor2Name}
                       onChange={(e) => setGuarantor2Name(e.target.value)}
-                      className="bg-[#07192C] border border-white/10 rounded-xl px-3 py-2 text-white"
+                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>

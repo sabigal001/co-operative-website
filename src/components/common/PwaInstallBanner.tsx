@@ -10,10 +10,10 @@ export const PwaInstallBanner: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-40 max-w-md bg-[#0A2540] text-white p-4 sm:p-5 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-xl animate-slide-up">
+      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-40 max-w-md bg-[#0A0A0A] text-white p-4 sm:p-5 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-xl animate-slide-up">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 p-0.5 shrink-0 flex items-center justify-center shadow-glow">
-            <div className="w-full h-full bg-[#0A2540] rounded-[14px] flex items-center justify-center">
+            <div className="w-full h-full bg-black rounded-[14px] flex items-center justify-center">
               <Smartphone className="w-6 h-6 text-brand-400" />
             </div>
           </div>
@@ -72,7 +72,7 @@ export const PwaInstallBanner: React.FC = () => {
       {/* iOS Install Instructions Modal */}
       {showIosGuide && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-sm rounded-3xl p-6 border border-white/10 shadow-2xl animate-slide-up">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-sm rounded-3xl p-6 border border-white/10 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg text-white flex items-center gap-2">
                 <Smartphone className="w-5 h-5 text-brand-400" /> Install on iPhone / iPad

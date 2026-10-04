@@ -18,10 +18,10 @@ export default {
           700: '#008536',
           800: '#00662A',
           900: '#00471D',
-          dark: '#0A2540', // Deep contrast navy
-          darker: '#061626',
-          surface: '#0F2F4F',
-          card: '#133557',
+          dark: '#0A0A0A', // Deep obsidian black
+          darker: '#000000', // True pitch black
+          surface: '#121212', // Sleek card surface
+          card: '#181818',
         },
         accent: {
           gold: '#FFB800',

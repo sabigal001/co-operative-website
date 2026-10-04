@@ -179,7 +179,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
     <div className="space-y-8">
       
       {/* Top Total Balance Hero Card */}
-      <div className="bg-gradient-to-br from-[#0F2F4F] via-[#0A2540] to-[#07192C] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-white/10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-black via-zinc-950 to-neutral-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-white/15 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -230,7 +230,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
 
         {/* 3 Metric Pills: Voluntary vs Target vs Dividend */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10 text-xs">
-          <div className="p-3.5 rounded-2xl bg-[#061626]/60 border border-white/5">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <span className="text-slate-400 block text-[11px]">Voluntary Regular Thrift</span>
             <span className="text-lg font-bold text-white font-mono">
               ₦{savings.voluntarySavings.toLocaleString()}
@@ -238,7 +238,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
             <span className="text-[10px] text-brand-400 block mt-0.5">Flexible liquidation</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#061626]/60 border border-white/5">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <span className="text-slate-400 block text-[11px]">Dedicated Target Plans</span>
             <span className="text-lg font-bold text-white font-mono">
               ₦{savings.targetSavings.toLocaleString()}
@@ -246,7 +246,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
             <span className="text-[10px] text-amber-400 block mt-0.5">{savings.targetPlans.length} active goals locked</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#061626]/60 border border-white/5">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <span className="text-slate-400 block text-[11px]">Accrued AGM Dividends</span>
             <span className="text-lg font-bold text-emerald-400 font-mono">
               ₦{savings.dividendsEarned.toLocaleString()}
@@ -328,7 +328,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 1: DEPOSIT SAVINGS (TREASURER APPROVAL FLOW) ================= */}
       {showDepositModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0A2540] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
             <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
               <div>
                 <h3 className="font-display font-bold text-lg text-white">Deposit Contribution</h3>
@@ -340,7 +340,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
             </div>
 
             {/* Cooperative Bank Account Information */}
-            <div className="p-4 rounded-2xl bg-[#07192C] border border-brand-500/30 mb-6 text-xs space-y-2">
+            <div className="p-4 rounded-2xl bg-black border border-brand-500/30 mb-6 text-xs space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-brand-400 block">
                 Official Treasury Collection Bank Account:
               </span>
@@ -364,7 +364,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 <select
                   value={depositType}
                   onChange={(e) => setDepositType(e.target.value as any)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value="voluntary_savings">Regular Voluntary Thrift Savings</option>
                   <option value="target_plan">Dedicated Target Savings Goal</option>
@@ -377,7 +377,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   <select
                     value={selectedPlanId}
                     onChange={(e) => setSelectedPlanId(e.target.value)}
-                    className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                    className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   >
                     {savings.targetPlans.map((p) => (
                       <option key={p.id} value={p.id}>{p.title}</option>
@@ -394,7 +394,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   step="5000"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -406,7 +406,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   value={bankRef}
                   onChange={(e) => setBankRef(e.target.value)}
                   placeholder="e.g. NIP-9081298402"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -442,7 +442,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 2: NEW TARGET PLAN ================= */}
       {showNewPlanModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
               <h3 className="font-display font-bold text-lg text-white">Create Target Savings Goal</h3>
               <button onClick={() => setShowNewPlanModal(false)} className="text-slate-400 hover:text-white">
@@ -458,7 +458,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   value={planTitle}
                   onChange={(e) => setPlanTitle(e.target.value)}
                   placeholder="e.g. Epe Land Deposit 2026"
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -471,7 +471,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   step="50000"
                   value={planTarget}
                   onChange={(e) => setPlanTarget(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -484,7 +484,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   step="5000"
                   value={planMonthly}
                   onChange={(e) => setPlanMonthly(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
@@ -494,7 +494,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 <select
                   value={planCategory}
                   onChange={(e) => setPlanCategory(e.target.value as any)}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value="estate">Real Estate & Land Downpayment</option>
                   <option value="education">Tuition & School Fees</option>
@@ -528,7 +528,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 3: WITHDRAWAL REQUEST ================= */}
       {showWithdrawModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
             <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
               <h3 className="font-display font-bold text-lg text-white">Withdraw Savings</h3>
               <button onClick={() => setShowWithdrawModal(false)} className="text-slate-400 hover:text-white">
@@ -550,7 +550,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   step="5000"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                  className="w-full bg-[#07192C] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
                 <span className="text-[10px] text-slate-400 mt-1 block">

@@ -102,8 +102,8 @@ export const PaOfficerView: React.FC = () => {
     <div className="space-y-6">
       
       {/* RBAC Notice Banner */}
-      <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/30 flex items-start gap-3 text-xs text-blue-200">
-        <UserCheck className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-2xl bg-black/90 border border-brand-500/30 flex items-start gap-3 text-xs text-slate-300">
+        <UserCheck className="w-5 h-5 text-brand-400 shrink-0 mt-0.5" />
         <div className="flex-1">
           <strong className="text-white block mb-0.5">Secretariat Operations & KYC Desk Authority Active</strong>
           <span>
@@ -118,7 +118,7 @@ export const PaOfficerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('kyc')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'kyc' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'kyc' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
@@ -128,7 +128,7 @@ export const PaOfficerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('vetting')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'vetting' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'vetting' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             <FileCheck className="w-4 h-4" />
@@ -138,7 +138,7 @@ export const PaOfficerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('registry')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'registry' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'registry' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -214,7 +214,7 @@ export const PaOfficerView: React.FC = () => {
                       <>
                         <button
                           onClick={() => handleVerifyKyc(m.id, true)}
-                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs flex items-center gap-1"
+                          className="px-3.5 py-1.5 bg-black hover:bg-zinc-900 text-brand-400 border border-brand-500/30 font-bold rounded-lg text-xs flex items-center gap-1 transition-all"
                         >
                           <Check className="w-3.5 h-3.5" /> Approve KYC
                         </button>
@@ -263,7 +263,7 @@ export const PaOfficerView: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-mono font-bold text-slate-900">{loan.id}</span>
-                          <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+                          <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/50 px-2 py-0.5 rounded-full">
                             Pending Secretariat Review
                           </span>
                         </div>
@@ -304,7 +304,7 @@ export const PaOfficerView: React.FC = () => {
                     <div className="flex items-center justify-end gap-3 pt-2">
                       <button
                         onClick={() => setActiveVettingLoan(loan)}
-                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm"
+                        className="px-5 py-2.5 bg-black hover:bg-zinc-900 text-brand-400 border border-brand-500/30 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all"
                       >
                         <FileCheck className="w-4 h-4" />
                         <span>Perform Vetting & Forward to Treasurer</span>
@@ -392,7 +392,7 @@ export const PaOfficerView: React.FC = () => {
       {/* Vetting Dialog */}
       {activeVettingLoan && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A2540] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-4 animate-slide-up">
+          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-4 animate-slide-up">
             <div className="flex justify-between items-center border-b border-white/10 pb-3">
               <h3 className="font-display font-bold text-lg text-white">Vetting Decision</h3>
               <button onClick={() => setActiveVettingLoan(null)} className="text-slate-400 hover:text-white">
@@ -413,7 +413,7 @@ export const PaOfficerView: React.FC = () => {
                 value={vettingComments}
                 onChange={(e) => setVettingComments(e.target.value)}
                 placeholder="Confirming that both member guarantors are verified in active standing..."
-                className="w-full bg-[#07192C] border border-white/10 rounded-xl p-3 text-xs text-white"
+                className="w-full bg-black border border-white/15 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
               />
             </div>
 
@@ -421,14 +421,14 @@ export const PaOfficerView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleVetLoanDecision(false)}
-                className="px-4 py-2 bg-rose-900/60 hover:bg-rose-900 text-rose-200 font-bold text-xs rounded-xl"
+                className="px-4 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-500/30 text-rose-300 font-bold text-xs rounded-xl transition-all"
               >
                 Reject Vetting
               </button>
               <button
                 type="button"
                 onClick={() => handleVetLoanDecision(true)}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-md"
+                className="px-5 py-2.5 bg-brand-500 hover:bg-brand-400 text-black font-black text-xs rounded-xl flex items-center gap-1.5 shadow-md shadow-brand-500/20 transition-all"
               >
                 <Check className="w-4 h-4" />
                 <span>Clear & Forward to Treasurer</span>

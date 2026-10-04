@@ -119,7 +119,7 @@ export const TreasurerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('deposits')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'deposits' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'deposits' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:text-black hover:bg-slate-100'
             }`}
           >
             <ArrowDownLeft className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const TreasurerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('disbursements')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'disbursements' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'disbursements' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:text-black hover:bg-slate-100'
             }`}
           >
             <Coins className="w-4 h-4" />
@@ -139,7 +139,7 @@ export const TreasurerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('payouts')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'payouts' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'payouts' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:text-black hover:bg-slate-100'
             }`}
           >
             <ArrowUpRight className="w-4 h-4" />
@@ -149,7 +149,7 @@ export const TreasurerView: React.FC = () => {
           <button
             onClick={() => setActiveTab('ledger')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              activeTab === 'ledger' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 hover:text-black hover:bg-slate-100'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -396,7 +396,7 @@ export const TreasurerView: React.FC = () => {
               </div>
               <div className="flex justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                 <span className="text-slate-500">Statutory Reserve Fund (30%):</span>
-                <span className="font-mono font-bold text-blue-700">₦112,000,000</span>
+                <span className="font-mono font-bold text-slate-900">₦112,000,000</span>
               </div>
             </div>
           </div>
