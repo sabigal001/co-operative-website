@@ -122,9 +122,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    showToast(`Switched to ${next === 'dark' ? 'Dark Obsidian' : 'Clean Light'} theme`, 'info');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('trigger-curtain-transition'));
+    } else {
+      const next = theme === 'dark' ? 'light' : 'dark';
+      setTheme(next);
+    }
   };
 
   useEffect(() => {

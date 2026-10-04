@@ -13,7 +13,7 @@ export const LandingPageView: React.FC = () => {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex flex-col transition-colors duration-300">
       {/* Pristine Institutional Navbar without test toggles */}
       <LandingNavbar onOpenApplyModal={() => setIsApplyModalOpen(true)} />
 

@@ -91,21 +91,22 @@ export const ProductOfferings: React.FC = () => {
   ];
 
   return (
-    <section id="products" className="py-20 lg:py-28 bg-black text-white border-b border-white/10 relative">
+    <section id="products" className="py-20 lg:py-28 dark:bg-black bg-white dark:text-white text-slate-900 border-b dark:border-white/10 border-slate-200 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-xs font-bold border border-brand-500/20 uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            Institutional Cooperative Products
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border dark:border-white/10 border-slate-200 dark:text-white text-slate-900 text-xs font-semibold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Institutional Cooperative Products</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display tracking-tight dark:text-white text-slate-900">
             Designed for Wealth, Dignity & High Returns.
           </h2>
-          <p className="text-sm sm:text-base text-slate-300">
-            Inspired by Nigeria’s most trusted cooperative institutions (IMSSM & FLAP Coop), 
-            engineered into a seamless digital experience.
+          <p className="text-sm sm:text-base dark:text-slate-300 text-slate-600 leading-relaxed">
+            Statutory multipurpose cooperative solutions engineered to provide structured savings growth, 
+            low-interest microcredit, and tangible asset co-ownership.
           </p>
         </div>
 
@@ -114,38 +115,38 @@ export const ProductOfferings: React.FC = () => {
           {products.map((p) => (
             <div
               key={p.id}
-              className="liquid-glass-card rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl"
+              className="liquid-glass-card rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl hover:border-emerald-500/30 transition-all"
             >
               {p.highlight && (
-                <div className="absolute top-0 right-0 bg-white text-black font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-bl-xl shadow-md border-b border-l border-white/20">
+                <div className="absolute top-0 right-0 dark:bg-white bg-slate-900 dark:text-black text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-bl-xl shadow-md border-b border-l dark:border-white/20 border-slate-700">
                   Featured Program
                 </div>
               )}
 
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center group-hover:scale-105 transition-transform text-white">
+                  <div className="w-10 h-10 rounded-xl dark:bg-white/10 bg-emerald-50 border dark:border-white/15 border-emerald-200 flex items-center justify-center group-hover:scale-105 transition-transform dark:text-white text-emerald-600">
                     {p.icon}
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/15">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider dark:bg-white/10 bg-emerald-50 dark:text-emerald-300 text-emerald-700 border dark:border-white/15 border-emerald-200">
                     {p.badge}
                   </span>
                 </div>
 
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">
                   {p.subtitle}
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold font-display text-white mb-2">
+                <h3 className="text-lg sm:text-xl font-bold font-display dark:text-white text-slate-900 mb-2">
                   {p.title}
                 </h3>
-                <p className="text-xs text-slate-300 leading-relaxed mb-5">
+                <p className="text-xs dark:text-slate-300 text-slate-600 leading-relaxed mb-5">
                   {p.description}
                 </p>
 
                 <div className="space-y-2 mb-6">
                   {p.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-brand-400 shrink-0 mt-0.5" />
+                    <div key={idx} className="flex items-start gap-2 text-xs dark:text-slate-300 text-slate-700">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
                   ))}

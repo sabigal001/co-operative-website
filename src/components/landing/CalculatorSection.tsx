@@ -29,36 +29,36 @@ export const CalculatorSection: React.FC = () => {
   const monthlyLoanRepayment = Math.round(totalLoanRepayment / loanTenureMonths);
 
   return (
-    <section id="calculator" className="py-20 lg:py-28 bg-black text-white border-b border-white/10 relative">
+    <section id="calculator" className="py-20 lg:py-28 bg-white dark:bg-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold border border-white/15 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-white/10 text-emerald-700 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20 dark:border-white/15 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
             <Calculator className="w-3.5 h-3.5" />
             Transparent Financial Simulator
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-900 dark:text-white">
             Calculate Your Yield & Borrowing Power.
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Real-time calculations based on official Mosunmola Cooperative Bye-Laws and audited yields.
           </p>
         </div>
 
         {/* Tab Switcher Pills */}
         <div className="flex justify-center mb-8">
-          <div className="liquid-glass p-1 rounded-full border border-white/15 flex items-center shadow-lg">
+          <div className="liquid-glass p-1 rounded-full border border-slate-200 dark:border-white/15 flex items-center shadow-lg">
             <button
               onClick={() => setActiveTab('savings')}
               className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
                 activeTab === 'savings'
-                  ? 'bg-white text-black shadow-sm font-black'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
+                  : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <TrendingUp className="w-3.5 h-3.5" />
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
               <span>Target Savings & Thrift ROI</span>
             </button>
 
@@ -66,18 +66,18 @@ export const CalculatorSection: React.FC = () => {
               onClick={() => setActiveTab('loan')}
               className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
                 activeTab === 'loan'
-                  ? 'bg-white text-black shadow-sm font-black'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
+                  : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <Coins className="w-3.5 h-3.5" />
+              <Coins className="w-3.5 h-3.5 text-emerald-500" />
               <span>Low-Interest Member Loan</span>
             </button>
           </div>
         </div>
 
         {/* Calculator Body */}
-        <div className="liquid-glass-card rounded-3xl p-6 sm:p-9 shadow-2xl max-w-4xl mx-auto">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-9 shadow-2xl max-w-4xl mx-auto border border-slate-200 dark:border-white/10">
           {activeTab === 'savings' ? (
             /* SAVINGS CALCULATOR */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -86,10 +86,10 @@ export const CalculatorSection: React.FC = () => {
                 {/* Monthly deposit slider */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Monthly Contribution (₦)
                     </span>
-                    <span className="font-mono text-xl font-black text-brand-400">
+                    <span className="font-mono text-xl font-black text-emerald-600 dark:text-emerald-400">
                       ₦{monthlyDeposit.toLocaleString()}
                     </span>
                   </div>
@@ -100,9 +100,9 @@ export const CalculatorSection: React.FC = () => {
                     step="10000"
                     value={monthlyDeposit}
                     onChange={(e) => setMonthlyDeposit(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                     <span>₦10,000/mo</span>
                     <span>₦500,000/mo</span>
                     <span>₦1,000,000/mo</span>
@@ -112,10 +112,10 @@ export const CalculatorSection: React.FC = () => {
                 {/* Duration slider */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Savings Tenure
                     </span>
-                    <span className="font-mono text-xl font-black text-white">
+                    <span className="font-mono text-xl font-black text-slate-900 dark:text-white">
                       {savingsMonths} Months
                     </span>
                   </div>
@@ -126,52 +126,52 @@ export const CalculatorSection: React.FC = () => {
                     step="3"
                     value={savingsMonths}
                     onChange={(e) => setSavingsMonths(Number(e.target.value))}
-                    className="w-full accent-brand-500 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                     <span>3 Months (Short)</span>
                     <span>12 Months (Annual Ajo)</span>
                     <span>36 Months</span>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2 text-white font-semibold">
-                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold">
+                    <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                     <span>Projected Dividend Bonus: 18.5% p.a.</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                     Dividends are audited and compounded into your cooperative wallet at the end of each financial year.
                   </p>
                 </div>
               </div>
 
               {/* Yield Card Summary */}
-              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-white/10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                     Projected Maturity Payout
                   </span>
-                  <div className="text-3xl sm:text-4xl font-black text-white font-display">
+                  <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-display">
                     ₦{totalSavingsPayout.toLocaleString()}
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Direct credit to your verified Nigerian bank account.
                   </p>
                 </div>
 
-                <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+                <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Total Contribution:</span>
-                    <span className="font-mono font-bold text-white">₦{totalPrincipalSaved.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Total Contribution:</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">₦{totalPrincipalSaved.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Est. Dividend Profit:</span>
-                    <span className="font-mono font-bold text-emerald-400">+₦{estimatedDividend.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Est. Dividend Profit:</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">+₦{estimatedDividend.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Lock Liquidity:</span>
-                    <span className="font-semibold text-slate-200">100% Guaranteed</span>
+                    <span className="text-slate-500 dark:text-slate-400">Lock Liquidity:</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">100% Guaranteed</span>
                   </div>
                 </div>
 
@@ -192,10 +192,10 @@ export const CalculatorSection: React.FC = () => {
                 {/* Loan amount slider */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Desired Loan Amount
                     </span>
-                    <span className="font-mono text-xl font-black text-white">
+                    <span className="font-mono text-xl font-black text-slate-900 dark:text-white">
                       ₦{loanAmount.toLocaleString()}
                     </span>
                   </div>
@@ -206,9 +206,9 @@ export const CalculatorSection: React.FC = () => {
                     step="50000"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(Number(e.target.value))}
-                    className="w-full accent-emerald-400 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                     <span>₦100,000</span>
                     <span>₦2,500,000</span>
                     <span>₦5,000,000</span>
@@ -218,10 +218,10 @@ export const CalculatorSection: React.FC = () => {
                 {/* Duration slider */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Repayment Tenure
                     </span>
-                    <span className="font-mono text-xl font-black text-white">
+                    <span className="font-mono text-xl font-black text-slate-900 dark:text-white">
                       {loanTenureMonths} Months
                     </span>
                   </div>
@@ -232,53 +232,53 @@ export const CalculatorSection: React.FC = () => {
                     step="1"
                     value={loanTenureMonths}
                     onChange={(e) => setLoanTenureMonths(Number(e.target.value))}
-                    className="w-full accent-emerald-400 h-2 bg-black rounded-lg cursor-pointer"
+                    className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 mt-1 font-mono">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                     <span>1 Month (Express)</span>
                     <span>6 Months</span>
                     <span>12 Months (Maximum)</span>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2 text-white font-semibold">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="p-4 rounded-2xl liquid-glass-card space-y-2 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                     <span>Flat 5.0% Cooperative Interest Rate</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                     Zero physical collateral required. You only need 2 active co-operative members in good standing as your guarantors.
                   </p>
                 </div>
               </div>
 
               {/* Repayment Card Summary */}
-              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-white/10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                     Monthly Installment
                   </span>
-                  <div className="text-3xl sm:text-4xl font-black text-white font-display">
+                  <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-display">
                     ₦{monthlyLoanRepayment.toLocaleString()}
-                    <span className="text-xs text-slate-400 font-normal"> / mo</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-normal"> / mo</span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Low interest rates designed for member prosperity.
                   </p>
                 </div>
 
-                <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+                <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Principal Borrowed:</span>
-                    <span className="font-mono font-bold text-white">₦{loanAmount.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Principal Borrowed:</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">₦{loanAmount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Total Flat Interest (5%):</span>
-                    <span className="font-mono font-bold text-emerald-400">₦{totalInterest.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Total Flat Interest (5%):</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">₦{totalInterest.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Total Repayment:</span>
-                    <span className="font-mono font-bold text-white">₦{totalLoanRepayment.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Total Repayment:</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">₦{totalLoanRepayment.toLocaleString()}</span>
                   </div>
                 </div>
 

@@ -8,12 +8,12 @@ interface LandingFooterProps {
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }) => {
   return (
-    <footer className="bg-black text-slate-300 border-t border-white/10 pt-16 pb-12">
+    <footer className="bg-slate-950 dark:bg-black text-slate-300 dark:text-slate-400 border-t border-slate-800 dark:border-white/10 pt-16 pb-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top CTA Banner in Footer */}
-        <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-white/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-slate-800 dark:border-white/10 relative overflow-hidden bg-gradient-to-r from-slate-900/90 to-slate-950/90 dark:from-black/80 dark:to-slate-950/80">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="space-y-2 text-center md:text-left relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-white/10 text-white text-xs font-semibold uppercase tracking-wider">
@@ -33,7 +33,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
               onClick={onOpenApplyModal}
               className="liquid-btn liquid-btn-white py-2.5 px-5 text-xs flex items-center gap-2"
             >
-              <UserPlus className="w-3.5 h-3.5 text-black" />
+              <UserPlus className="w-3.5 h-3.5" />
               <span>Register as a Member</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -48,7 +48,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
         </div>
 
         {/* 4 Footer Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10 text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800 dark:border-white/10 text-xs">
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
