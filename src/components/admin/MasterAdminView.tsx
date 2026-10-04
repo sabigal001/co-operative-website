@@ -184,7 +184,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       
       {/* Navigation Pills */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1">
+        <div className="bg-white dark:bg-[#0c1015] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
           {[
             { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
             { id: 'cards', label: 'Physical ID Card Batch Manager', icon: <CreditCard className="w-4 h-4" /> },
@@ -200,7 +200,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
                   isActive
                     ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm'
-                    : 'text-slate-600 hover:text-black hover:bg-slate-100'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 {t.icon}
@@ -236,24 +236,24 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="font-bold text-base text-slate-900 font-display">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
                 Prospective Membership Applications ({applications.length})
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Applicants who registered through the public landing page awaiting Board and Super Admin approval and physical card allocation.
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {applications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs">
+              <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No prospective applications currently submitted.
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[10px] uppercase">
+                  <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                     <tr>
                       <th className="py-3 px-4">Application ID</th>
                       <th className="py-3 px-4">Applicant Name</th>
@@ -265,31 +265,31 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                       <th className="py-3 px-4 text-right">Super Admin Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
                     {applications.map((app) => (
-                      <tr key={app.id} className="hover:bg-slate-50/70">
-                        <td className="py-3.5 px-4 font-bold text-slate-900">{app.id}</td>
-                        <td className="py-3.5 px-4 font-sans font-bold text-slate-800">
+                      <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
+                        <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{app.id}</td>
+                        <td className="py-3.5 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">
                           {app.fullName}
                           <span className="block text-[10px] text-slate-400 font-mono font-normal">{app.email}</span>
                         </td>
-                        <td className="py-3.5 px-4 font-sans text-slate-600 text-[10px]">
+                        <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[10px]">
                           <div>{app.phone}</div>
                           <div>{app.lga}, {app.state}</div>
                         </td>
-                        <td className="py-3.5 px-4 font-sans text-slate-700">{app.occupation}</td>
-                        <td className="py-3.5 px-4 font-bold text-emerald-700">
+                        <td className="py-3.5 px-4 font-sans text-slate-700 dark:text-slate-300">{app.occupation}</td>
+                        <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400">
                           ₦{app.monthlyThriftTarget.toLocaleString()}/mo
                         </td>
                         <td className="py-3.5 px-4 font-sans text-[10px]">
-                          <span className="font-semibold block">{app.idType}</span>
-                          <span className="font-mono text-slate-500">{app.idNumber}</span>
+                          <span className="font-semibold block text-slate-800 dark:text-slate-200">{app.idType}</span>
+                          <span className="font-mono text-slate-500 dark:text-slate-400">{app.idNumber}</span>
                         </td>
                         <td className="py-3.5 px-4 font-sans">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                            app.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
-                            app.status === 'pending_approval' ? 'bg-amber-100 text-amber-800' :
-                            'bg-rose-100 text-rose-800'
+                            app.status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400' :
+                            app.status === 'pending_approval' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400' :
+                            'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400'
                           }`}>
                             {app.status.replace('_', ' ')}
                           </span>
@@ -308,7 +308,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                               </button>
                               <button
                                 onClick={() => handleRejectApplication(app.id)}
-                                className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs"
+                                className="px-2.5 py-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold rounded-lg text-xs"
                               >
                                 Reject
                               </button>
@@ -334,10 +334,10 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="font-bold text-base text-slate-900 font-display">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
                 Physical Member Card Inventory & Batch Control
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Track pre-printed RFID plastic cards, member allocations, and lost/replacement records.
               </p>
             </div>
@@ -348,16 +348,16 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 value={cardSearch}
                 onChange={(e) => setCardSearch(e.target.value)}
                 placeholder="Search card ID, holder, batch..."
-                className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-500"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[10px] uppercase">
+                <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Card ID Number</th>
                     <th className="py-3 px-4">Batch Code</th>
@@ -367,21 +367,21 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                     <th className="py-3 px-4 text-right">Card Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
                   {filteredCards.map((card) => (
-                    <tr key={card.cardId} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">{card.cardId}</td>
-                      <td className="py-3.5 px-4 text-slate-500 text-[11px]">{card.batchNumber}</td>
-                      <td className="py-3.5 px-4 font-sans font-medium text-slate-800">
+                    <tr key={card.cardId} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{card.cardId}</td>
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-[11px]">{card.batchNumber}</td>
+                      <td className="py-3.5 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">
                         {card.assignedMemberName}
                       </td>
-                      <td className="py-3.5 px-4 font-sans text-slate-600 text-[11px]">{card.branch}</td>
+                      <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[11px]">{card.branch}</td>
                       <td className="py-3.5 px-4 font-sans">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          card.status === 'active' ? 'bg-emerald-100 text-emerald-800' :
-                          card.status === 'unassigned' ? 'bg-blue-100 text-blue-800' :
-                          card.status === 'lost' ? 'bg-rose-100 text-rose-800' :
-                          'bg-amber-100 text-amber-800'
+                          card.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400' :
+                          card.status === 'unassigned' ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400' :
+                          card.status === 'lost' ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400' :
+                          'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400'
                         }`}>
                           {card.status}
                         </span>
@@ -391,7 +391,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                           {card.status !== 'active' && (
                             <button
                               onClick={() => handleStatusChange(card.cardId, 'active')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-emerald-100 text-emerald-800 rounded-md"
+                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-md"
                               title="Mark as Active"
                             >
                               Activate
@@ -400,7 +400,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                           {card.status !== 'lost' && (
                             <button
                               onClick={() => handleStatusChange(card.cardId, 'lost')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-rose-100 text-rose-800 rounded-md"
+                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-800 dark:text-rose-400 rounded-md"
                               title="Flag Lost"
                             >
                               Flag Lost
@@ -409,7 +409,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                           {card.status === 'lost' && (
                             <button
                               onClick={() => handleStatusChange(card.cardId, 'replaced')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-amber-100 text-amber-800 rounded-md"
+                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-800 dark:text-amber-400 rounded-md"
                               title="Mark Replaced"
                             >
                               Replaced
@@ -430,10 +430,10 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {activeTab === 'roles' && (
         <div className="space-y-4">
           <div>
-            <h3 className="font-bold text-base text-slate-900 font-display">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
               Role-Based Access Control (RBAC) Administration
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Assign administrative permissions between Master Admin, Treasurer, and Personal Assistant officers.
             </p>
           </div>
@@ -442,41 +442,41 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             {admins.map((admin) => (
               <div
                 key={admin.id}
-                className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between space-y-4"
+                className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <img
                       src={admin.avatar}
                       alt={admin.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-slate-200"
+                      className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-white/15"
                     />
                     <div>
-                      <h4 className="font-bold text-sm text-slate-900">{admin.name}</h4>
-                      <p className="text-[11px] text-slate-500">{admin.email}</p>
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white">{admin.name}</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{admin.email}</p>
                     </div>
                   </div>
 
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 ${
-                    admin.role === 'master_admin' ? 'bg-purple-100 text-purple-800' :
-                    admin.role === 'treasurer' ? 'bg-emerald-100 text-emerald-800' :
-                    'bg-blue-100 text-blue-800'
+                    admin.role === 'master_admin' ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300' :
+                    admin.role === 'treasurer' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400' :
+                    'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300'
                   }`}>
                     Current Role: {admin.role.replace('_', ' ')}
                   </span>
-                  <p className="text-xs text-slate-500 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     Department: {admin.department}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100">
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                <div className="pt-3 border-t border-slate-100 dark:border-white/10">
+                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
                     Assign New Role:
                   </label>
                   <select
                     value={admin.role}
                     onChange={(e) => handleRoleChange(admin.id, e.target.value as AdminRole)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800"
+                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200"
                   >
                     <option value="master_admin">Master Admin (Full Access)</option>
                     <option value="treasurer">Treasurer (Financial Disbursals Only)</option>
@@ -493,36 +493,36 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {activeTab === 'dividends' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 font-semibold">Total Savings Pool</span>
-              <div className="text-2xl font-black font-display text-slate-900">
+            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total Savings Pool</span>
+              <div className="text-2xl font-black font-display text-slate-900 dark:text-white">
                 ₦342,800,000
               </div>
               <p className="text-[11px] text-slate-400">Regular Thrift + Dedicated Target Plans</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 font-semibold">Outstanding Active Loans</span>
-              <div className="text-2xl font-black font-display text-amber-600">
+            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Outstanding Active Loans</span>
+              <div className="text-2xl font-black font-display text-amber-600 dark:text-amber-400">
                 ₦142,400,000
               </div>
               <p className="text-[11px] text-slate-400">Performing with 0.2% NPL ratio</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 font-semibold">Total AGM Dividends Distributed</span>
-              <div className="text-2xl font-black font-display text-emerald-600">
+            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total AGM Dividends Distributed</span>
+              <div className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400">
                 ₦65,400,000
               </div>
               <p className="text-[11px] text-slate-400">Audited surplus returns credited</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
-            <h4 className="font-bold text-base text-slate-900 font-display">
+          <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white font-display">
               Annual General Meeting (AGM) Surplus Profit Allocation
             </h4>
-            <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
               Under Section 14 of the Cooperative Bye-Laws, net operating surplus from agro-processing, real estate capital gains, and loan interest margins are allocated pro-rata across active financial members.
             </p>
 
@@ -541,18 +541,18 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {activeTab === 'audit' && (
         <div className="space-y-4">
           <div>
-            <h3 className="font-bold text-base text-slate-900 font-display">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
               Immutable System Audit Trail
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Cryptographic log of all administrative approvals, disbursements, KYC verifications, and role edits.
             </p>
           </div>
 
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[10px] uppercase">
+                <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Log ID</th>
                     <th className="py-3 px-4">Timestamp</th>
@@ -562,19 +562,19 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                     <th className="py-3 px-4">Audit Details</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
                   {auditLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-50/70">
-                      <td className="py-3 px-4 font-bold text-slate-900">{log.id}</td>
-                      <td className="py-3 px-4 text-slate-500">{log.timestamp}</td>
-                      <td className="py-3 px-4 font-sans font-medium text-slate-800">{log.adminName}</td>
+                    <tr key={log.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
+                      <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{log.id}</td>
+                      <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{log.timestamp}</td>
+                      <td className="py-3 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">{log.adminName}</td>
                       <td className="py-3 px-4 font-sans">
-                        <span className="px-2 py-0.5 rounded text-[10px] uppercase bg-slate-100 text-slate-700 font-bold">
+                        <span className="px-2 py-0.5 rounded text-[10px] uppercase bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-bold">
                           {log.adminRole}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-brand-700">{log.action}</td>
-                      <td className="py-3 px-4 font-sans text-slate-600">{log.details}</td>
+                      <td className="py-3 px-4 font-bold text-brand-700 dark:text-brand-400">{log.action}</td>
+                      <td className="py-3 px-4 font-sans text-slate-600 dark:text-slate-300">{log.details}</td>
                     </tr>
                   ))}
                 </tbody>

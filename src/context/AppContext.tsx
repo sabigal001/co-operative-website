@@ -94,11 +94,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentMember, setCurrentMember] = useState<MemberProfile>(() => {
     return authService.getCurrentMember();
   });
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('current_member_id');
+      if (saved === 'logged_out' || saved === 'false') return false;
+      return !!saved;
+    } catch {
+      return false;
+    }
+  });
 
   const loginMember = (member: MemberProfile) => {
+    try {
+      localStorage.setItem('current_member_id', member.id);
+    } catch {}
     setCurrentMember(member);
     setIsLoggedIn(true);
+    setCurrentPortal('member');
     showToast(`Welcome, ${member.fullName}!`, 'success');
   };
 
@@ -106,7 +118,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [theme, setThemeState] = useState<'dark' | 'light'>(() => {
     try {
       const savedTheme = localStorage.getItem('mosunmola_theme');
-      return (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'dark';
+      return savedTheme === 'light' ? 'light' : 'dark';
     } catch {
       return 'dark';
     }
@@ -146,16 +158,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [theme]);
 
   const logoutMember = async () => {
-    try {
-      const res = await authService.logout();
-      showToast(res.message || 'You have signed out of your member account.', 'info');
-    } catch (e) {
-      authService.logoutMember();
-      showToast('You have signed out of your member account.', 'info');
-    }
+    // Instant UI state transition to login page
     setIsLoggedIn(false);
-    setCurrentPortal('landing');
-    navigateToService('landing');
+    setCurrentPortal('member');
+    try {
+      localStorage.setItem('current_member_id', 'logged_out');
+    } catch {}
+    try {
+      await authService.logout();
+    } catch {
+      authService.logoutMember();
+    }
+    showToast('You have signed out. Please sign in or activate your card.', 'info');
   };
 
   // Registration Modal with Physical Card verification

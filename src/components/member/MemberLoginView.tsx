@@ -162,17 +162,17 @@ export const MemberLoginView: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full liquid-btn liquid-btn-white py-2.5 text-xs font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 group active:scale-98 disabled:opacity-50"
+                className="w-full liquid-btn liquid-btn-white text-black py-2.5 text-xs font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 group active:scale-98 disabled:opacity-50"
               >
                 {isLoading ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 text-black">
                     <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     <span>Signing in...</span>
                   </span>
                 ) : (
                   <>
                     <span>Sign In to Member Portal</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 text-black group-hover:translate-x-0.5 transition-transform" />
                   </>
                 )}
               </button>

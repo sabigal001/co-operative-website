@@ -70,7 +70,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
 
           <button
             onClick={handlePrint}
-            className="liquid-btn liquid-btn-white py-1.5 px-3 text-xs flex items-center gap-1.5"
+            className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5"
           >
             <Printer className="w-3.5 h-3.5 text-black" />
             <span>Print Pass</span>

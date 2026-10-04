@@ -4,19 +4,17 @@ import {
   X,
   UserPlus,
   Smartphone,
-  ArrowRight,
-  Sun,
-  Moon
+  ArrowRight
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { navigateToService } from '../../utils/subdomainRouter';
+import { CurtainPullCord } from '../common/CurtainThemeSwitch';
 
 interface LandingNavbarProps {
   onOpenApplyModal: () => void;
 }
 
 export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }) => {
-  const { theme, toggleTheme } = useApp();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -40,27 +38,13 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
             </div>
           </a>
 
-          {/* Action Buttons: Theme Toggle + Become a Member + Hamburger Menu */}
+          {/* Action Buttons: Become a Member + Hamburger Menu + Curtain Pull Cord at Right End */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 sm:p-2.5 text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-xl sm:rounded-full border border-slate-900/10 dark:border-white/15 transition-all active:scale-95"
-              title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-3.5 h-3.5 text-amber-300" />
-              ) : (
-                <Moon className="w-3.5 h-3.5 text-indigo-600" />
-              )}
-            </button>
-
             <button
               onClick={onOpenApplyModal}
-              className="liquid-btn liquid-btn-white text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full"
+              className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full"
             >
-              <UserPlus className="w-3.5 h-3.5" />
+              <UserPlus className="w-3.5 h-3.5 text-black" />
               <span>Become a Member</span>
             </button>
 
@@ -72,6 +56,11 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
             >
               <Menu className="w-4 h-4 text-slate-800 dark:text-white" />
             </button>
+
+            {/* Curtain Pull Cord hanging at the right end of the header */}
+            <div className="pl-1 sm:pl-2 ml-0.5 border-l border-slate-200 dark:border-white/15 flex items-center">
+              <CurtainPullCord />
+            </div>
           </div>
 
         </div>
@@ -83,7 +72,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
           {/* Full Screen Overlay with Liquid Glass Backdrop */}
           <div className="fixed inset-0 w-full h-full bg-white/95 dark:bg-black/95 backdrop-blur-3xl text-slate-900 dark:text-white z-50 flex flex-col justify-between p-6 sm:p-10 overflow-y-auto animate-slide-up">
 
-            {/* Top Bar: Brand + Theme Toggle + Close Icon */}
+            {/* Top Bar: Brand + Close Icon (No duplicate toggle button) */}
             <div className="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-white/10 max-w-2xl mx-auto w-full">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-black font-display font-black flex items-center justify-center text-base shadow-sm">
@@ -100,15 +89,6 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={toggleTheme}
-                  className="p-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-900/10 dark:border-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold"
-                  title="Toggle Theme"
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-indigo-600" />}
-                  <span className="hidden sm:inline">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                </button>
-
                 <button
                   onClick={() => setDrawerOpen(false)}
                   className="p-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-900/10 dark:border-white/10 transition-colors"

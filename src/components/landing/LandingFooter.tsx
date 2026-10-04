@@ -11,37 +11,38 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
     <footer className="bg-slate-950 dark:bg-black text-slate-300 dark:text-slate-400 border-t border-slate-800 dark:border-white/10 pt-16 pb-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Top CTA Banner in Footer */}
-        <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-slate-800 dark:border-white/10 relative overflow-hidden bg-gradient-to-r from-slate-900/90 to-slate-950/90 dark:from-black/80 dark:to-slate-950/80">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Top CTA Banner in Footer - High-Contrast Obsidian & Emerald Theme */}
+        <div className="rounded-3xl p-8 sm:p-10 mb-16 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-emerald-500/30 relative overflow-hidden bg-gradient-to-br from-black via-[#06180f] to-slate-950">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-emerald-600/10 rounded-full blur-2xl pointer-events-none" />
 
-          <div className="space-y-2 text-center md:text-left relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-white/10 text-white text-xs font-semibold uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="space-y-3 text-center md:text-left relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#00C853] animate-pulse" />
               <span>Statutory Cooperative Membership</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-white">
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black font-display tracking-tight text-white leading-tight">
               Ready to take charge of your financial future?
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-              Join 14,850+ forward-thinking Nigerians building sustainable wealth with 5% low-interest loans, high-yield thrift, and collective empowerment.
+            <p className="text-xs sm:text-sm text-slate-200 max-w-xl font-normal leading-relaxed">
+              Join <span className="text-emerald-400 font-bold">14,850+</span> forward-thinking Nigerians building sustainable wealth with <span className="text-white font-semibold">5% low-interest loans</span>, high-yield thrift, and collective empowerment.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 relative z-10">
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 relative z-10 w-full sm:w-auto">
             <button
               onClick={onOpenApplyModal}
-              className="liquid-btn liquid-btn-white py-2.5 px-5 text-xs flex items-center gap-2"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-full bg-white hover:bg-slate-100 text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95"
             >
-              <UserPlus className="w-3.5 h-3.5" />
+              <UserPlus className="w-3.5 h-3.5 text-black" />
               <span>Register as a Member</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-black" />
             </button>
             <button
               onClick={() => navigateToService('members')}
-              className="liquid-btn liquid-btn-default py-2.5 px-5 text-xs flex items-center gap-2"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-white border border-emerald-500/30 font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
               <span>Member Portal Login</span>
             </button>
           </div>

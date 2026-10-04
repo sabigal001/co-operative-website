@@ -78,10 +78,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
   return (
     <div className="space-y-8 max-w-3xl">
       <div>
-        <h2 className="text-xl sm:text-2xl font-black font-display text-slate-900">
+        <h2 className="text-xl sm:text-2xl font-black font-display text-slate-900 dark:text-white">
           Account & Security Settings
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Manage statutory cooperative records, next of kin, and bank payout credentials.
         </p>
       </div>
@@ -89,139 +89,139 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
       <form onSubmit={handleSaveProfile} className="space-y-6">
         
         {/* Personal Details Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <User className="w-5 h-5 text-brand-600" />
-            <h3 className="font-bold text-sm text-slate-900">Identity & Contact</h3>
+        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
+            <User className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Identity & Contact</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-500 mb-1">Full Legal Name (Locked to ID)</label>
+              <label className="block text-slate-500 dark:text-slate-400 mb-1">Full Legal Name (Locked to ID)</label>
               <input
                 type="text"
                 value={member.fullName}
                 disabled
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-600 font-semibold cursor-not-allowed"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-600 dark:text-slate-300 font-semibold cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-slate-500 mb-1">Physical Member ID</label>
+              <label className="block text-slate-500 dark:text-slate-400 mb-1">Physical Member ID</label>
               <input
                 type="text"
                 value={member.memberId}
                 disabled
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-brand-700 font-mono font-bold cursor-not-allowed"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-brand-700 dark:text-brand-400 font-mono font-bold cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Phone Number (WhatsApp)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Phone Number (WhatsApp)</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-brand-500"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Occupation / Enterprise</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Occupation / Enterprise</label>
               <input
                 type="text"
                 value={occupation}
                 onChange={(e) => setOccupation(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-brand-500"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-slate-700 font-semibold mb-1">Residential Address</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Residential Address</label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-brand-500"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
             </div>
           </div>
         </div>
 
         {/* Payout Bank Account Details */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <Building className="w-5 h-5 text-emerald-600" />
-            <h3 className="font-bold text-sm text-slate-900">Settlement & Payout Bank Account</h3>
+        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
+            <Building className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Settlement & Payout Bank Account</h3>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             All loan disbursements, savings maturities, and annual AGM dividends are sent to this account.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Bank Name</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Bank Name</label>
               <input
                 type="text"
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">NUBAN Account Number</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">NUBAN Account Number</label>
               <input
                 type="text"
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-mono"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Account Holder Name</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Account Holder Name</label>
               <input
                 type="text"
                 value={accountName}
                 onChange={(e) => setAccountName(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white"
               />
             </div>
           </div>
         </div>
 
         {/* Next of Kin Beneficiary */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <ShieldCheck className="w-5 h-5 text-amber-600" />
-            <h3 className="font-bold text-sm text-slate-900">Next of Kin Beneficiary Record</h3>
+        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
+            <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Next of Kin Beneficiary Record</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Beneficiary Name</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Beneficiary Name</label>
               <input
                 type="text"
                 value={nokName}
                 onChange={(e) => setNokName(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Relationship</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Relationship</label>
               <input
                 type="text"
                 value={nokRel}
                 onChange={(e) => setNokRel(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Beneficiary Phone</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Beneficiary Phone</label>
               <input
                 type="tel"
                 value={nokPhone}
                 onChange={(e) => setNokPhone(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white"
               />
             </div>
           </div>

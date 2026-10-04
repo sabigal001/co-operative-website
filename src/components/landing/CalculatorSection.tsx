@@ -177,10 +177,10 @@ export const CalculatorSection: React.FC = () => {
 
                 <button
                   onClick={() => navigateToService('members')}
-                  className="w-full liquid-btn liquid-btn-white py-2.5 text-xs flex items-center justify-center gap-2"
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2"
                 >
                   <span>Start This Savings Goal</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
                 </button>
               </div>
             </div>
@@ -284,10 +284,10 @@ export const CalculatorSection: React.FC = () => {
 
                 <button
                   onClick={() => navigateToService('members')}
-                  className="w-full liquid-btn liquid-btn-white py-2.5 text-xs flex items-center justify-center gap-2"
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2"
                 >
                   <span>Apply for This Loan</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
                 </button>
               </div>
             </div>

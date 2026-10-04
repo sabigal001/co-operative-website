@@ -204,7 +204,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => setShowDepositModal(true)}
-              className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-2"
+              className="liquid-btn liquid-btn-white text-black font-bold py-2 px-4 text-xs flex items-center gap-2"
             >
               <ArrowDownLeft className="w-3.5 h-3.5 text-black" />
               <span>Deposit Funds</span>
@@ -429,9 +429,9 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs flex items-center gap-1.5"
+                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs flex items-center gap-1.5"
                 >
-                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-black" /> : <CheckCircle2 className="w-3.5 h-3.5 text-black" />}
                   <span>Submit to Treasurer</span>
                 </button>
               </div>
@@ -516,7 +516,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs flex items-center gap-1.5"
+                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs flex items-center gap-1.5"
                 >
                   <span>Create Plan</span>
                 </button>
@@ -570,7 +570,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs"
+                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs"
                 >
                   <span>Request Payout</span>
                 </button>

@@ -23,12 +23,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
         <img
           src={bgPosterImage}
           alt="Modern Financial Architecture in Lagos"
-          className="w-full h-full object-cover object-center dark:opacity-75 opacity-30 transform scale-105 transition-transform duration-1000"
+          className="w-full h-full object-cover object-center dark:opacity-15 opacity-20 transform scale-105 transition-transform duration-1000"
         />
 
-        {/* Adaptive Vignette to Guarantee Readability in both Dark and Light themes */}
-        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-black/90 dark:via-black/70 dark:to-black/80 bg-gradient-to-r from-slate-50/95 via-slate-50/85 to-slate-50/90" />
-        <div className="absolute inset-0 dark:bg-gradient-to-t dark:from-black dark:via-transparent dark:to-black/40 bg-gradient-to-t from-slate-50 via-transparent to-slate-50/40" />
+        {/* Adaptive Vignette to Guarantee Deep Obsidian Contrast in Dark Theme and Clarity in Light Theme */}
+        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-black dark:via-black/95 dark:to-black/90 bg-gradient-to-r from-slate-50/95 via-slate-50/85 to-slate-50/90" />
+        <div className="absolute inset-0 dark:bg-gradient-to-t dark:from-black dark:via-black/80 dark:to-black/70 bg-gradient-to-t from-slate-50 via-transparent to-slate-50/40" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -57,11 +57,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-1">
               <button
                 onClick={onOpenApplyModal}
-                className="liquid-btn liquid-btn-white"
+                className="liquid-btn liquid-btn-white text-black font-bold"
               >
-                <UserPlus className="w-3.5 h-3.5" />
+                <UserPlus className="w-3.5 h-3.5 text-black" />
                 <span>Apply for Membership</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-black" />
               </button>
 
               <a
@@ -169,10 +169,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
 
               <button
                 onClick={onOpenApplyModal}
-                className="liquid-btn liquid-btn-white w-full py-2.5"
+                className="liquid-btn liquid-btn-white text-black font-bold w-full py-2.5"
               >
                 <span>Submit Membership Application</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-black" />
               </button>
 
             </div>

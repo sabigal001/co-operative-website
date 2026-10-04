@@ -162,10 +162,10 @@ export const ProductOfferings: React.FC = () => {
                       openRegisterModal();
                     }
                   }}
-                  className="liquid-btn liquid-btn-white w-full py-2.5"
+                  className="liquid-btn liquid-btn-white text-black font-bold w-full py-2.5"
                 >
                   <span>{p.cta}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
                 </button>
               </div>
             </div>

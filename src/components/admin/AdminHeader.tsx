@@ -1,15 +1,16 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { ShieldCheck, Coins, UserCheck, ExternalLink, CreditCard, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Coins, UserCheck, ExternalLink, CreditCard } from 'lucide-react';
 import type { SystemMetrics } from '../../types';
 import { navigateToService } from '../../utils/subdomainRouter';
+import { CurtainPullCord } from '../common/CurtainThemeSwitch';
 
 interface AdminHeaderProps {
   metrics: SystemMetrics | null;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
-  const { activeAdminRole, currentAdmin, setActiveAdminRole, theme, toggleTheme } = useApp();
+  const { activeAdminRole, currentAdmin, setActiveAdminRole, theme } = useApp();
 
   const roleInfo = {
     master_admin: {
@@ -54,20 +55,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Theme Switcher */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle dark/light theme"
-              className="liquid-btn liquid-btn-default p-2 text-xs rounded-xl"
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-3.5 h-3.5 text-amber-300" />
-              ) : (
-                <Moon className="w-3.5 h-3.5 text-slate-300" />
-              )}
-            </button>
-
             <button
               onClick={() => navigateToService('members')}
               className="liquid-btn liquid-btn-white py-1.5 px-3 text-xs flex items-center gap-1.5"
@@ -82,6 +69,11 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
               <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
               <span className="hidden sm:inline">Public Website</span>
             </button>
+
+            {/* Curtain Pull Cord hanging at the right end */}
+            <div className="pl-1 sm:pl-2 ml-0.5 border-l border-slate-200 dark:border-white/15 flex items-center">
+              <CurtainPullCord />
+            </div>
           </div>
         </div>
       </div>

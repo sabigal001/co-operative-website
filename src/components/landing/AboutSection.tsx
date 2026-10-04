@@ -92,10 +92,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) 
 
           <button
             onClick={onOpenApplyModal}
-            className="liquid-btn liquid-btn-white shrink-0 py-2.5 px-5 text-xs font-bold"
+            className="liquid-btn liquid-btn-white text-black shrink-0 py-2.5 px-5 text-xs font-bold"
           >
             <span>Apply to Join Today</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 text-black" />
           </button>
         </div>
 

@@ -80,11 +80,11 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
               <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <button
                   onClick={onOpenApplyModal}
-                  className="liquid-btn liquid-btn-white py-2.5 px-5 text-xs flex items-center justify-center gap-2"
+                  className="liquid-btn liquid-btn-white text-black font-bold py-2.5 px-5 text-xs flex items-center justify-center gap-2"
                 >
-                  <UserPlus className="w-3.5 h-3.5" />
+                  <UserPlus className="w-3.5 h-3.5 text-black" />
                   <span>Register as a Member</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
                 </button>
 
                 <button

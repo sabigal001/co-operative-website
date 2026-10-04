@@ -156,7 +156,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
 
         <button
           onClick={() => setShowApplyModal(true)}
-          className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center justify-center gap-2"
+          className="liquid-btn liquid-btn-white text-black font-bold py-2 px-4 text-xs flex items-center justify-center gap-2"
         >
           <Plus className="w-3.5 h-3.5 text-black" />
           <span>Apply for New Loan</span>
@@ -174,7 +174,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
             </p>
             <button
               onClick={() => setShowApplyModal(true)}
-              className="liquid-btn liquid-btn-white py-2 px-4 text-xs"
+              className="liquid-btn liquid-btn-white text-black font-bold py-2 px-4 text-xs"
             >
               Apply Now
             </button>
@@ -452,9 +452,9 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs flex items-center gap-1.5"
+                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs flex items-center gap-1.5"
                 >
-                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-black" />}
+                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-black" /> : <ShieldCheck className="w-3.5 h-3.5 text-black" />}
                   <span>Submit for PA Vetting</span>
                 </button>
               </div>

@@ -140,7 +140,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
             <button
               onClick={handleResetAndClose}
-              className="liquid-btn liquid-btn-white py-2 px-6 text-xs"
+              className="liquid-btn liquid-btn-white text-black font-bold py-2 px-6 text-xs"
             >
               Done, Return to Website
             </button>
@@ -327,9 +327,9 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
               <button
                 type="submit"
                 disabled={loading}
-                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
+                className="liquid-btn liquid-btn-white text-black font-bold py-2 px-4 text-xs flex items-center gap-1.5"
               >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-black" /> : <ArrowRight className="w-3.5 h-3.5 text-black" />}
                 <span>Submit Membership Application</span>
               </button>
             </div>
