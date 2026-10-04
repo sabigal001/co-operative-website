@@ -7,14 +7,14 @@ import { AssetPortfolio } from './AssetPortfolio';
 import { TransactionHistory } from './TransactionHistory';
 import { ProfileSettings } from './ProfileSettings';
 import { BottomNav } from './BottomNav';
-import { 
-  CreditCard, 
-  PiggyBank, 
-  Coins, 
-  Building2, 
-  Clock, 
-  User, 
-  ShieldCheck, 
+import {
+  CreditCard,
+  PiggyBank,
+  Coins,
+  Building2,
+  Clock,
+  User,
+  ShieldCheck,
   LogOut,
   Sparkles,
   ExternalLink,
@@ -39,7 +39,7 @@ export const MemberPortalView: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-slate-100 pb-28 md:pb-16 transition-colors duration-300">
-      
+
       {/* Standalone Member Subdomain Navbar */}
       <div className="bg-black/90 backdrop-blur-xl text-white border-b border-white/10 px-4 sm:px-6 lg:px-8 py-3 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -146,7 +146,7 @@ export const MemberPortalView: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        
+
         {/* Desktop Navigation Tabs (Liquid Glass Pill Style) */}
         <div className="hidden md:flex items-center liquid-glass p-1.5 rounded-2xl border border-white/10 shadow-sm mb-8 overflow-x-auto gap-1">
           {navItems.map((item) => {
@@ -155,11 +155,10 @@ export const MemberPortalView: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${
-                  isActive
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${isActive
                     ? 'liquid-btn-white text-black shadow-md'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
+                  }`}
               >
                 {item.icon}
                 <span>{item.label}</span>

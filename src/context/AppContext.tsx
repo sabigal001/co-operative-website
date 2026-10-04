@@ -21,30 +21,30 @@ interface AppContextType {
   isLoggedIn: boolean;
   loginMember: (member: MemberProfile) => void;
   logoutMember: () => void;
-  
+
   // Registration & Card Verification Modal
   isRegisterModalOpen: boolean;
   openRegisterModal: (prefillCardId?: string) => void;
   closeRegisterModal: () => void;
   prefillCardId: string;
-  
+
   // PWA State & Installation
   isInstallBannerVisible: boolean;
   dismissInstallBanner: () => void;
   triggerInstallPrompt: () => void;
   isIOS: boolean;
   isStandalone: boolean;
-  
+
   // Toast & Confetti
   toasts: ToastNotification[];
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   fireConfetti: () => void;
-  
+
   // Theme Mode
   theme: 'dark' | 'light';
   setTheme: (theme: 'dark' | 'light') => void;
   toggleTheme: () => void;
-  
+
   // Refresh Signal
   dataVersion: number;
   refreshData: () => void;

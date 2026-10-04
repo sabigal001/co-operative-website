@@ -17,7 +17,7 @@ export const CurtainThemeSwitch: React.FC = () => {
     if (curtainStage !== 'idle') return;
 
     setCurtainStage('closing');
-    
+
     // Halfway through animation when curtain covers viewport
     setTimeout(() => {
       setCurtainStage('closed');
@@ -112,7 +112,7 @@ export const CurtainThemeSwitch: React.FC = () => {
   return (
     <>
       {/* 1. Hanging Pull Cord / Tassel (Pinned at Top Bar) */}
-      <div 
+      <div
         ref={cordRef}
         className="fixed top-0 right-16 sm:right-28 z-50 select-none flex flex-col items-center pointer-events-auto cursor-grab active:cursor-grabbing group"
         onMouseDown={(e) => handlePointerDown(e.clientY)}
@@ -130,20 +130,19 @@ export const CurtainThemeSwitch: React.FC = () => {
       >
         {/* Mounting Plate at ceiling/top */}
         <div className="w-6 h-1.5 bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 rounded-b-sm shadow-sm" />
-        
+
         {/* Elastic Cord Line */}
-        <div 
+        <div
           className="w-0.5 bg-gradient-to-b from-amber-300 via-amber-400/80 to-emerald-400 transition-all duration-75 origin-top"
           style={{ height: `${28 + cordExtension}px` }}
         />
 
         {/* Tassel / Ring Toggle Handle */}
-        <div 
-          className={`relative p-1.5 rounded-full transition-all duration-200 transform shadow-lg flex items-center justify-center ${
-            isDragging 
-              ? 'scale-110 ring-2 ring-emerald-400 bg-emerald-600 text-white' 
+        <div
+          className={`relative p-1.5 rounded-full transition-all duration-200 transform shadow-lg flex items-center justify-center ${isDragging
+              ? 'scale-110 ring-2 ring-emerald-400 bg-emerald-600 text-white'
               : 'group-hover:scale-110 bg-slate-900/90 dark:bg-white/95 text-amber-400 dark:text-slate-900 border border-amber-300/40'
-          }`}
+            }`}
         >
           {theme === 'dark' ? (
             <Sun className="w-3.5 h-3.5 animate-spin-slow" />
@@ -167,7 +166,7 @@ export const CurtainThemeSwitch: React.FC = () => {
 
       {/* 2. Drag-peek Curtain Preview (reveals as you drag) */}
       {isDragging && dragDistance > 0 && curtainStage === 'idle' && (
-        <div 
+        <div
           className="fixed inset-x-0 top-0 z-[999] pointer-events-none overflow-hidden transition-none"
           style={{ height: `${dragDistance * 1.8}px` }}
         >
@@ -182,25 +181,24 @@ export const CurtainThemeSwitch: React.FC = () => {
       {/* 3. Full Animated Curtain Screen Sweep */}
       {curtainStage !== 'idle' && (
         <div className="fixed inset-0 z-[1000] pointer-events-auto flex flex-col overflow-hidden">
-          
+
           {/* Main Top Roller / Velvet Curtain Drop */}
-          <div 
-            className={`w-full h-full relative transition-transform duration-500 ease-out flex flex-col justify-between ${
-              curtainStage === 'closing' 
-                ? 'translate-y-0' 
-                : curtainStage === 'closed'
+          <div
+            className={`w-full h-full relative transition-transform duration-500 ease-out flex flex-col justify-between ${curtainStage === 'closing'
                 ? 'translate-y-0'
-                : '-translate-y-full'
-            }`}
+                : curtainStage === 'closed'
+                  ? 'translate-y-0'
+                  : '-translate-y-full'
+              }`}
             style={{
-              background: theme === 'dark' 
-                ? 'linear-gradient(180deg, #090d16 0%, #030712 50%, #020617 100%)' 
+              background: theme === 'dark'
+                ? 'linear-gradient(180deg, #090d16 0%, #030712 50%, #020617 100%)'
                 : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
               transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           >
             {/* Fabric Pleats Shading (Realistic Draped Folds) */}
-            <div 
+            <div
               className="absolute inset-0 opacity-25 pointer-events-none"
               style={{
                 backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(0,0,0,0.4) 40px, rgba(255,255,255,0.15) 45px, transparent 50px)'
@@ -242,7 +240,7 @@ export const CurtainThemeSwitch: React.FC = () => {
               {/* Gold Embroidered Border */}
               <div className="h-3 w-full bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500 border-t border-b border-amber-600/50 shadow-md" />
               {/* Tassel Fringe row */}
-              <div 
+              <div
                 className="h-4 w-full opacity-90"
                 style={{
                   background: 'repeating-linear-gradient(90deg, #d97706, #d97706 6px, transparent 6px, transparent 10px)'

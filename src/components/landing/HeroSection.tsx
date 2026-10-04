@@ -1,7 +1,7 @@
 import React from 'react';
-import { 
-  ArrowRight, 
-  Building2, 
+import {
+  ArrowRight,
+  Building2,
   ChevronRight,
   UserPlus,
   CheckCircle2
@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
 
   return (
     <section className="relative overflow-hidden dark:bg-black bg-slate-50 dark:text-white text-slate-900 pt-12 pb-16 lg:pt-20 lg:pb-24 border-b dark:border-white/10 border-slate-200 transition-colors duration-300">
-      
+
       {/* Background Photography & Adaptive Ambient Vignette */}
       <div className="absolute inset-0 z-0">
         <img
@@ -33,10 +33,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-          
+
           {/* Left Column: Authentic Institutional Headline & Presentation */}
           <div className="lg:col-span-8 space-y-5 text-center lg:text-left animate-slide-up">
-            
+
             {/* Regulatory Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border dark:border-white/15 border-slate-200 text-xs font-semibold backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#00C853] animate-pulse" />
@@ -113,7 +113,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
           {/* Right Column: Institutional Trust Card & Protections */}
           <div className="lg:col-span-4">
             <div className="liquid-glass-card rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
-              
+
               <div className="flex items-center gap-3 pb-3 border-b dark:border-white/10 border-slate-200">
                 <div className="w-10 h-10 rounded-xl dark:bg-white/10 bg-emerald-50 text-emerald-500 flex items-center justify-center border dark:border-white/15 border-emerald-200 shadow-inner">
                   <Building2 className="w-5 h-5" />

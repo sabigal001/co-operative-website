@@ -10,7 +10,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
   return (
     <footer className="bg-slate-950 dark:bg-black text-slate-300 dark:text-slate-400 border-t border-slate-800 dark:border-white/10 pt-16 pb-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top CTA Banner in Footer */}
         <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 mb-16 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-slate-800 dark:border-white/10 relative overflow-hidden bg-gradient-to-r from-slate-900/90 to-slate-950/90 dark:from-black/80 dark:to-slate-950/80">
           <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -109,8 +109,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
             <h4 className="font-bold text-sm text-white uppercase tracking-wider">Access Subdomains</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
-                <button 
-                  onClick={() => navigateToService('members')} 
+                <button
+                  onClick={() => navigateToService('members')}
                   className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
                 >
                   <CreditCard className="w-3.5 h-3.5 text-brand-400 shrink-0" />
@@ -121,8 +121,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
                 </button>
               </li>
               <li className="pt-1">
-                <button 
-                  onClick={() => navigateToService('admin')} 
+                <button
+                  onClick={() => navigateToService('admin')}
                   className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-purple-400 shrink-0" />
