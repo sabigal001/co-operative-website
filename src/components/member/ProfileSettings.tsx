@@ -89,7 +89,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
       <form onSubmit={handleSaveProfile} className="space-y-6">
         
         {/* Personal Details Card */}
-        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-black rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
             <User className="w-5 h-5 text-brand-600 dark:text-brand-400" />
             <h3 className="font-bold text-sm text-slate-900 dark:text-white">Identity & Contact</h3>
@@ -149,7 +149,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
         </div>
 
         {/* Payout Bank Account Details */}
-        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-black rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
             <Building className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <h3 className="font-bold text-sm text-slate-900 dark:text-white">Settlement & Payout Bank Account</h3>
@@ -190,7 +190,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
         </div>
 
         {/* Next of Kin Beneficiary */}
-        <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-black rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3">
             <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             <h3 className="font-bold text-sm text-slate-900 dark:text-white">Next of Kin Beneficiary Record</h3>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserPlus, ArrowRight, ExternalLink, ShieldCheck, CreditCard, MapPin, Phone, Mail } from 'lucide-react';
+import { UserPlus, ArrowRight, ExternalLink, MapPin, Phone, Mail } from 'lucide-react';
 import { navigateToService } from '../../utils/subdomainRouter';
 
 interface LandingFooterProps {
@@ -48,10 +48,10 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
           </div>
         </div>
 
-        {/* 4 Footer Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800 dark:border-white/10 text-xs">
+        {/* 3 Footer Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-800 dark:border-white/10 text-xs">
           {/* Col 1: Brand */}
-          <div className="space-y-4">
+          <div className="md:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl liquid-glass border border-white/15 text-white font-black flex items-center justify-center text-lg font-display shadow-sm">
                 M
@@ -65,7 +65,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
                 </span>
               </div>
             </div>
-            <p className="text-slate-400 leading-relaxed text-xs">
+            <p className="text-slate-400 leading-relaxed text-xs max-w-sm">
               Pioneering modern cooperative banking, target thrift digitization, zero-collateral micro-credit, and real estate co-ownership in West Africa.
             </p>
             <div className="text-[11px] text-slate-400 font-mono">
@@ -74,7 +74,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
           </div>
 
           {/* Col 2: Cooperative Solutions */}
-          <div className="space-y-3">
+          <div className="md:col-span-3 space-y-3">
             <h4 className="font-bold text-sm text-white uppercase tracking-wider">Solutions</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
@@ -105,39 +105,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
             </ul>
           </div>
 
-          {/* Col 3: Portal Navigation */}
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider">Access Subdomains</h4>
-            <ul className="space-y-2 text-slate-400">
-              <li>
-                <button
-                  onClick={() => navigateToService('members')}
-                  className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
-                >
-                  <CreditCard className="w-3.5 h-3.5 text-brand-400 shrink-0" />
-                  <div>
-                    <span className="block font-medium">Member Portal</span>
-                    <span className="text-[10px] text-slate-500 font-mono">members.mosunmolacoop.com</span>
-                  </div>
-                </button>
-              </li>
-              <li className="pt-1">
-                <button
-                  onClick={() => navigateToService('admin')}
-                  className="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-left"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                  <div>
-                    <span className="block font-medium">Super Admin Console</span>
-                    <span className="text-[10px] text-slate-500 font-mono">admin.mosunmolacoop.com</span>
-                  </div>
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4: Secretariat Contacts */}
-          <div className="space-y-3">
+          {/* Col 3: Secretariat Contacts */}
+          <div className="md:col-span-4 space-y-3">
             <h4 className="font-bold text-sm text-white uppercase tracking-wider">Head Secretariat</h4>
             <div className="space-y-2.5 text-slate-400 text-xs">
               <div className="flex items-start gap-2">

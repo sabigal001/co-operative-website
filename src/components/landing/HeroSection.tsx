@@ -16,19 +16,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
   const bgPosterImage = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85";
 
   return (
-    <section className="relative overflow-hidden dark:bg-black bg-slate-50 dark:text-white text-slate-900 pt-12 pb-16 lg:pt-20 lg:pb-24 border-b dark:border-white/10 border-slate-200 transition-colors duration-300">
+    <section className="relative overflow-hidden bg-slate-50 dark:bg-black text-slate-900 dark:text-white pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-200 dark:border-white/10 transition-colors duration-300">
 
       {/* Background Photography & Adaptive Ambient Vignette */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 bg-slate-50 dark:bg-black pointer-events-none">
         <img
           src={bgPosterImage}
           alt="Modern Financial Architecture in Lagos"
-          className="w-full h-full object-cover object-center dark:opacity-15 opacity-20 transform scale-105 transition-transform duration-1000"
+          className="w-full h-full object-cover object-center opacity-20 dark:opacity-20 dark:mix-blend-luminosity transform scale-105 transition-transform duration-1000"
         />
 
-        {/* Adaptive Vignette to Guarantee Deep Obsidian Contrast in Dark Theme and Clarity in Light Theme */}
-        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-black dark:via-black/95 dark:to-black/90 bg-gradient-to-r from-slate-50/95 via-slate-50/85 to-slate-50/90" />
-        <div className="absolute inset-0 dark:bg-gradient-to-t dark:from-black dark:via-black/80 dark:to-black/70 bg-gradient-to-t from-slate-50 via-transparent to-slate-50/40" />
+        {/* Pure Pitch-Black Vignette in Dark Mode (Guaranteed Deep Obsidian Contrast) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 to-black/80 dark:block hidden" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent dark:block hidden" />
+
+        {/* Clean Light Vignette in Light Mode */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/90 to-slate-50/70 dark:hidden block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-slate-50/40 dark:hidden block" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -38,18 +42,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
           <div className="lg:col-span-8 space-y-5 text-center lg:text-left animate-slide-up">
 
             {/* Regulatory Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border dark:border-white/15 border-slate-200 text-xs font-semibold backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-slate-200 dark:border-white/15 text-xs font-semibold backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#00C853] animate-pulse" />
-              <span className="dark:text-white text-slate-900 font-bold">Lagos State Certified Society</span>
-              <span className="dark:text-white/30 text-slate-400">•</span>
-              <span className="dark:text-slate-300 text-slate-600 font-mono text-[11px]">LSCS/2018/8941</span>
+              <span className="text-slate-900 dark:text-white font-bold">Lagos State Certified Society</span>
+              <span className="text-slate-400 dark:text-white/30">•</span>
+              <span className="text-slate-600 dark:text-slate-300 font-mono text-[11px]">LSCS/2018/8941</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight dark:text-white text-slate-900 leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight text-slate-900 dark:text-white leading-[1.12]">
               Empowering Members with Disciplined Wealth & <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 underline decoration-emerald-500/40 decoration-wavy underline-offset-8">Cooperative Freedom.</span>
             </h1>
 
-            <p className="text-sm sm:text-base dark:text-slate-200 text-slate-600 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-200 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
               <strong>Mosunmola Cooperative Multipurpose Society</strong> is a premier statutory credit and thrift institution. We help forward-thinking professionals, civil servants, and entrepreneurs achieve financial sovereignty through collective capital, 5% low-interest member loans, high-yield thrift, and verified asset co-ownership.
             </p>
 
@@ -89,22 +93,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
             </div>
 
             {/* Credibility Stats Bar */}
-            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0 border-t dark:border-white/10 border-slate-200 text-left">
+            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0 border-t border-slate-200 dark:border-white/10 text-left">
               <div>
-                <span className="text-2xl font-black font-display dark:text-white text-slate-900 block">14,850+</span>
-                <span className="text-[10px] dark:text-slate-300 text-slate-500 uppercase tracking-wider font-semibold">Active Members</span>
+                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">14,850+</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Active Members</span>
               </div>
               <div>
-                <span className="text-2xl font-black font-display dark:text-white text-slate-900 block">₦3.2B+</span>
-                <span className="text-[10px] dark:text-slate-300 text-slate-500 uppercase tracking-wider font-semibold">Managed Assets</span>
+                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">₦3.2B+</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Managed Assets</span>
               </div>
               <div>
                 <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">5.0%</span>
-                <span className="text-[10px] dark:text-slate-300 text-slate-500 uppercase tracking-wider font-semibold">Flat Loan Rate</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Flat Loan Rate</span>
               </div>
               <div>
                 <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">18.5%</span>
-                <span className="text-[10px] dark:text-slate-300 text-slate-500 uppercase tracking-wider font-semibold">Target Yield</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Target Yield</span>
               </div>
             </div>
 

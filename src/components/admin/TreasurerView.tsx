@@ -115,7 +115,7 @@ export const TreasurerView: React.FC = () => {
 
       {/* Tabs */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-white dark:bg-[#0c1015] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
+        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
           <button
             onClick={() => setActiveTab('deposits')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
@@ -170,7 +170,7 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
@@ -260,7 +260,7 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {disbursementQueue.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No vetted loans currently awaiting disbursement.
@@ -323,7 +323,7 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
@@ -379,7 +379,7 @@ export const TreasurerView: React.FC = () => {
       {/* ================= TAB 4: FINANCIAL REPORTS & LEDGERS ================= */}
       {activeTab === 'ledger' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
             <h4 className="font-bold text-sm text-slate-900 dark:text-white font-display">Treasury Cashflow Summary</h4>
             <div className="space-y-3 text-xs">
               <div className="flex justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
@@ -401,7 +401,7 @@ export const TreasurerView: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
             <h4 className="font-bold text-sm text-slate-900 dark:text-white font-display">Liquidity Ratio & Reserve</h4>
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 space-y-2">
               <div className="flex justify-between font-bold">
@@ -424,7 +424,7 @@ export const TreasurerView: React.FC = () => {
       {/* Proof Preview Modal */}
       {previewProofUrl && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0c1015] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-3xl p-6 max-w-sm w-full space-y-4">
+          <div className="bg-white dark:bg-black text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-3xl p-6 max-w-sm w-full space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-bold text-slate-900 dark:text-white text-sm">Payment Proof Document</h4>
               <button onClick={() => setPreviewProofUrl(null)} className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">

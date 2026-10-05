@@ -114,7 +114,7 @@ export const PaOfficerView: React.FC = () => {
 
       {/* Tabs */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-white dark:bg-[#0c1015] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
+        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
           <button
             onClick={() => setActiveTab('kyc')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
@@ -163,7 +163,7 @@ export const PaOfficerView: React.FC = () => {
             {members.map((m) => (
               <div
                 key={m.id}
-                className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4"
+                className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -250,7 +250,7 @@ export const PaOfficerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {loansForVetting.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No new loan applications awaiting vetting.
@@ -343,7 +343,7 @@ export const PaOfficerView: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">

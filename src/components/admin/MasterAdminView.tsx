@@ -184,7 +184,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       
       {/* Navigation Pills */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="bg-white dark:bg-[#0c1015] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
+        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
           {[
             { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
             { id: 'cards', label: 'Physical ID Card Batch Manager', icon: <CreditCard className="w-4 h-4" /> },
@@ -245,7 +245,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {applications.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No prospective applications currently submitted.
@@ -354,7 +354,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
@@ -442,7 +442,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             {admins.map((admin) => (
               <div
                 key={admin.id}
-                className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-4"
+                className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center gap-3 mb-3">
@@ -493,7 +493,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {activeTab === 'dividends' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total Savings Pool</span>
               <div className="text-2xl font-black font-display text-slate-900 dark:text-white">
                 ₦342,800,000
@@ -501,7 +501,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               <p className="text-[11px] text-slate-400">Regular Thrift + Dedicated Target Plans</p>
             </div>
 
-            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Outstanding Active Loans</span>
               <div className="text-2xl font-black font-display text-amber-600 dark:text-amber-400">
                 ₦142,400,000
@@ -509,7 +509,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               <p className="text-[11px] text-slate-400">Performing with 0.2% NPL ratio</p>
             </div>
 
-            <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
+            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total AGM Dividends Distributed</span>
               <div className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400">
                 ₦65,400,000
@@ -518,7 +518,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-black rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
             <h4 className="font-bold text-base text-slate-900 dark:text-white font-display">
               Annual General Meeting (AGM) Surplus Profit Allocation
             </h4>
@@ -549,7 +549,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">

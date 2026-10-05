@@ -52,18 +52,18 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Liquid Glass Cards - Razor Sharp Obsidian with Crisp Depth (No Murky Blur) */
+/* Liquid Glass Cards - Razor Sharp Deep Pitch-Black Obsidian (True Deep Black #000000) */
 .liquid-glass-card {
-  background: linear-gradient(180deg, #10141A 0%, #07090C 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .liquid-glass-card:hover {
-  background: linear-gradient(180deg, #151A22 0%, #0B0E12 100%);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 18px 44px -8px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  background: #050505;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
 }
 
@@ -85,27 +85,35 @@
   transform: scale(0.96);
 }
 
-/* 1. Translucent / Default Liquid Button */
+/* 1. Translucent / Default Liquid Button - High Contrast in Dark Mode */
+.liquid-btn-default,
+.liquid-btn-default *,
+.dark .liquid-btn-default,
+.dark .liquid-btn-default * {
+  color: #FFFFFF !important;
+}
+
 .liquid-btn-default,
 .dark .liquid-btn-default {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
 }
 
 .liquid-btn-default:hover,
 .dark .liquid-btn-default:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
   color: #FFFFFF !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
-.liquid-btn-default svg {
-  stroke: currentColor;
+.liquid-btn-default svg,
+.dark .liquid-btn-default svg {
+  stroke: #FFFFFF !important;
 }
 
-/* 2. Primary White Action Button - Guaranteed Black Text in Dark Theme */
+/* 2. Primary White Action Button - Guaranteed Crisp Contrast */
 .liquid-btn-white,
 .liquid-btn-white *,
 .dark .liquid-btn-white,
@@ -126,7 +134,8 @@
   transform: translateY(-1px);
 }
 
-.liquid-btn-white svg {
+.liquid-btn-white svg,
+.dark .liquid-btn-white svg {
   stroke: #000000 !important;
 }
 
@@ -148,13 +157,13 @@
   stroke: currentColor;
 }
 
-/* Floating Glass Header & Capsule Utility */
+/* Floating Glass Header & Capsule Utility - Pure Deep Obsidian */
 .liquid-glass {
-  background: rgba(10, 12, 16, 0.88);
+  background: rgba(0, 0, 0, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .liquid-glass-border {
@@ -177,10 +186,10 @@
 }
 
 .light .liquid-glass {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   box-shadow: 0 8px 28px 0 rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
@@ -190,16 +199,16 @@
 }
 
 .light .liquid-btn-default {
-  background: rgba(15, 23, 42, 0.06) !important;
+  background: rgba(15, 23, 42, 0.07) !important;
   color: #0F172A !important;
-  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
 }
 
 .light .liquid-btn-default:hover {
-  background: rgba(15, 23, 42, 0.12) !important;
+  background: rgba(15, 23, 42, 0.14) !important;
   color: #000000 !important;
-  border-color: rgba(15, 23, 42, 0.24) !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
 }
 
 .light .liquid-btn-default svg {
@@ -225,6 +234,41 @@
 
 .light .liquid-btn-white svg {
   stroke: #FFFFFF !important;
+}
+
+/* Guaranteed High-Contrast Protection for buttons inside dark modals */
+[class*="bg-black"] .liquid-btn-default,
+[class*="bg-black"] .liquid-btn-default *,
+[class*="bg-[#0"] .liquid-btn-default,
+[class*="bg-[#0"] .liquid-btn-default *,
+[class*="bg-[#1"] .liquid-btn-default,
+[class*="bg-[#1"] .liquid-btn-default * {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+[class*="bg-black"] .liquid-btn-default svg,
+[class*="bg-[#0"] .liquid-btn-default svg,
+[class*="bg-[#1"] .liquid-btn-default svg {
+  stroke: #FFFFFF !important;
+}
+
+[class*="bg-black"] .liquid-btn-white,
+[class*="bg-black"] .liquid-btn-white *,
+[class*="bg-[#0"] .liquid-btn-white,
+[class*="bg-[#0"] .liquid-btn-white *,
+[class*="bg-[#1"] .liquid-btn-white,
+[class*="bg-[#1"] .liquid-btn-white * {
+  color: #000000 !important;
+  background-color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[class*="bg-black"] .liquid-btn-white svg,
+[class*="bg-[#0"] .liquid-btn-white svg,
+[class*="bg-[#1"] .liquid-btn-white svg {
+  stroke: #000000 !important;
 }
 
 /* Animations */

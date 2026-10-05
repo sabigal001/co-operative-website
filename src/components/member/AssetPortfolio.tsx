@@ -66,7 +66,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
           {investments.map((inv) => (
             <div
               key={inv.id}
-              className="bg-white dark:bg-[#0c1015] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-5"
+              className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-5"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -138,7 +138,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
           {initialInvestmentAssets.map((asset) => (
             <div
               key={asset.id}
-              className="bg-white dark:bg-[#0c1015] rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div className="h-40 relative overflow-hidden bg-slate-900">
                 <img
@@ -192,7 +192,7 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
       {/* Certificate Modal */}
       {selectedCert && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0c1015] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-8 border border-slate-200 dark:border-white/15 shadow-2xl relative animate-slide-up">
+          <div className="bg-white dark:bg-black text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-8 border border-slate-200 dark:border-white/15 shadow-2xl relative animate-slide-up">
             <button
               onClick={() => setSelectedCert(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 dark:hover:text-white p-1"

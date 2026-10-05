@@ -13,21 +13,21 @@ interface AboutSectionProps {
 
 export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenApplyModal }) => {
   return (
-    <section id="about" className="py-20 lg:py-28 dark:bg-[#080808] bg-slate-50 dark:text-white text-slate-900 border-b dark:border-white/10 border-slate-200 relative transition-colors duration-300">
+    <section id="about" className="py-20 lg:py-28 bg-slate-50 dark:bg-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="max-w-3xl mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border dark:border-white/10 border-slate-200 dark:text-white text-slate-900 text-xs font-semibold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs font-semibold uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <Building className="w-3.5 h-3.5 text-emerald-500" />
             <span>About Mosunmola Cooperative</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display tracking-tight dark:text-white text-slate-900 leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display tracking-tight text-slate-900 dark:text-white leading-tight">
             A Legacy of Trust, Capital Pooling & Member Wealth.
           </h2>
-          <p className="text-base dark:text-slate-300 text-slate-600 leading-relaxed">
-            Registered under the Cooperative Societies Laws of Lagos State (Certificate No: <strong className="dark:text-emerald-400 text-emerald-600 font-mono">LSCS/2018/8941</strong>), Mosunmola Cooperative Multipurpose Society Limited is built on the time-tested cooperative principle of mutual empowerment.
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+            Registered under the Cooperative Societies Laws of Lagos State (Certificate No: <strong className="text-emerald-600 dark:text-emerald-400 font-mono">LSCS/2018/8941</strong>), Mosunmola Cooperative Multipurpose Society Limited is built on the time-tested cooperative principle of mutual empowerment.
           </p>
         </div>
 
