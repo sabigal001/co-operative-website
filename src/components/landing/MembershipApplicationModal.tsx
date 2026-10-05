@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface MembershipApplicationModalProps {
   isOpen: boolean;
@@ -65,12 +66,14 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
       });
 
       if (res.success && res.data) {
+        triggerHaptic('success');
         setSuccessAppId(res.data.id);
         fireConfetti();
         showToast('Membership application submitted to Super Admin!', 'success');
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error submitting application', 'error');
     } finally {
       setLoading(false);
@@ -78,6 +81,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
   };
 
   const handleResetAndClose = () => {
+    triggerHaptic('light');
     setSuccessAppId(null);
     onClose();
   };

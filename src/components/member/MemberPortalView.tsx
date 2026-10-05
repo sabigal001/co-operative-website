@@ -22,6 +22,7 @@ import {
 import { navigateToService } from '../../utils/subdomainRouter';
 import { MemberLoginView } from './MemberLoginView';
 import { CurtainPullCord } from '../common/CurtainThemeSwitch';
+import { triggerHaptic } from '../../utils/haptics';
 
 export const MemberPortalView: React.FC = () => {
   const { currentMember, logoutMember, openRegisterModal, theme, isLoggedIn } = useApp();
@@ -150,8 +151,11 @@ export const MemberPortalView: React.FC = () => {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap ${isActive
+                onClick={() => {
+                  triggerHaptic('light');
+                  setActiveTab(item.id);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap tap-spring ${isActive
                     ? 'liquid-btn-white text-black shadow-md'
                     : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                   }`}

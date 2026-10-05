@@ -3,6 +3,7 @@ import type { MemberProfile, Transaction } from '../../types';
 import { memberService } from '../../services/api/memberService';
 import { useApp } from '../../context/AppContext';
 import { ReceiptModal } from '../common/ReceiptModal';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   Search, 
   ArrowDownLeft, 
@@ -57,8 +58,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ member }
           {['all', 'deposit', 'loan_disbursement', 'loan_repayment', 'dividend'].map((type) => (
             <button
               key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+              onClick={() => {
+                triggerHaptic('light');
+                setFilterType(type);
+              }}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all tap-spring ${
                 filterType === type
                   ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-300'
@@ -153,8 +157,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ member }
 
                       <td className="py-4 px-4 text-right">
                         <button
-                          onClick={() => setSelectedReceiptTxn(t)}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-brand-500 hover:text-slate-950 text-slate-700 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white dark:hover:text-black font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5 transition-colors"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setSelectedReceiptTxn(t);
+                          }}
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-brand-500 hover:text-slate-950 text-slate-700 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white dark:hover:text-black font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5 transition-colors tap-spring"
                         >
                           <Receipt className="w-3.5 h-3.5" />
                           <span>Receipt</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { MemberProfile } from '../../types';
 import { 
   CreditCard, 
@@ -12,6 +12,7 @@ import {
   Sparkles 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface DigitalMemberCardProps {
   member: MemberProfile;
@@ -22,7 +23,41 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // 3D Interactive Card Physics Tilt State
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -12; // Max 12 deg tilt
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setTilt({ rotateX, rotateY, glareX, glareY });
+  };
+
+  const handlePointerLeave = () => {
+    setIsHovered(false);
+    setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  };
+
+  const handleFlip = () => {
+    triggerHaptic('medium');
+    setIsFlipped(!isFlipped);
+  };
+
   const copyCardId = () => {
+    triggerHaptic('success');
     navigator.clipboard.writeText(member.memberId);
     setCopied(true);
     showToast(`Copied ${member.memberId} to clipboard!`, 'success');
@@ -30,6 +65,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   };
 
   const handlePrint = () => {
+    triggerHaptic('light');
     window.print();
   };
 
@@ -38,39 +74,39 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl sm:text-2xl font-black font-display text-white">
+            <h2 className="text-xl sm:text-2xl font-black font-display text-slate-900 dark:text-white">
               Digital Membership Pass
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider liquid-glass text-emerald-400 border border-white/10">
               {member.status === 'active' ? 'Active & Verified' : 'Pending KYC'}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Cryptographically signed virtual counterpart of your physical RFID card.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Cryptographically signed virtual counterpart of your physical RFID card. Move cursor/touch to inspect holographic security foil.
           </p>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setIsFlipped(!isFlipped)}
-            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5"
+            onClick={handleFlip}
+            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
           >
-            <RotateCw className="w-3.5 h-3.5 text-slate-400" />
-            <span>{isFlipped ? 'Show Front' : 'Flip Card'}</span>
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>{isFlipped ? 'Show Front' : 'Flip Card 3D'}</span>
           </button>
 
           <button
             onClick={copyCardId}
-            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5"
+            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
           >
-            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy ID'}</span>
           </button>
 
           <button
             onClick={handlePrint}
-            className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5"
+            className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
           >
             <Printer className="w-3.5 h-3.5 text-black" />
             <span>Print Pass</span>
@@ -78,25 +114,46 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         </div>
       </div>
 
-      {/* 3D Flippable Card Container */}
-      <div className="perspective-1000 max-w-lg mx-auto">
+      {/* 3D Flippable Card Container with Interactive Tilt & Holographic Sheen */}
+      <div 
+        ref={cardRef}
+        onPointerMove={handlePointerMove}
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleFlip}
+        className="perspective-1000 max-w-lg mx-auto cursor-pointer select-none group"
+      >
         <div
-          className={`relative w-full aspect-[1.586/1] rounded-3xl transition-transform duration-700 transform-style-3d shadow-2xl ${
-            isFlipped ? 'rotate-y-180' : ''
-          }`}
+          className="relative w-full aspect-[1.586/1] rounded-3xl transform-style-3d shadow-2xl transition-transform ease-out"
           style={{
-            transformStyle: 'preserve-3d',
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+            transform: isFlipped 
+              ? `rotateY(${180 + tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`
+              : `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`,
+            transitionDuration: isHovered ? '75ms' : '500ms'
           }}
         >
           {/* ================= CARD FRONT ================= */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-br from-black via-zinc-950 to-neutral-900 border border-white/20 shadow-2xl flex flex-col justify-between"
+            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-black border border-white/20 shadow-2xl flex flex-col justify-between"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            {/* Hologram Sheen */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+            {/* Dynamic Holographic Rainbow Sheen */}
+            <div 
+              className="absolute inset-0 holo-sheen transition-opacity duration-300"
+              style={{
+                opacity: isHovered ? 0.75 : 0.3,
+                backgroundPosition: `${tilt.glareX}% ${tilt.glareY}%`
+              }}
+            />
+
+            {/* Specular Radial Light Reflection following cursor */}
+            <div 
+              className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+              style={{
+                opacity: isHovered ? 0.45 : 0,
+                background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.4) 0%, transparent 60%)`
+              }}
+            />
 
             {/* Top Bar: Brand, Logo & Status Badge */}
             <div className="flex items-center justify-between relative z-10">

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { MemberProfile } from '../../types';
 import { memberService } from '../../services/api/memberService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   User, 
   ShieldCheck, 
@@ -66,9 +67,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
       });
 
       if (res.success) {
+        triggerHaptic('success');
         showToast('Member profile and beneficiary details saved successfully!', 'success');
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error updating profile', 'error');
     } finally {
       setSaving(false);
@@ -244,8 +247,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
           {!isStandalone && (
             <button
               type="button"
-              onClick={triggerInstallPrompt}
-              className="px-4 py-2 bg-brand-500 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 shrink-0"
+              onClick={() => {
+                triggerHaptic('medium');
+                triggerInstallPrompt();
+              }}
+              className="px-4 py-2 bg-brand-500 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 shrink-0 tap-spring"
             >
               <Download className="w-4 h-4" />
               <span>Install Now</span>

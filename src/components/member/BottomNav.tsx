@@ -1,6 +1,7 @@
 import React from 'react';
 import { CreditCard, PiggyBank, Coins, Building2, User, Clock } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface BottomNavProps {
   activeTab: 'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile';
@@ -50,6 +51,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
   ] as const;
 
   const handleTabClick = (tab: typeof tabs[number]) => {
+    triggerHaptic('light');
     if (activeTab !== tab.id) {
       setActiveTab(tab.id);
       showToast(`Navigated to: ${tab.toast}`, 'info');

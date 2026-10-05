@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { LoanApplication, MemberProfile, Guarantor } from '../../types';
 import { loanService } from '../../services/api/loanService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   Coins, 
   Clock, 
@@ -92,12 +93,14 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
       );
 
       if (res.success) {
+        triggerHaptic('success');
         showToast('Loan application submitted for PA Officer vetting!', 'success');
         fireConfetti();
         setShowApplyModal(false);
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error applying for loan.', 'error');
     } finally {
       setIsSubmitting(false);
@@ -108,6 +111,7 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
   const handlePayInstallment = async (loan: LoanApplication) => {
     const nextInstallment = loan.repaymentSchedule.find((s) => s.status === 'pending');
     if (!nextInstallment) {
+      triggerHaptic('warning');
       showToast('All installments for this loan have been completed!', 'info');
       return;
     }
@@ -116,11 +120,13 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
     try {
       const res = await loanService.repayLoan(loan.id, nextInstallment.amount, member.fullName);
       if (res.success) {
+        triggerHaptic('success');
         showToast(`Paid ₦${nextInstallment.amount.toLocaleString()} for installment #${loan.id}!`, 'success');
         fireConfetti();
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Payment error', 'error');
     } finally {
       setRepayingLoanId(null);

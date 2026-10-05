@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { authService } from '../../services/api/authService';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   CreditCard, 
   CheckCircle2, 
@@ -77,6 +78,7 @@ export const RegisterCardModal: React.FC = () => {
   const handleVerifyCard = async (overrideId?: string) => {
     const idToVerify = (overrideId || cardId).trim().toUpperCase();
     if (!idToVerify) {
+      triggerHaptic('warning');
       setErrorMessage('Please enter your Physical Member ID Card number.');
       return;
     }
@@ -87,6 +89,7 @@ export const RegisterCardModal: React.FC = () => {
     try {
       const res = await authService.verifyPhysicalCardId(idToVerify);
       if (res.success && res.data.valid) {
+        triggerHaptic('success');
         setVerifiedInfo(res.data.prefill || null);
         if (res.data.prefill) {
           setFullName(res.data.prefill.fullName || '');
@@ -95,9 +98,11 @@ export const RegisterCardModal: React.FC = () => {
         }
         setStep(2);
       } else {
+        triggerHaptic('error');
         setErrorMessage(res.message || 'Verification failed. Please check the ID.');
       }
     } catch (e: any) {
+      triggerHaptic('error');
       setErrorMessage(e.message || 'Network error verifying card.');
     } finally {
       setLoading(false);
@@ -106,6 +111,7 @@ export const RegisterCardModal: React.FC = () => {
 
   // Step 2 -> Step 3: Proceed to Registration form
   const handleProceedToAccount = () => {
+    triggerHaptic('selection');
     setStep(3);
   };
 
@@ -113,6 +119,7 @@ export const RegisterCardModal: React.FC = () => {
   const handleSubmitAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !phone || !password) {
+      triggerHaptic('warning');
       setErrorMessage('Please fill in email, phone, and secure password.');
       return;
     }
@@ -122,8 +129,10 @@ export const RegisterCardModal: React.FC = () => {
     try {
       // Simulate submission and move to OTP
       await new Promise((r) => setTimeout(r, 600));
+      triggerHaptic('selection');
       setStep(4);
     } catch (err: any) {
+      triggerHaptic('error');
       setErrorMessage(err.message || 'Error creating account.');
     } finally {
       setLoading(false);
@@ -133,6 +142,7 @@ export const RegisterCardModal: React.FC = () => {
   // Step 4: Verify OTP and Activate
   const handleVerifyOtp = async () => {
     if (!otpCode || otpCode.length < 6) {
+      triggerHaptic('warning');
       setErrorMessage('Please enter a 6-digit verification code.');
       return;
     }
@@ -143,6 +153,7 @@ export const RegisterCardModal: React.FC = () => {
     try {
       const otpRes = await authService.verifyOtp(otpCode);
       if (!otpRes.success) {
+        triggerHaptic('error');
         setErrorMessage(otpRes.message);
         setLoading(false);
         return;
@@ -168,6 +179,7 @@ export const RegisterCardModal: React.FC = () => {
       });
 
       if (regRes.success && regRes.data) {
+        triggerHaptic('success');
         loginMember(regRes.data);
         fireConfetti();
         showToast('Physical Card Activated! Welcome to Mosunmola Cooperative.', 'success');
@@ -177,15 +189,18 @@ export const RegisterCardModal: React.FC = () => {
         // If already existing, just log in
         const loginRes = await authService.loginMember(cardId);
         if (loginRes.success) {
+          triggerHaptic('success');
           loginMember(loginRes.data);
           fireConfetti();
           closeRegisterModal();
           setCurrentPortal('member');
         } else {
+          triggerHaptic('error');
           setErrorMessage(regRes.message || 'Failed to complete activation.');
         }
       }
     } catch (err: any) {
+      triggerHaptic('error');
       setErrorMessage(err.message || 'Verification error.');
     } finally {
       setLoading(false);
@@ -218,8 +233,11 @@ export const RegisterCardModal: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={closeRegisterModal}
-            className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/5 transition-colors"
+            onClick={() => {
+              triggerHaptic('light');
+              closeRegisterModal();
+            }}
+            className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/5 transition-colors tap-spring"
           >
             <X className="w-5 h-5" />
           </button>

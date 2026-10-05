@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Transaction } from '../../types';
 import { X, Printer, Download, CheckCircle2, ShieldCheck, QrCode } from 'lucide-react';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface ReceiptModalProps {
   transaction: Transaction | null;
@@ -8,13 +9,21 @@ interface ReceiptModalProps {
 }
 
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose }) => {
+  useEffect(() => {
+    if (transaction) {
+      triggerHaptic('success');
+    }
+  }, [transaction]);
+
   if (!transaction) return null;
 
   const handlePrint = () => {
+    triggerHaptic('light');
     window.print();
   };
 
   const handleDownload = () => {
+    triggerHaptic('light');
     window.print(); // Browser allows saving directly to PDF
   };
 
@@ -142,8 +151,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
               </div>
             </div>
 
-            {/* Simulated Rubber Stamp */}
-            <div className="border-2 border-dashed border-brand-600 rounded-xl p-2 text-center text-brand-700 rotate-[-6deg] opacity-90">
+            {/* Simulated Rubber Stamp with Kinetic Drop Motion */}
+            <div className="border-2 border-dashed border-brand-600 rounded-xl p-2 text-center text-brand-700 rotate-[-6deg] opacity-90 animate-stamp-drop origin-center shadow-xs">
               <span className="text-[9px] uppercase font-black tracking-widest block">MOSUNMOLA COOP</span>
               <span className="text-[11px] font-black block">TREASURY AUDITED</span>
               <span className="text-[8px] font-mono block">DATE: {transaction.date.split(' ')[0]}</span>

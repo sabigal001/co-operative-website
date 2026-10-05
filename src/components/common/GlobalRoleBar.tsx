@@ -2,6 +2,7 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import type { AdminRole } from '../../types';
 import { ShieldCheck, Coins, UserCheck, Eye, Layers } from 'lucide-react';
+import { triggerHaptic } from '../../utils/haptics';
 
 export const GlobalRoleBar: React.FC = () => {
   const { 
@@ -56,12 +57,13 @@ export const GlobalRoleBar: React.FC = () => {
                 <button
                   key={item.role}
                   onClick={() => {
+                    triggerHaptic('medium');
                     setActiveAdminRole(item.role);
                     if (currentPortal !== 'admin') {
                       setCurrentPortal('admin');
                     }
                   }}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-all ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-all tap-spring ${
                     isActive
                       ? 'liquid-btn-white text-black shadow-sm font-bold scale-[1.02]'
                       : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'

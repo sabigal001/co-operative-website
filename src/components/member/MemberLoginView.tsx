@@ -12,6 +12,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { authService } from '../../services/api/authService';
 import { navigateToService } from '../../utils/subdomainRouter';
+import { triggerHaptic } from '../../utils/haptics';
 
 export const MemberLoginView: React.FC = () => {
   const { loginMember, openRegisterModal, showToast } = useApp();
@@ -23,6 +24,7 @@ export const MemberLoginView: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier.trim()) {
+      triggerHaptic('warning');
       setErrorMessage('Please enter your Membership Card ID or registered email.');
       return;
     }
@@ -33,12 +35,15 @@ export const MemberLoginView: React.FC = () => {
     try {
       const res = await authService.loginMember(identifier, pin);
       if (res.success && res.data) {
+        triggerHaptic('success');
         loginMember(res.data);
       } else {
+        triggerHaptic('error');
         setErrorMessage(res.message || 'Invalid credentials. Please verify your Card ID.');
         showToast(res.message || 'Login failed', 'error');
       }
     } catch {
+      triggerHaptic('error');
       setErrorMessage('Failed to sign in. Please try again.');
     } finally {
       setIsLoading(false);
@@ -46,10 +51,12 @@ export const MemberLoginView: React.FC = () => {
   };
 
   const handleQuickDemoLogin = async () => {
+    triggerHaptic('medium');
     setIsLoading(true);
     setErrorMessage('');
     const res = await authService.loginMember('MCS-2026-8942', '8942');
     if (res.data) {
+      triggerHaptic('success');
       loginMember(res.data);
     }
     setIsLoading(false);
@@ -197,8 +204,11 @@ export const MemberLoginView: React.FC = () => {
               </span>
               <button
                 type="button"
-                onClick={() => openRegisterModal()}
-                className="liquid-btn liquid-btn-default w-full py-2 text-xs rounded-xl"
+                onClick={() => {
+                  triggerHaptic('light');
+                  openRegisterModal();
+                }}
+                className="liquid-btn liquid-btn-default w-full py-2 text-xs rounded-xl tap-spring"
               >
                 <Sparkles className="w-3 h-3 text-emerald-500" />
                 <span>Activate Newly Issued Physical Card</span>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { DepositSubmission, LoanApplication, PayoutRequest } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   Coins, 
   ArrowUpRight, 
@@ -49,11 +50,13 @@ export const TreasurerView: React.FC = () => {
     try {
       const res = await adminService.approveDeposit(depositId, currentAdmin.name);
       if (res.success) {
+        triggerHaptic('success');
         showToast(res.message, 'success');
         fireConfetti();
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error approving deposit', 'error');
     }
   };
@@ -63,10 +66,12 @@ export const TreasurerView: React.FC = () => {
     try {
       const res = await adminService.rejectDeposit(depositId, 'Invalid bank transaction reference or uncredited NIP transfer', currentAdmin.name);
       if (res.success) {
+        triggerHaptic('warning');
         showToast(res.message, 'info');
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error rejecting deposit', 'error');
     }
   };
@@ -76,11 +81,13 @@ export const TreasurerView: React.FC = () => {
     try {
       const res = await adminService.disburseLoan(loanId, currentAdmin.name);
       if (res.success) {
+        triggerHaptic('success');
         showToast(res.message, 'success');
         fireConfetti();
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error releasing disbursement', 'error');
     }
   };
@@ -90,11 +97,13 @@ export const TreasurerView: React.FC = () => {
     try {
       const res = await adminService.approvePayout(payoutId, currentAdmin.name);
       if (res.success) {
+        triggerHaptic('success');
         showToast(res.message, 'success');
         fireConfetti();
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error approving payout', 'error');
     }
   };

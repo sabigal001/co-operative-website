@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { MemberProfile, SavingsAccount, TargetPlan } from '../../types';
 import { savingsService } from '../../services/api/savingsService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   PiggyBank, 
   TrendingUp, 
@@ -74,6 +75,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
   const handleDepositSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (depositAmount <= 0) {
+      triggerHaptic('error');
       showToast('Please enter a valid deposit amount.', 'error');
       return;
     }
@@ -91,11 +93,13 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       );
 
       if (res.success) {
+        triggerHaptic('success');
         showToast('Payment proof submitted to the Treasurer for authorization!', 'success');
         setShowDepositModal(false);
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error submitting deposit.', 'error');
     } finally {
       setIsSubmitting(false);
@@ -106,6 +110,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
   const handleCreatePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!planTitle || planTarget <= 0) {
+      triggerHaptic('error');
       showToast('Please specify a title and target amount.', 'error');
       return;
     }
@@ -127,6 +132,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       });
 
       if (res.success) {
+        triggerHaptic('success');
         showToast(res.message, 'success');
         fireConfetti();
         setShowNewPlanModal(false);
@@ -134,6 +140,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error creating plan.', 'error');
     } finally {
       setIsSubmitting(false);
@@ -156,11 +163,13 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       );
 
       if (res.success) {
+        triggerHaptic('warning');
         showToast('Withdrawal request submitted to the Treasurer.', 'success');
         setShowWithdrawModal(false);
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error submitting withdrawal.', 'error');
     } finally {
       setIsSubmitting(false);

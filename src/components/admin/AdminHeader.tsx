@@ -4,6 +4,7 @@ import { ShieldCheck, Coins, UserCheck, ExternalLink, CreditCard } from 'lucide-
 import type { SystemMetrics } from '../../types';
 import { navigateToService } from '../../utils/subdomainRouter';
 import { CurtainPullCord } from '../common/CurtainThemeSwitch';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface AdminHeaderProps {
   metrics: SystemMetrics | null;
@@ -110,24 +111,33 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
           <div className="liquid-glass p-1.5 rounded-2xl border border-white/10 shadow-inner flex flex-wrap items-center gap-1 text-xs">
             <span className="text-[10px] font-mono text-slate-400 uppercase px-2">Role Switch:</span>
             <button
-              onClick={() => setActiveAdminRole('master_admin')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                triggerHaptic('medium');
+                setActiveAdminRole('master_admin');
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
                 activeAdminRole === 'master_admin' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
               }`}
             >
               Master Admin
             </button>
             <button
-              onClick={() => setActiveAdminRole('treasurer')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                triggerHaptic('medium');
+                setActiveAdminRole('treasurer');
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
                 activeAdminRole === 'treasurer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
               }`}
             >
               Treasurer
             </button>
             <button
-              onClick={() => setActiveAdminRole('pa_officer')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                triggerHaptic('medium');
+                setActiveAdminRole('pa_officer');
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
                 activeAdminRole === 'pa_officer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
               }`}
             >

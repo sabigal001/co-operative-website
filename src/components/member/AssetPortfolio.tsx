@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface AssetPortfolioProps {
   member: MemberProfile;
@@ -111,8 +112,11 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
                 </div>
 
                 <button
-                  onClick={() => setSelectedCert(inv)}
-                  className="px-3.5 py-2 bg-slate-100 dark:bg-white/10 hover:bg-brand-500 hover:text-slate-950 dark:hover:bg-brand-500 dark:hover:text-black text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors"
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setSelectedCert(inv);
+                  }}
+                  className="px-3.5 py-2 bg-slate-100 dark:bg-white/10 hover:bg-brand-500 hover:text-slate-950 dark:hover:bg-brand-500 dark:hover:text-black text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors tap-spring"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>View Deed Slip</span>
@@ -174,10 +178,11 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
 
                   <button
                     onClick={() => {
+                      triggerHaptic('success');
                       showToast(`Subscribed for allocation inquiry in ${asset.title}. Secretariat will call you.`, 'success');
                       fireConfetti();
                     }}
-                    className="w-full py-2.5 bg-slate-900 dark:bg-brand-500 hover:bg-brand-500 dark:hover:bg-brand-400 hover:text-slate-950 dark:text-black text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2.5 bg-slate-900 dark:bg-brand-500 hover:bg-brand-500 dark:hover:bg-brand-400 hover:text-slate-950 dark:text-black text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors tap-spring"
                   >
                     <span>Subscribe to Units</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -194,7 +199,10 @@ export const AssetPortfolio: React.FC<AssetPortfolioProps> = ({ member }) => {
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-black text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-8 border border-slate-200 dark:border-white/15 shadow-2xl relative animate-slide-up">
             <button
-              onClick={() => setSelectedCert(null)}
+              onClick={() => {
+                triggerHaptic('light');
+                setSelectedCert(null);
+              }}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 dark:hover:text-white p-1"
             >
               <X className="w-5 h-5" />

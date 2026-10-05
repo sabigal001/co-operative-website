@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Calculator, TrendingUp, Coins, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { navigateToService } from '../../utils/subdomainRouter';
+import { triggerHaptic } from '../../utils/haptics';
 
 export const CalculatorSection: React.FC = () => {
   const { setCurrentPortal } = useApp();
@@ -51,8 +52,11 @@ export const CalculatorSection: React.FC = () => {
         <div className="flex justify-center mb-8">
           <div className="liquid-glass p-1 rounded-full border border-slate-200 dark:border-white/15 flex items-center shadow-lg">
             <button
-              onClick={() => setActiveTab('savings')}
-              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
+              onClick={() => {
+                triggerHaptic('light');
+                setActiveTab('savings');
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all tap-spring ${
                 activeTab === 'savings'
                   ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
@@ -63,8 +67,11 @@ export const CalculatorSection: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setActiveTab('loan')}
-              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
+              onClick={() => {
+                triggerHaptic('light');
+                setActiveTab('loan');
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all tap-spring ${
                 activeTab === 'loan'
                   ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
@@ -99,7 +106,10 @@ export const CalculatorSection: React.FC = () => {
                     max="1000000"
                     step="10000"
                     value={monthlyDeposit}
-                    onChange={(e) => setMonthlyDeposit(Number(e.target.value))}
+                    onChange={(e) => {
+                      triggerHaptic('selection');
+                      setMonthlyDeposit(Number(e.target.value));
+                    }}
                     className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
@@ -125,7 +135,10 @@ export const CalculatorSection: React.FC = () => {
                     max="36"
                     step="3"
                     value={savingsMonths}
-                    onChange={(e) => setSavingsMonths(Number(e.target.value))}
+                    onChange={(e) => {
+                      triggerHaptic('selection');
+                      setSavingsMonths(Number(e.target.value));
+                    }}
                     className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
@@ -176,8 +189,11 @@ export const CalculatorSection: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => navigateToService('members')}
-                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2"
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    navigateToService('members');
+                  }}
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
                 >
                   <span>Start This Savings Goal</span>
                   <ArrowRight className="w-3.5 h-3.5 text-black" />
@@ -205,7 +221,10 @@ export const CalculatorSection: React.FC = () => {
                     max="5000000"
                     step="50000"
                     value={loanAmount}
-                    onChange={(e) => setLoanAmount(Number(e.target.value))}
+                    onChange={(e) => {
+                      triggerHaptic('selection');
+                      setLoanAmount(Number(e.target.value));
+                    }}
                     className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
@@ -231,7 +250,10 @@ export const CalculatorSection: React.FC = () => {
                     max="12"
                     step="1"
                     value={loanTenureMonths}
-                    onChange={(e) => setLoanTenureMonths(Number(e.target.value))}
+                    onChange={(e) => {
+                      triggerHaptic('selection');
+                      setLoanTenureMonths(Number(e.target.value));
+                    }}
                     className="w-full accent-emerald-500 h-2 bg-slate-200 dark:bg-slate-800 rounded-lg cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
@@ -283,8 +305,11 @@ export const CalculatorSection: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => navigateToService('members')}
-                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2"
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    navigateToService('members');
+                  }}
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
                 >
                   <span>Apply for This Loan</span>
                   <ArrowRight className="w-3.5 h-3.5 text-black" />

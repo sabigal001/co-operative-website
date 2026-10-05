@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { LoanApplication, MemberProfile } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   UserCheck, 
   Search, 
@@ -46,11 +47,13 @@ export const PaOfficerView: React.FC = () => {
     try {
       const res = await adminService.verifyMemberKyc(memberId, verified, currentAdmin.name);
       if (res.success) {
+        triggerHaptic(verified ? 'success' : 'warning');
         showToast(res.message, verified ? 'success' : 'info');
         if (verified) fireConfetti();
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error processing KYC', 'error');
     }
   };
@@ -68,6 +71,7 @@ export const PaOfficerView: React.FC = () => {
       );
 
       if (res.success) {
+        triggerHaptic(approved ? 'success' : 'warning');
         showToast(res.message, approved ? 'success' : 'info');
         if (approved) fireConfetti();
         setActiveVettingLoan(null);
@@ -75,6 +79,7 @@ export const PaOfficerView: React.FC = () => {
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error vetting loan', 'error');
     }
   };
@@ -84,10 +89,12 @@ export const PaOfficerView: React.FC = () => {
     try {
       const res = await adminService.issuePickupSlip(memberId, currentAdmin.name);
       if (res.success) {
+        triggerHaptic('success');
         showToast(`Pickup Slip Generated: ${res.data.slipCode}. Member notified!`, 'success');
         refreshData();
       }
     } catch (err: any) {
+      triggerHaptic('error');
       showToast(err.message || 'Error generating slip', 'error');
     }
   };

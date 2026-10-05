@@ -7,6 +7,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { navigateToService } from '../../utils/subdomainRouter';
+import { StatCounter } from '../common/StatCounter';
 
 interface HeroSectionProps {
   onOpenApplyModal: () => void;
@@ -92,22 +93,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
               </span>
             </div>
 
-            {/* Credibility Stats Bar */}
+            {/* Credibility Stats Bar with Viewport Animated Counters */}
             <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0 border-t border-slate-200 dark:border-white/10 text-left">
               <div>
-                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">14,850+</span>
+                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">
+                  <StatCounter end={14850} suffix="+" duration={1800} />
+                </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Active Members</span>
               </div>
               <div>
-                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">₦3.2B+</span>
+                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">
+                  ₦<StatCounter end={3.2} decimals={1} suffix="B+" duration={2000} />
+                </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Managed Assets</span>
               </div>
               <div>
-                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">5.0%</span>
+                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">
+                  <StatCounter end={5.0} decimals={1} suffix="%" duration={1600} />
+                </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Flat Loan Rate</span>
               </div>
               <div>
-                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">18.5%</span>
+                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">
+                  <StatCounter end={18.5} decimals={1} suffix="%" duration={2200} />
+                </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Target Yield</span>
               </div>
             </div>

@@ -348,3 +348,87 @@
     display: none !important;
   }
 }
+
+/* ================= MOTION DESIGN & KINETIC UTILITIES ================= */
+
+/* 1. 3D Card Flipping & Depth Perspective */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* 2. Holographic Card Iridescent Sheen */
+.holo-sheen {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(0, 200, 83, 0.15) 50%,
+    rgba(147, 51, 234, 0.12) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 200%;
+  pointer-events: none;
+}
+
+/* 3. Official Receipt Rubber Stamp Impact Motion */
+@keyframes stampDrop {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-15deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-5deg);
+  }
+  80% {
+    transform: scale(1.04) rotate(-7deg);
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1) rotate(-6deg);
+  }
+}
+
+.animate-stamp-drop {
+  animation: stampDrop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 4. Liquid Glass Border Shimmer Flow */
+@keyframes liquidBorderShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-border-shine {
+  background-size: 300% 300%;
+  animation: liquidBorderShine 6s ease infinite;
+}
+
+/* 5. Smooth spring scale on tap for mobile / desktop interactive elements */
+.tap-spring {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tap-spring:active {
+  transform: scale(0.96);
+}
