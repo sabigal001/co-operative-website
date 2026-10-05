@@ -3,6 +3,7 @@ import type { LoanApplication, MemberProfile } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
+import { FluidPillBar } from '../common/FluidPillBar';
 import { 
   UserCheck, 
   Search, 
@@ -119,40 +120,28 @@ export const PaOfficerView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
-          <button
-            onClick={() => setActiveTab('kyc')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'kyc' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>KYC & Document Verification ({members.filter((m) => !m.kycVerified).length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('vetting')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'vetting' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <FileCheck className="w-4 h-4" />
-            <span>Loan Application Vetting ({loansForVetting.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('registry')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'registry' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>Member Support Registry</span>
-          </button>
-        </div>
-      </div>
+      {/* Sliding Fluid Pill Tabs */}
+      <FluidPillBar
+        tabs={[
+          {
+            id: 'kyc',
+            label: `KYC & Document Verification (${members.filter((m) => !m.kycVerified).length})`,
+            icon: <ShieldCheck className="w-4 h-4" />
+          },
+          {
+            id: 'vetting',
+            label: `Loan Application Vetting (${loansForVetting.length})`,
+            icon: <FileCheck className="w-4 h-4" />
+          },
+          {
+            id: 'registry',
+            label: 'Member Support Registry',
+            icon: <Users className="w-4 h-4" />
+          }
+        ]}
+        activeId={activeTab}
+        onChange={(id) => setActiveTab(id as any)}
+      />
 
       {/* ================= TAB 1: KYC VERIFICATION ================= */}
       {activeTab === 'kyc' && (

@@ -4,6 +4,100 @@ import { Calculator, TrendingUp, Coins, Sparkles, ArrowRight, ShieldCheck, Check
 import { navigateToService } from '../../utils/subdomainRouter';
 import { triggerHaptic } from '../../utils/haptics';
 
+interface KineticGaugeProps {
+  ratio: number;
+  title: string;
+  centerLabel: string;
+  centerValue: string;
+  colorGradient: 'emerald' | 'amber';
+}
+
+const KineticGauge: React.FC<KineticGaugeProps> = ({
+  ratio,
+  title,
+  centerLabel,
+  centerValue,
+  colorGradient
+}) => {
+  const arcLength = 220;
+  const clampedRatio = Math.min(Math.max(ratio, 0.05), 1);
+  const strokeOffset = arcLength * (1 - clampedRatio);
+  
+  // Point on semicircle (100, 92), r=70. Angle goes from PI (left) to 0 (right)
+  const angle = Math.PI - (Math.PI * clampedRatio);
+  const tipX = 100 + 70 * Math.cos(angle);
+  const tipY = 92 - 70 * Math.sin(angle);
+
+  return (
+    <div className="relative flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50/70 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 mb-4 overflow-hidden">
+      <div className="w-full flex items-center justify-between text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5 px-1">
+        <span>{title}</span>
+        <span className={colorGradient === 'emerald' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-bold'}>
+          {Math.round(clampedRatio * 100)}% Velocity
+        </span>
+      </div>
+      <svg viewBox="0 0 200 102" className="w-48 h-24 overflow-visible">
+        <defs>
+          <linearGradient id={`gaugeGrad-${colorGradient}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            {colorGradient === 'emerald' ? (
+              <>
+                <stop offset="0%" stopColor="#059669" />
+                <stop offset="60%" stopColor="#10B981" />
+                <stop offset="100%" stopColor="#34D399" />
+              </>
+            ) : (
+              <>
+                <stop offset="0%" stopColor="#D97706" />
+                <stop offset="60%" stopColor="#F59E0B" />
+                <stop offset="100%" stopColor="#FBBF24" />
+              </>
+            )}
+          </linearGradient>
+        </defs>
+        {/* Background Track Arc */}
+        <path
+          d="M 30 92 A 70 70 0 0 1 170 92"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="9"
+          strokeLinecap="round"
+          className="text-slate-200 dark:text-white/10"
+        />
+        {/* Dynamic Animated Progress Arc */}
+        <path
+          d="M 30 92 A 70 70 0 0 1 170 92"
+          fill="none"
+          stroke={`url(#gaugeGrad-${colorGradient})`}
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeDasharray={arcLength}
+          strokeDashoffset={strokeOffset}
+          style={{ transition: 'stroke-dashoffset 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        />
+        {/* Glowing Tip Needle Bead */}
+        <circle
+          cx={tipX}
+          cy={tipY}
+          r="5.5"
+          fill="#FFFFFF"
+          stroke={colorGradient === 'emerald' ? '#059669' : '#D97706'}
+          strokeWidth="2.5"
+          className="drop-shadow-md transition-all duration-300 ease-out"
+        />
+      </svg>
+      {/* Central Metric Readout */}
+      <div className="-mt-7 text-center">
+        <span className="text-[10px] font-mono text-slate-400 block">{centerLabel}</span>
+        <span className={`text-xs font-black font-display tracking-tight ${
+          colorGradient === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+        }`}>
+          {centerValue}
+        </span>
+      </div>
+    </div>
+  );
+};
+
 export const CalculatorSection: React.FC = () => {
   const { setCurrentPortal } = useApp();
 
@@ -18,6 +112,7 @@ export const CalculatorSection: React.FC = () => {
   const totalPrincipalSaved = monthlyDeposit * savingsMonths;
   const estimatedDividend = Math.round(totalPrincipalSaved * (annualDividendRate / 100) * (savingsMonths / 12));
   const totalSavingsPayout = totalPrincipalSaved + estimatedDividend;
+  const savingsRatio = Math.min(Math.max((monthlyDeposit / 1000000) * 0.6 + (savingsMonths / 36) * 0.4, 0.08), 1);
 
   // Loan Calculator State
   const [loanAmount, setLoanAmount] = useState<number>(750000);
@@ -28,6 +123,8 @@ export const CalculatorSection: React.FC = () => {
   const totalInterest = Math.round(loanAmount * (flatInterestRate / 100) * (loanTenureMonths / 12));
   const totalLoanRepayment = loanAmount + totalInterest;
   const monthlyLoanRepayment = Math.round(totalLoanRepayment / loanTenureMonths);
+  // Fluid animated ratio directly reflecting monthly repayment and tenure duration
+  const loanRatio = Math.min(Math.max((monthlyLoanRepayment / 500000) * 0.65 + (loanTenureMonths / 12) * 0.35, 0.08), 1);
 
   return (
     <section id="calculator" className="py-20 lg:py-28 bg-white dark:bg-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 relative transition-colors duration-300">
@@ -48,21 +145,28 @@ export const CalculatorSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Tab Switcher Pills */}
+        {/* Tab Switcher Pills with Sliding Fluid Pill */}
         <div className="flex justify-center mb-8">
-          <div className="liquid-glass p-1 rounded-full border border-slate-200 dark:border-white/15 flex items-center shadow-lg">
+          <div className="liquid-glass p-1 rounded-full border border-slate-200 dark:border-white/15 flex items-center shadow-lg relative overflow-hidden">
+            {/* Sliding Fluid Backdrop Pill */}
+            <div 
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-slate-900 text-white dark:bg-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-md ${
+                activeTab === 'savings' ? 'left-1' : 'left-[calc(50%+2px)]'
+              }`}
+            />
+
             <button
               onClick={() => {
                 triggerHaptic('light');
                 setActiveTab('savings');
               }}
-              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all tap-spring ${
+              className={`relative z-10 px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors tap-spring ${
                 activeTab === 'savings'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
+                  ? 'text-white dark:text-black font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+              <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'savings' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
               <span>Target Savings & Thrift ROI</span>
             </button>
 
@@ -71,13 +175,13 @@ export const CalculatorSection: React.FC = () => {
                 triggerHaptic('light');
                 setActiveTab('loan');
               }}
-              className={`px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all tap-spring ${
+              className={`relative z-10 px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors tap-spring ${
                 activeTab === 'loan'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm font-black'
+                  ? 'text-white dark:text-black font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <Coins className="w-3.5 h-3.5 text-emerald-500" />
+              <Coins className={`w-3.5 h-3.5 ${activeTab === 'loan' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
               <span>Low-Interest Member Loan</span>
             </button>
           </div>
@@ -160,7 +264,16 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Yield Card Summary */}
-              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-5">
+                {/* Kinetic Animated Arc Gauge */}
+                <KineticGauge
+                  ratio={savingsRatio}
+                  title={`Thrift Velocity (${savingsMonths} Mo)`}
+                  centerLabel="Est. Dividend Bonus"
+                  centerValue={`+₦${estimatedDividend.toLocaleString()} (${annualDividendRate}%)`}
+                  colorGradient="emerald"
+                />
+
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                     Projected Maturity Payout
@@ -275,7 +388,16 @@ export const CalculatorSection: React.FC = () => {
               </div>
 
               {/* Repayment Card Summary */}
-              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-5 liquid-glass-card p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col justify-between space-y-5">
+                {/* Kinetic Animated Arc Gauge */}
+                <KineticGauge
+                  ratio={loanRatio}
+                  title={`Repayment & Tenure Arc (${loanTenureMonths} Mo)`}
+                  centerLabel="Monthly Repayment"
+                  centerValue={`₦${monthlyLoanRepayment.toLocaleString()}/mo`}
+                  colorGradient="amber"
+                />
+
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                     Monthly Installment

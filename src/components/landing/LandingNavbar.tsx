@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Menu,
   X,
@@ -9,6 +9,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { navigateToService } from '../../utils/subdomainRouter';
 import { CurtainPullCord } from '../common/CurtainThemeSwitch';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface LandingNavbarProps {
   onOpenApplyModal: () => void;
@@ -16,12 +17,28 @@ interface LandingNavbarProps {
 
 export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
-      {/* Floating Liquid Glassmorphism Header */}
-      <header className="sticky top-3 sm:top-5 z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full transition-all">
-        <div className="liquid-glass rounded-3xl sm:rounded-full px-4 sm:px-6 py-2.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] flex items-center justify-between text-slate-900 dark:text-white transition-all">
+      {/* Floating Liquid Glassmorphism Header with Dynamic Backdrop Shrink */}
+      <header className={`sticky z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full transition-all duration-300 ${
+        scrolled ? 'top-2 sm:top-3' : 'top-3 sm:top-5'
+      }`}>
+        <div className={`liquid-glass rounded-3xl sm:rounded-full flex items-center justify-between text-slate-900 dark:text-white transition-all duration-300 ${
+          scrolled
+            ? 'px-4 sm:px-6 py-2 sm:py-2.5 backdrop-blur-3xl bg-white/95 dark:bg-black/95 shadow-2xl border-slate-300 dark:border-white/20'
+            : 'px-4 sm:px-6 py-3 sm:py-3.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]'
+        }`}>
 
           {/* Brand Logo & Name (No 'COOP' badge) */}
           <a href="/" className="flex items-center gap-2.5 group">

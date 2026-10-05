@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 import { 
   PiggyBank, 
   Coins, 
@@ -14,6 +15,26 @@ import {
 
 export const ProductOfferings: React.FC = () => {
   const { openRegisterModal, setCurrentPortal } = useApp();
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const products = [
     {
@@ -90,12 +111,20 @@ export const ProductOfferings: React.FC = () => {
     }
   ];
 
+  const delays = ['delay-100', 'delay-200', 'delay-300', 'delay-[400ms]'];
+
   return (
-    <section id="products" className="py-20 lg:py-28 dark:bg-black bg-white dark:text-white text-slate-900 border-b dark:border-white/10 border-slate-200 relative transition-colors duration-300">
+    <section 
+      id="products" 
+      ref={sectionRef}
+      className="py-20 lg:py-28 dark:bg-black bg-white dark:text-white text-slate-900 border-b dark:border-white/10 border-slate-200 relative transition-colors duration-300"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+        <div className={`text-center max-w-3xl mx-auto mb-16 space-y-4 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+        }`}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full liquid-glass border dark:border-white/10 border-slate-200 dark:text-white text-slate-900 text-xs font-semibold uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
@@ -110,12 +139,14 @@ export const ProductOfferings: React.FC = () => {
           </p>
         </div>
 
-        {/* 4 Cards Grid */}
+        {/* 4 Cards Grid - Staggered Cascade Scroll-Driven Entrance */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {products.map((p) => (
+          {products.map((p, idx) => (
             <div
               key={p.id}
-              className="liquid-glass-card rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl hover:border-emerald-500/30 transition-all"
+              className={`liquid-glass-card rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl hover:border-emerald-500/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${delays[idx % 4]} ${
+                isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.98]'
+              }`}
             >
               {p.highlight && (
                 <div className="absolute top-0 right-0 dark:bg-white bg-slate-900 dark:text-black text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-bl-xl shadow-md border-b border-l dark:border-white/20 border-slate-700">
@@ -144,8 +175,8 @@ export const ProductOfferings: React.FC = () => {
                 </p>
 
                 <div className="space-y-2 mb-6">
-                  {p.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs dark:text-slate-300 text-slate-700">
+                  {p.features.map((feat, fIdx) => (
+                    <div key={fIdx} className="flex items-start gap-2 text-xs dark:text-slate-300 text-slate-700">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
@@ -156,13 +187,14 @@ export const ProductOfferings: React.FC = () => {
               <div>
                 <button
                   onClick={() => {
+                    triggerHaptic('medium');
                     if (p.id === 'savings' || p.id === 'loans') {
                       setCurrentPortal('member');
                     } else {
                       openRegisterModal();
                     }
                   }}
-                  className="liquid-btn liquid-btn-white text-black font-bold w-full py-2.5"
+                  className="liquid-btn liquid-btn-white text-black font-bold w-full py-2.5 tap-spring"
                 >
                   <span>{p.cta}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-black" />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { CreditCard, QrCode, ShieldCheck, ArrowRight, UserPlus } from 'lucide-react';
 import { navigateToService } from '../../utils/subdomainRouter';
 
@@ -7,6 +7,29 @@ interface PhysicalCardBannerProps {
 }
 
 export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenApplyModal }) => {
+  // 3D Interactive Card Physics Tilt State
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -14;
+    const rotateY = ((x - centerX) / centerX) * 14;
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+    setTilt({ rotateX, rotateY, glareX, glareY });
+  };
+
+  const handlePointerLeave = () => {
+    setIsHovered(false);
+    setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  };
 
   const steps = [
     {
@@ -96,12 +119,39 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
               </div>
             </div>
 
-            {/* Right Graphic: Physical Card Render in Sleek Black & Minimal Emerald */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-sm rounded-3xl p-0.5 liquid-glass-card border border-white/20 shadow-2xl">
+            {/* Right Graphic: Interactive 3D RFID Card Tilt Render */}
+            <div className="lg:col-span-5 flex justify-center perspective-1000">
+              <div 
+                ref={cardRef}
+                onPointerMove={handlePointerMove}
+                onPointerEnter={() => setIsHovered(true)}
+                onPointerLeave={handlePointerLeave}
+                className="w-full max-w-sm rounded-3xl p-0.5 liquid-glass-card border border-white/20 shadow-2xl transition-transform ease-out cursor-pointer select-none"
+                style={{
+                  transform: `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`,
+                  transitionDuration: isHovered ? '75ms' : '500ms'
+                }}
+              >
                 <div className="bg-[#101010]/95 rounded-[22px] p-6 space-y-5 text-white relative overflow-hidden border border-white/10">
+                  {/* Dynamic Holographic Rainbow Sheen */}
+                  <div 
+                    className="absolute inset-0 holo-sheen transition-opacity duration-300"
+                    style={{
+                      opacity: isHovered ? 0.75 : 0.3,
+                      backgroundPosition: `${tilt.glareX}% ${tilt.glareY}%`
+                    }}
+                  />
+
+                  {/* Specular Radial Glare */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                    style={{
+                      opacity: isHovered ? 0.45 : 0,
+                      background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.4) 0%, transparent 60%)`
+                    }}
+                  />
                   
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start relative z-10">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm" />
@@ -114,16 +164,16 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                     </div>
                   </div>
 
-                  <div className="w-10 h-7 rounded bg-gradient-to-r from-amber-400 to-amber-600 p-1 flex flex-col justify-around shadow-sm">
+                  <div className="w-10 h-7 rounded bg-gradient-to-r from-amber-400 to-amber-600 p-1 flex flex-col justify-around shadow-sm relative z-10">
                     <div className="h-0.5 bg-black/40 w-full" />
                     <div className="h-0.5 bg-black/40 w-full" />
                   </div>
 
-                  <div className="font-mono text-xl font-bold tracking-widest text-center py-2 bg-black/80 rounded-xl border border-white/10 text-white shadow-inner">
+                  <div className="font-mono text-xl font-bold tracking-widest text-center py-2 bg-black/80 rounded-xl border border-white/10 text-white shadow-inner relative z-10">
                     MCS-2026-8942
                   </div>
 
-                  <div className="flex justify-between items-end text-xs">
+                  <div className="flex justify-between items-end text-xs relative z-10">
                     <div>
                       <span className="text-[9px] text-slate-400 block uppercase">Member Name</span>
                       <span className="font-bold text-white">CHIEF ADELEKE BALOGUN</span>
@@ -133,7 +183,7 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                     </div>
                   </div>
 
-                  <div className="text-[9px] text-center text-slate-400 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5">
+                  <div className="text-[9px] text-center text-slate-400 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5 relative z-10">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Lagos State Registered Society LSCS/2018/8941</span>
                   </div>

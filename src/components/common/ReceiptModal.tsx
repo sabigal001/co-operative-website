@@ -152,10 +152,12 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ transaction, onClose
             </div>
 
             {/* Simulated Rubber Stamp with Kinetic Drop Motion */}
-            <div className="border-2 border-dashed border-brand-600 rounded-xl p-2 text-center text-brand-700 rotate-[-6deg] opacity-90 animate-stamp-drop origin-center shadow-xs">
-              <span className="text-[9px] uppercase font-black tracking-widest block">MOSUNMOLA COOP</span>
-              <span className="text-[11px] font-black block">TREASURY AUDITED</span>
-              <span className="text-[8px] font-mono block">DATE: {transaction.date.split(' ')[0]}</span>
+            <div className="relative p-2.5 rounded-xl border-2 border-emerald-700/90 text-emerald-800 text-center animate-stamp-drop origin-center select-none shadow-sm">
+              <div className="border border-dashed border-emerald-600/70 rounded-lg px-3 py-1.5">
+                <span className="text-[8px] uppercase font-black tracking-widest block text-emerald-700">★ MOSUNMOLA COOP ★</span>
+                <span className="text-[12px] font-black font-display tracking-tight block text-emerald-900 leading-tight">TREASURY AUDITED</span>
+                <span className="text-[8px] font-mono font-bold block text-emerald-700">STAMP REF: {transaction.reference.slice(0, 10)}</span>
+              </div>
             </div>
           </div>
 

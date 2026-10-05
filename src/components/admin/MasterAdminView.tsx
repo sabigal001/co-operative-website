@@ -10,6 +10,7 @@ import type {
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
+import { FluidPillBar } from '../common/FluidPillBar';
 import { 
   CreditCard, 
   Users, 
@@ -195,34 +196,17 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       
       {/* Navigation Pills */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
-          {[
+        <FluidPillBar
+          tabs={[
             { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
             { id: 'cards', label: 'Physical ID Card Batch Manager', icon: <CreditCard className="w-4 h-4" /> },
             { id: 'roles', label: 'Staff Role Management (RBAC)', icon: <Users className="w-4 h-4" /> },
             { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
             { id: 'audit', label: 'System Audit Logs', icon: <Clock className="w-4 h-4" /> },
-          ].map((t) => {
-            const isActive = activeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => {
-                  triggerHaptic('light');
-                  setActiveTab(t.id as any);
-                }}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all tap-spring ${
-                  isActive
-                    ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-                }`}
-              >
-                {t.icon}
-                <span>{t.label}</span>
-              </button>
-            );
-          })}
-        </div>
+          ]}
+          activeId={activeTab}
+          onChange={(id) => setActiveTab(id as any)}
+        />
 
         {activeTab === 'cards' && (
           <button

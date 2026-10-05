@@ -7,6 +7,7 @@ import { AssetPortfolio } from './AssetPortfolio';
 import { TransactionHistory } from './TransactionHistory';
 import { ProfileSettings } from './ProfileSettings';
 import { BottomNav } from './BottomNav';
+import { FluidPillBar } from '../common/FluidPillBar';
 import {
   CreditCard,
   PiggyBank,
@@ -144,28 +145,13 @@ export const MemberPortalView: React.FC = () => {
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
 
-        {/* Desktop Navigation Tabs (Liquid Glass Pill Style) */}
-        <div className="hidden md:flex items-center liquid-glass p-1.5 rounded-2xl border border-white/10 shadow-sm mb-8 overflow-x-auto gap-1">
-          {navItems.map((item) => {
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  triggerHaptic('light');
-                  setActiveTab(item.id);
-                }}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap tap-spring ${isActive
-                    ? 'liquid-btn-white text-black shadow-md'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-                  }`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Desktop Navigation Tabs (Sliding Fluid Pill Style) */}
+        <FluidPillBar
+          tabs={navItems}
+          activeId={activeTab}
+          onChange={(id) => setActiveTab(id as any)}
+          className="hidden md:flex mb-8"
+        />
 
         {/* Tab View Render */}
         <div className="animate-slide-up">

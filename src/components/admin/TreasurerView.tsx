@@ -3,6 +3,7 @@ import type { DepositSubmission, LoanApplication, PayoutRequest } from '../../ty
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
+import { FluidPillBar } from '../common/FluidPillBar';
 import { 
   Coins, 
   ArrowUpRight, 
@@ -122,50 +123,33 @@ export const TreasurerView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="bg-white dark:bg-black p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-1">
-          <button
-            onClick={() => setActiveTab('deposits')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'deposits' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <ArrowDownLeft className="w-4 h-4" />
-            <span>Deposit Approvals ({deposits.filter((d) => d.status === 'pending').length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('disbursements')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'disbursements' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <Coins className="w-4 h-4" />
-            <span>Loan Disbursements ({disbursementQueue.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('payouts')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'payouts' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <ArrowUpRight className="w-4 h-4" />
-            <span>Payout Manager ({payouts.filter((p) => p.status === 'pending').length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('ledger')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-              activeTab === 'ledger' ? 'bg-black text-brand-400 border border-brand-500/30 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>Cashflow & Ledgers</span>
-          </button>
-        </div>
-      </div>
+      {/* Sliding Fluid Pill Tabs */}
+      <FluidPillBar
+        tabs={[
+          {
+            id: 'deposits',
+            label: `Deposit Approvals (${deposits.filter((d) => d.status === 'pending').length})`,
+            icon: <ArrowDownLeft className="w-4 h-4" />
+          },
+          {
+            id: 'disbursements',
+            label: `Loan Disbursements (${disbursementQueue.length})`,
+            icon: <Coins className="w-4 h-4" />
+          },
+          {
+            id: 'payouts',
+            label: `Payout Manager (${payouts.filter((p) => p.status === 'pending').length})`,
+            icon: <ArrowUpRight className="w-4 h-4" />
+          },
+          {
+            id: 'ledger',
+            label: 'Cashflow & Ledgers',
+            icon: <FileText className="w-4 h-4" />
+          }
+        ]}
+        activeId={activeTab}
+        onChange={(id) => setActiveTab(id as any)}
+      />
 
       {/* ================= TAB 1: DEPOSIT APPROVALS ================= */}
       {activeTab === 'deposits' && (
