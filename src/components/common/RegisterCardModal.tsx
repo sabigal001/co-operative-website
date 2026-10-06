@@ -216,18 +216,18 @@ export const RegisterCardModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="liquid-glass-card border border-white/15 text-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
+      <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
         {/* Top Header */}
-        <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl liquid-glass border border-white/15 flex items-center justify-center shadow-sm">
-              <CreditCard className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shadow-sm">
+              <CreditCard className="w-5 h-5 text-slate-900 dark:text-white" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-lg text-white leading-tight">
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white leading-tight">
                 Physical Card Activation
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Link your issued plastic ID card to your digital member wallet
               </p>
             </div>
@@ -237,14 +237,14 @@ export const RegisterCardModal: React.FC = () => {
               triggerHaptic('light');
               closeRegisterModal();
             }}
-            className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/5 transition-colors tap-spring"
+            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors tap-spring"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Step Progress Pills */}
-        <div className="px-6 py-3 bg-white/[0.02] border-b border-white/10 flex items-center justify-between text-xs">
+        <div className="px-6 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
           {[
             { num: 1, title: 'Card Lookup' },
             { num: 2, title: 'Verification' },
@@ -258,15 +258,15 @@ export const RegisterCardModal: React.FC = () => {
                 <span
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
                     isCompleted
-                      ? 'liquid-btn-white text-black font-black'
+                      ? 'bg-emerald-600 text-white font-bold'
                       : isCurrent
-                      ? 'liquid-glass text-emerald-400 border border-emerald-400/40 font-black'
-                      : 'bg-white/5 text-slate-500'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 font-bold'
+                      : 'bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {isCompleted ? '✓' : item.num}
                 </span>
-                <span className={`hidden sm:inline text-[11px] font-medium ${isCurrent ? 'text-white font-bold' : 'text-slate-400'}`}>
+                <span className={`hidden sm:inline text-[11px] font-medium ${isCurrent ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400'}`}>
                   {item.title}
                 </span>
               </div>
@@ -276,8 +276,8 @@ export const RegisterCardModal: React.FC = () => {
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs flex items-start gap-2.5 animate-slide-up">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+          <div className="mx-6 mt-4 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-500/40 text-rose-800 dark:text-rose-200 text-xs flex items-start gap-2.5 animate-slide-up">
+            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
             <div className="flex-1">{errorMessage}</div>
           </div>
         )}
@@ -286,7 +286,7 @@ export const RegisterCardModal: React.FC = () => {
         {step === 1 && (
           <div className="p-6 space-y-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Physical Member ID Card Number
               </label>
               <div className="relative">
@@ -295,18 +295,18 @@ export const RegisterCardModal: React.FC = () => {
                   value={cardId}
                   onChange={(e) => setCardId(e.target.value.toUpperCase())}
                   placeholder="e.g. MCS-2026-1033"
-                  className="w-full bg-black border border-white/15 rounded-2xl px-4 py-3.5 text-base font-mono font-bold text-white tracking-widest focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 uppercase"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-2xl px-4 py-3.5 text-base font-mono font-bold text-slate-900 dark:text-white tracking-widest focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 uppercase"
                 />
                 <CreditCard className="w-5 h-5 text-slate-400 absolute right-4 top-3.5 pointer-events-none" />
               </div>
-              <p className="text-[11px] text-slate-400 mt-2">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
                 This 12-character ID is embossed on the front and magnetic strip of your Mosunmola physical membership card.
               </p>
             </div>
 
             {/* Quick Demo Pickers */}
             <div>
-              <span className="text-[11px] font-semibold text-brand-400 uppercase tracking-wider block mb-2">
+              <span className="text-[11px] font-semibold text-emerald-600 dark:text-brand-400 uppercase tracking-wider block mb-2">
                 ⚡ Quick Demo Card IDs (Click to test):
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -318,22 +318,22 @@ export const RegisterCardModal: React.FC = () => {
                       setCardId(sample.id);
                       handleVerifyCard(sample.id);
                     }}
-                    className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-brand-500/40 text-left transition-all group"
+                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/5 hover:border-brand-500/40 text-left transition-all group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-white group-hover:text-brand-400">
+                      <span className="font-mono text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-brand-400">
                         {sample.id}
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
                     </div>
-                    <div className="text-[11px] text-slate-300 truncate">{sample.name}</div>
-                    <div className="text-[10px] text-slate-400">{sample.branch}</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300 truncate">{sample.name}</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">{sample.branch}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="pt-3 border-t border-white/10 flex justify-end">
+            <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex justify-end">
               <button
                 type="button"
                 onClick={() => handleVerifyCard()}
@@ -350,39 +350,39 @@ export const RegisterCardModal: React.FC = () => {
         {/* STEP 2: VERIFICATION PREVIEW */}
         {step === 2 && verifiedInfo && (
           <div className="p-6 space-y-6">
-            <div className="liquid-glass-card rounded-2xl p-5 border border-white/10 space-y-4">
-              <div className="flex items-center gap-2 text-white font-bold text-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-5 border border-slate-200 dark:border-white/10 space-y-4">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                 <span>Physical Member ID Validated in Registry</span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <span className="text-slate-400 block">Member ID:</span>
-                  <span className="font-mono font-bold text-white text-sm">{cardId}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Member ID:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">{cardId}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Assigned Holder:</span>
-                  <span className="font-bold text-white text-sm">{verifiedInfo.fullName}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Assigned Holder:</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-sm">{verifiedInfo.fullName}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Issuing Branch:</span>
-                  <span className="text-slate-200 font-semibold">{verifiedInfo.branch}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Issuing Branch:</span>
+                  <span className="text-slate-700 dark:text-slate-200 font-semibold">{verifiedInfo.branch}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Security Chip Status:</span>
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-emerald-400" /> Ready for Linking
+                  <span className="text-slate-500 dark:text-slate-400 block">Security Chip Status:</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-emerald-500" /> Ready for Linking
                   </span>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               We found your pre-allocation record. In the next step, create your login password, confirm contact phone & email, and attach your facial photo for the digital card.
             </p>
 
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => setStep(1)}
@@ -406,7 +406,7 @@ export const RegisterCardModal: React.FC = () => {
         {step === 3 && (
           <form onSubmit={handleSubmitAccount} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
             {/* Photo Upload / Avatar Preview */}
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-black border border-white/10">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10">
               <div className="relative">
                 <img
                   src={avatarUrl}
@@ -418,22 +418,22 @@ export const RegisterCardModal: React.FC = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <span className="text-xs font-bold text-white block">Digital Card Photo</span>
-                <p className="text-[11px] text-slate-400">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">Digital Card Photo</span>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Select a facial portrait for your digital ID card and verification pass.
                 </p>
                 <div className="mt-2 flex gap-2">
                   <button
                     type="button"
                     onClick={() => setAvatarUrl('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80')}
-                    className="text-[10px] bg-white/10 hover:bg-white/20 px-2 py-1 rounded-md text-slate-300"
+                    className="text-[10px] bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 px-2 py-1 rounded-md text-slate-700 dark:text-slate-300"
                   >
                     Preset Photo A
                   </button>
                   <button
                     type="button"
                     onClick={() => setAvatarUrl('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80')}
-                    className="text-[10px] bg-white/10 hover:bg-white/20 px-2 py-1 rounded-md text-slate-300"
+                    className="text-[10px] bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 px-2 py-1 rounded-md text-slate-700 dark:text-slate-300"
                   >
                     Preset Photo B
                   </button>
@@ -443,77 +443,77 @@ export const RegisterCardModal: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Full Legal Name</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Full Legal Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Email Address</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Email Address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@email.com"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Phone Number (WhatsApp)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Phone Number (WhatsApp)</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+234 800 000 0000"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">National ID (NIN)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">National ID (NIN)</label>
                 <input
                   type="text"
                   value={nin}
                   onChange={(e) => setNin(e.target.value)}
                   placeholder="11 digits NIN"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 font-mono"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 font-mono"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Account Password</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Account Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Occupation / Business</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Occupation / Business</label>
                 <input
                   type="text"
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
             </div>
 
             {/* Next of Kin */}
-            <div className="pt-2 border-t border-white/10">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 block mb-2">
+            <div className="pt-2 border-t border-slate-200 dark:border-white/10">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-brand-400 block mb-2">
                 Next of Kin Beneficiary Details
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
@@ -523,7 +523,7 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokName}
                     onChange={(e) => setNokName(e.target.value)}
                     placeholder="Beneficiary Full Name"
-                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -532,7 +532,7 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokRel}
                     onChange={(e) => setNokRel(e.target.value)}
                     placeholder="Relationship (e.g. Spouse)"
-                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
                 <div>
@@ -541,13 +541,13 @@ export const RegisterCardModal: React.FC = () => {
                     value={nokPhone}
                     onChange={(e) => setNokPhone(e.target.value)}
                     placeholder="Beneficiary Phone"
-                    className="w-full bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => setStep(2)}
@@ -570,14 +570,14 @@ export const RegisterCardModal: React.FC = () => {
         {/* STEP 4: OTP ACTIVATION MODAL */}
         {step === 4 && (
           <div className="p-6 space-y-6 text-center">
-            <div className="w-16 h-16 mx-auto rounded-3xl liquid-glass border border-white/15 flex items-center justify-center text-emerald-400 shadow-sm">
+            <div className="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center text-emerald-500 shadow-sm">
               <KeyRound className="w-8 h-8" />
             </div>
 
             <div>
-              <h4 className="font-display font-bold text-lg text-white">Enter 6-Digit OTP Code</h4>
-              <p className="text-xs text-slate-300 mt-1 max-w-sm mx-auto">
-                A simulated verification code has been dispatched to <strong className="text-white">{phone}</strong> and <strong className="text-white">{email}</strong>.
+              <h4 className="font-display font-bold text-lg text-slate-900 dark:text-white">Enter 6-Digit OTP Code</h4>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto">
+                A simulated verification code has been dispatched to <strong className="text-slate-900 dark:text-white">{phone}</strong> and <strong className="text-slate-900 dark:text-white">{email}</strong>.
               </p>
             </div>
 
@@ -587,14 +587,14 @@ export const RegisterCardModal: React.FC = () => {
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-black border border-white/20 rounded-2xl py-3 text-white focus:outline-none focus:border-white/40 shadow-inner"
+                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-slate-50 dark:bg-black border border-slate-300 dark:border-white/20 rounded-2xl py-3 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 shadow-inner"
               />
-              <span className="text-[11px] text-slate-400 block mt-2">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-2">
                 Demo helper: Pre-filled with code <strong>894201</strong> (or enter any 6 digits).
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => setStep(3)}

@@ -338,43 +338,43 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 1: DEPOSIT SAVINGS (TREASURER APPROVAL FLOW) ================= */}
       {showDepositModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
-            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up relative">
+            <div className="flex justify-between items-center mb-6 border-b border-slate-200 dark:border-white/10 pb-4">
               <div>
-                <h3 className="font-display font-bold text-lg text-white">Deposit Contribution</h3>
-                <p className="text-xs text-slate-400">Direct Bank Transfer to Cooperative Accounts</p>
+                <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Deposit Contribution</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Direct Bank Transfer to Cooperative Accounts</p>
               </div>
-              <button onClick={() => setShowDepositModal(false)} className="text-slate-400 hover:text-white p-1">
+              <button onClick={() => setShowDepositModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Cooperative Bank Account Information */}
-            <div className="p-4 rounded-2xl bg-black border border-brand-500/30 mb-6 text-xs space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-400 block">
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-black border border-emerald-200 dark:border-brand-500/30 mb-6 text-xs space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-brand-400 block">
                 Official Treasury Collection Bank Account:
               </span>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Bank Name:</span>
-                <strong className="text-white">Access Bank PLC</strong>
+                <span className="text-slate-600 dark:text-slate-300">Bank Name:</span>
+                <strong className="text-slate-900 dark:text-white">Access Bank PLC</strong>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Account Number:</span>
-                <span className="font-mono font-bold text-brand-400 text-sm">0129482710</span>
+                <span className="text-slate-600 dark:text-slate-300">Account Number:</span>
+                <span className="font-mono font-bold text-emerald-700 dark:text-brand-400 text-sm">0129482710</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Account Name:</span>
-                <span className="text-white font-semibold">MOSUNMOLA COOP SOC LTD</span>
+                <span className="text-slate-600 dark:text-slate-300">Account Name:</span>
+                <span className="text-slate-900 dark:text-white font-semibold">MOSUNMOLA COOP SOC LTD</span>
               </div>
             </div>
 
             <form onSubmit={handleDepositSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Deposit Type</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Deposit Type</label>
                 <select
                   value={depositType}
                   onChange={(e) => setDepositType(e.target.value as any)}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value="voluntary_savings">Regular Voluntary Thrift Savings</option>
                   <option value="target_plan">Dedicated Target Savings Goal</option>
@@ -383,11 +383,11 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
 
               {depositType === 'target_plan' && (
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Select Target Goal</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Select Target Goal</label>
                   <select
                     value={selectedPlanId}
                     onChange={(e) => setSelectedPlanId(e.target.value)}
-                    className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   >
                     {savings.targetPlans.map((p) => (
                       <option key={p.id} value={p.id}>{p.title}</option>
@@ -397,37 +397,37 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
               )}
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Deposit Amount (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Deposit Amount (₦)</label>
                 <input
                   type="number"
                   min="5000"
                   step="5000"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Bank Payment Reference / Session ID</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Bank Payment Reference / Session ID</label>
                 <input
                   type="text"
                   value={bankRef}
                   onChange={(e) => setBankRef(e.target.value)}
                   placeholder="e.g. NIP-9081298402"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
-              <div className="p-3 rounded-xl bg-white/5 border border-dashed border-white/20 text-center">
-                <Upload className="w-5 h-5 text-brand-400 mx-auto mb-1" />
-                <span className="text-[11px] text-slate-300 block">Bank Transfer Receipt Attached</span>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 text-center">
+                <Upload className="w-5 h-5 text-emerald-600 dark:text-brand-400 mx-auto mb-1" />
+                <span className="text-[11px] text-slate-700 dark:text-slate-300 block">Bank Transfer Receipt Attached</span>
                 <span className="text-[9px] text-slate-500">proof_transfer_access.pdf (Uploaded)</span>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowDepositModal(false)}
@@ -452,59 +452,59 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 2: NEW TARGET PLAN ================= */}
       {showNewPlanModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-              <h3 className="font-display font-bold text-lg text-white">Create Target Savings Goal</h3>
-              <button onClick={() => setShowNewPlanModal(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-white/10">
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Create Target Savings Goal</h3>
+              <button onClick={() => setShowNewPlanModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreatePlan} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Goal Title</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Goal Title</label>
                 <input
                   type="text"
                   value={planTitle}
                   onChange={(e) => setPlanTitle(e.target.value)}
                   placeholder="e.g. Epe Land Deposit 2026"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Target Amount (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Target Amount (₦)</label>
                 <input
                   type="number"
                   min="50000"
                   step="50000"
                   value={planTarget}
                   onChange={(e) => setPlanTarget(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Monthly Contribution (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Monthly Contribution (₦)</label>
                 <input
                   type="number"
                   min="5000"
                   step="5000"
                   value={planMonthly}
                   onChange={(e) => setPlanMonthly(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Category</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Category</label>
                 <select
                   value={planCategory}
                   onChange={(e) => setPlanCategory(e.target.value as any)}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value="estate">Real Estate & Land Downpayment</option>
                   <option value="education">Tuition & School Fees</option>
@@ -514,7 +514,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowNewPlanModal(false)}
@@ -538,21 +538,21 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
       {/* ================= MODAL 3: WITHDRAWAL REQUEST ================= */}
       {showWithdrawModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-              <h3 className="font-display font-bold text-lg text-white">Withdraw Savings</h3>
-              <button onClick={() => setShowWithdrawModal(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-white/10">
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Withdraw Savings</h3>
+              <button onClick={() => setShowWithdrawModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleWithdrawSubmit} className="space-y-4 text-xs">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200">
+              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200">
                 Payouts are authorized by the Treasurer and disbursed directly into your registered bank account ({member.bankDetails.bankName} - {member.bankDetails.accountNumber}).
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Amount to Withdraw (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Amount to Withdraw (₦)</label>
                 <input
                   type="number"
                   min="10000"
@@ -560,15 +560,15 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                   step="5000"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                   required
                 />
-                <span className="text-[10px] text-slate-400 mt-1 block">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">
                   Available voluntary balance: ₦{savings.voluntarySavings.toLocaleString()}
                 </span>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowWithdrawModal(false)}

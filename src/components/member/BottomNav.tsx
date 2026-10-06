@@ -60,7 +60,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/85 backdrop-blur-2xl border-t border-white/10 px-2 py-2 shadow-[0_-8px_30px_rgba(0,0,0,0.7)] safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/90 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 px-2 py-2 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.7)] safe-area-bottom">
       <div className="flex items-center justify-around">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -70,18 +70,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
               onClick={() => handleTabClick(tab)}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all active:scale-90 ${
                 isActive
-                  ? 'text-white font-bold scale-105'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'text-slate-900 dark:text-white font-bold scale-105'
+                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
             >
               <div className={`p-1.5 rounded-xl transition-all ${
                 isActive 
-                  ? 'liquid-glass text-white shadow-sm border border-white/20' 
-                  : 'text-slate-400'
+                  ? 'liquid-glass text-slate-900 dark:text-white shadow-sm border border-slate-300 dark:border-white/20' 
+                  : 'text-slate-500 dark:text-slate-400'
               }`}>
                 {tab.icon}
               </div>
-              <span className={`text-[10px] tracking-tight mt-0.5 ${isActive ? 'text-white font-bold' : 'font-medium'}`}>
+              <span className={`text-[10px] tracking-tight mt-0.5 ${isActive ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>
                 {tab.label}
               </span>
             </button>

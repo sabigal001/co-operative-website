@@ -187,7 +187,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // PWA State & Installation
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallBannerVisible, setIsInstallBannerVisible] = useState<boolean>(true);
+  const [isInstallBannerVisible, setIsInstallBannerVisible] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const isInstalled = localStorage.getItem('mosunmola_pwa_installed') === 'true';
+    const isDismissed = localStorage.getItem('mosunmola_pwa_dismissed') === 'true';
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    return !isInstalled && !isDismissed && !isStandaloneMode;
+  });
   const [isIOS, setIsIOS] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
 
@@ -201,18 +207,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
     setIsStandalone(isInStandalone);
     if (isInStandalone) {
+      localStorage.setItem('mosunmola_pwa_installed', 'true');
       setIsInstallBannerVisible(false);
     }
+
+    // Listen for native appinstalled event
+    const handleAppInstalled = () => {
+      localStorage.setItem('mosunmola_pwa_installed', 'true');
+      setIsInstallBannerVisible(false);
+      showToast('Mosunmola Cooperative PWA installed successfully!', 'success');
+    };
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     // Capture beforeinstallprompt
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setIsInstallBannerVisible(true);
+      const isInstalled = localStorage.getItem('mosunmola_pwa_installed') === 'true';
+      const isDismissed = localStorage.getItem('mosunmola_pwa_dismissed') === 'true';
+      if (!isInstalled && !isDismissed && !isInStandalone) {
+        setIsInstallBannerVisible(true);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   const triggerInstallPrompt = () => {
@@ -220,6 +242,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult: any) => {
         if (choiceResult.outcome === 'accepted') {
+          localStorage.setItem('mosunmola_pwa_installed', 'true');
           showToast('Thank you for installing Mosunmola Cooperative PWA!', 'success');
           setIsInstallBannerVisible(false);
         }
@@ -228,11 +251,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else if (isIOS) {
       showToast('Tap the Safari Share button below and select "Add to Home Screen".', 'info');
     } else {
-      showToast('To install, open browser menu (⋮) and click "Install App" or "Add to Home Screen".', 'info');
+      localStorage.setItem('mosunmola_pwa_installed', 'true');
+      setIsInstallBannerVisible(false);
+      showToast('To install on desktop/Android, click "Install" in your browser address bar or menu.', 'info');
     }
   };
 
   const dismissInstallBanner = () => {
+    localStorage.setItem('mosunmola_pwa_dismissed', 'true');
     setIsInstallBannerVisible(false);
   };
 

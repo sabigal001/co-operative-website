@@ -3,8 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  *, *::before, *::after {
+    text-shadow: none !important;
+  }
+
   html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -15,7 +28,18 @@
   h6 {
     font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
     letter-spacing: -0.02em;
+    text-shadow: none !important;
   }
+}
+
+/* Strict Zero Text Shadow in Dark Mode */
+.dark,
+.dark *,
+.dark *::before,
+.dark *::after {
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbars */
@@ -80,19 +104,18 @@
   mask-composite: exclude;
   pointer-events: none;
   opacity: 0.35;
-  transition: opacity 0.35s ease, filter 0.35s ease;
+  transition: opacity 0.35s ease;
 }
 
 .liquid-glass-card:hover {
   background: #050505;
   border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 1), 0 0 32px -4px rgba(0, 200, 83, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
 .liquid-glass-card:hover::before {
-  opacity: 0.9;
-  filter: drop-shadow(0 0 6px rgba(0, 200, 83, 0.25));
+  opacity: 0.8;
 }
 
 /* Small Refined Liquid Glass Buttons with Spring Physics (cubic-bezier(0.16, 1, 0.3, 1)) */
@@ -139,14 +162,14 @@ button * {
 }
 
 .dark .liquid-btn-default {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
   color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
 }
 
 .dark .liquid-btn-default:hover {
-  background: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
   color: #FFFFFF !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
 }
@@ -166,7 +189,7 @@ button * {
   background-color: #FFFFFF !important;
   color: #000000 !important;
   border: 1px solid #FFFFFF !important;
-  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.15) !important;
 }
 
 .dark .liquid-btn-white:hover {
@@ -189,7 +212,7 @@ button * {
   background: rgba(0, 200, 83, 0.15) !important;
   color: #00C853 !important;
   border: 1px solid rgba(0, 200, 83, 0.4) !important;
-  box-shadow: 0 4px 12px -2px rgba(0, 200, 83, 0.25) !important;
+  box-shadow: 0 2px 6px -1px rgba(0, 200, 83, 0.2) !important;
 }
 
 .dark .liquid-btn-primary:hover {

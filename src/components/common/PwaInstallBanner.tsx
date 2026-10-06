@@ -36,7 +36,7 @@ export const PwaInstallBanner: React.FC = () => {
         />
 
         {/* Centered Modal Card with Deep Obsidian Glass & Mobile Responsiveness */}
-        <div className="relative w-full max-w-md bg-black text-white p-6 sm:p-8 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] border border-white/20 liquid-glass-card z-10 animate-slide-up">
+        <div className="relative w-full max-w-md bg-slate-950 text-white p-6 sm:p-8 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] border border-white/20 z-10 animate-slide-up">
           {/* Top-Right Dismiss Cross */}
           <button
             onClick={handleDismiss}
@@ -123,7 +123,10 @@ export const PwaInstallBanner: React.FC = () => {
                 <Smartphone className="w-5 h-5 text-brand-400" /> Install on iPhone / iPad
               </h3>
               <button
-                onClick={() => setShowIosGuide(false)}
+                onClick={() => {
+                  setShowIosGuide(false);
+                  handleDismiss();
+                }}
                 className="p-1 rounded-full text-slate-400 hover:text-white bg-white/10"
               >
                 <X className="w-5 h-5" />
@@ -164,7 +167,10 @@ export const PwaInstallBanner: React.FC = () => {
             </ol>
 
             <button
-              onClick={() => setShowIosGuide(false)}
+              onClick={() => {
+                setShowIosGuide(false);
+                handleDismiss();
+              }}
               className="mt-6 w-full liquid-btn liquid-btn-white text-black font-bold py-3 rounded-xl text-xs flex items-center justify-center tap-spring"
             >
               Got It, Thanks!

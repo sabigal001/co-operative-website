@@ -29,8 +29,30 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  // Passive Gyroscope / DeviceOrientation Listener for subtle 3D parallax on mobile
+  React.useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (!isHovered && e.gamma !== null && e.beta !== null) {
+        // gamma: left-to-right [-90, 90], beta: front-to-back [-180, 180]
+        const rotateY = Math.max(-8, Math.min(8, (e.gamma / 35) * 8));
+        const rotateX = Math.max(-8, Math.min(8, ((e.beta - 40) / 35) * -8));
+        const glareX = 50 + rotateY * 3;
+        const glareY = 50 - rotateX * 3;
+        setTilt({ rotateX, rotateY, glareX, glareY });
+      }
+    };
+
+    if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+      window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+      return () => window.removeEventListener('deviceorientation', handleOrientation);
+    }
+  }, [isHovered]);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Only handle mouse/pen pointer events; touch is handled separately by onTouchMove
+    if (e.pointerType === 'touch') return;
     if (isFlipping || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -51,6 +73,65 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   const handlePointerLeave = () => {
     setIsHovered(false);
     setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  };
+
+  // Mobile Touch Gestures: Drag to tilt, Swipe to flip 3D
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isFlipping) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    setIsHovered(true);
+
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = Math.max(-14, Math.min(14, ((y - centerY) / centerY) * -12));
+      const rotateY = Math.max(-14, Math.min(14, ((x - centerX) / centerX) * 12));
+      const glareX = Math.max(0, Math.min(100, (x / rect.width) * 100));
+      const glareY = Math.max(0, Math.min(100, (y / rect.height) * 100));
+      setTilt({ rotateX, rotateY, glareX, glareY });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isFlipping || !cardRef.current) return;
+    const touch = e.touches[0];
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = Math.max(-14, Math.min(14, ((y - centerY) / centerY) * -12));
+    const rotateY = Math.max(-14, Math.min(14, ((x - centerX) / centerX) * 12));
+    const glareX = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    const glareY = Math.max(0, Math.min(100, (y / rect.height) * 100));
+    setTilt({ rotateX, rotateY, glareX, glareY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    const duration = Date.now() - touchStartRef.current.time;
+    touchStartRef.current = null;
+
+    // Detect horizontal swipe (at least 30px horizontal and predominantly horizontal)
+    const isHorizontalSwipe = Math.abs(deltaX) > 30 && Math.abs(deltaX) > Math.abs(deltaY) * 0.7;
+    const isTap = Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15 && duration < 350;
+
+    if (isHorizontalSwipe || isTap) {
+      handleFlip();
+    }
+
+    // Smoothly restore neutral tilt after release
+    setTimeout(() => {
+      setIsHovered(false);
+      setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+    }, 400);
   };
 
   const handleFlip = () => {
@@ -131,9 +212,12 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         onPointerMove={handlePointerMove}
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={handlePointerLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onClick={handleFlip}
-        style={{ perspective: '1500px' }}
-        className="max-w-lg mx-auto cursor-pointer select-none group"
+        style={{ perspective: '1500px', touchAction: 'pan-y' }}
+        className="max-w-lg mx-auto cursor-pointer select-none group touch-pan-y"
       >
         <div
           className={`relative w-full aspect-[1.586/1] rounded-3xl shadow-2xl ${
@@ -221,7 +305,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
                 </div>
               </div>
 
-              <div className="font-mono text-xl sm:text-2xl font-black text-white tracking-widest">
+              <div className="font-mono text-xl sm:text-2xl font-extrabold text-white tracking-widest">
                 {member.memberId}
               </div>
               <span className="text-[10px] text-slate-400 font-mono tracking-wider">
@@ -305,6 +389,12 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
           </div>
 
         </div>
+      </div>
+
+      {/* Mobile Touch & Swipe Guide */}
+      <div className="flex sm:hidden items-center justify-center gap-2 mt-4 text-slate-500 dark:text-slate-400 text-[11px] font-medium bg-slate-100 dark:bg-white/5 py-2 px-4 rounded-full max-w-xs mx-auto border border-slate-200 dark:border-white/10">
+        <Sparkles className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400 shrink-0" />
+        <span>Swipe horizontally or tap to flip 3D • Drag to tilt</span>
       </div>
     </div>
   );

@@ -388,20 +388,20 @@ export const PaOfficerView: React.FC = () => {
       {/* Vetting Dialog */}
       {activeVettingLoan && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-4 animate-slide-up">
-            <div className="flex justify-between items-center border-b border-white/10 pb-3">
-              <h3 className="font-display font-bold text-lg text-white">Vetting Decision</h3>
-              <button onClick={() => setActiveVettingLoan(null)} className="text-slate-400 hover:text-white">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl space-y-4 animate-slide-up">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/10 pb-3">
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Vetting Decision</h3>
+              <button onClick={() => setActiveVettingLoan(null)} className="text-slate-400 hover:text-slate-800 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Loan: <strong>{activeVettingLoan.id}</strong> (₦{activeVettingLoan.amount.toLocaleString()} for {activeVettingLoan.memberName})
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Loan: <strong className="text-slate-900 dark:text-white font-mono">{activeVettingLoan.id}</strong> (₦{activeVettingLoan.amount.toLocaleString()} for {activeVettingLoan.memberName})
             </p>
 
             <div>
-              <label className="block text-slate-300 text-xs font-semibold mb-1">
+              <label className="block text-slate-700 dark:text-slate-300 text-xs font-semibold mb-1">
                 PA Vetting Comments / Guarantor Verification Notes
               </label>
               <textarea
@@ -409,15 +409,15 @@ export const PaOfficerView: React.FC = () => {
                 value={vettingComments}
                 onChange={(e) => setVettingComments(e.target.value)}
                 placeholder="Confirming that both member guarantors are verified in active standing..."
-                className="w-full bg-black border border-white/15 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-brand-500"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => handleVetLoanDecision(false)}
-                className="px-4 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-500/30 text-rose-300 font-bold text-xs rounded-xl transition-all"
+                className="px-4 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/60 dark:hover:bg-rose-900 border border-rose-300 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 font-bold text-xs rounded-xl transition-all"
               >
                 Reject Vetting
               </button>

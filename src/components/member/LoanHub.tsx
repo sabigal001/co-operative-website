@@ -339,20 +339,20 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
       {/* Apply Loan Modal */}
       {showApplyModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl animate-slide-up relative">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up relative">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 dark:border-white/10">
               <div>
-                <h3 className="font-display font-bold text-lg text-white">Apply for Member Loan</h3>
-                <p className="text-xs text-slate-400">Zero collateral • 5% Flat Interest Rate</p>
+                <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Apply for Member Loan</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Zero collateral • 5% Flat Interest Rate</p>
               </div>
-              <button onClick={() => setShowApplyModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowApplyModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleApplySubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Requested Loan Amount (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Requested Loan Amount (₦)</label>
                 <input
                   type="number"
                   min="50000"
@@ -360,17 +360,17 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
                   step="50000"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Repayment Duration</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Repayment Duration</label>
                 <select
                   value={durationMonths}
                   onChange={(e) => setDurationMonths(Number(e.target.value))}
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value={3}>3 Months</option>
                   <option value={6}>6 Months</option>
@@ -380,78 +380,82 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Loan Purpose</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Loan Purpose</label>
                 <input
                   type="text"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
                   placeholder="e.g. Agro commodity trade financing"
-                  className="w-full bg-black border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               {/* Guarantors */}
-              <div className="pt-2 border-t border-white/10 space-y-3">
-                <span className="text-[11px] font-bold text-brand-400 uppercase tracking-wider block">
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10 space-y-3">
+                <span className="text-[11px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider block">
                   Assign 2 Verified Cooperative Guarantors
                 </span>
 
                 <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Guarantor 1 (Member ID & Name)</label>
+                  <label className="block text-slate-500 dark:text-slate-400 text-[11px] mb-1">Guarantor 1 (Member ID & Name)</label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
                       value={guarantor1Id}
+                      placeholder="Memb ID"
                       onChange={(e) => setGuarantor1Id(e.target.value)}
-                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brand-500"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                     />
                     <input
                       type="text"
                       value={guarantor1Name}
+                      placeholder="Full Name"
                       onChange={(e) => setGuarantor1Name(e.target.value)}
-                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Guarantor 2 (Member ID & Name)</label>
+                  <label className="block text-slate-500 dark:text-slate-400 text-[11px] mb-1">Guarantor 2 (Member ID & Name)</label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
                       value={guarantor2Id}
+                      placeholder="Memb ID"
                       onChange={(e) => setGuarantor2Id(e.target.value)}
-                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brand-500"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
                     />
                     <input
                       type="text"
                       value={guarantor2Name}
+                      placeholder="Full Name"
                       onChange={(e) => setGuarantor2Name(e.target.value)}
-                      className="bg-black border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500"
+                      className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 space-y-1">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 space-y-1">
                 <div className="flex justify-between">
                   <span>Interest Rate:</span>
-                  <span className="font-bold text-emerald-400">5.0% Flat</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">5.0% Flat</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Total Repayment:</span>
-                  <span className="font-bold text-white font-mono">
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">
                     ₦{Math.round(amount + (amount * 0.05 * (durationMonths / 12))).toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
+                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs text-slate-700 dark:text-white"
                 >
                   Cancel
                 </button>
