@@ -27,7 +27,7 @@ import { CurtainPullCord } from '../common/CurtainThemeSwitch';
 import { triggerHaptic } from '../../utils/haptics';
 
 export const MemberPortalView: React.FC = () => {
-  const { currentMember, logoutMember, openRegisterModal, theme, isLoggedIn, isStandalone, openInstallBanner } = useApp();
+  const { currentMember, logoutMember, openRegisterModal, theme, isLoggedIn, isAppInstalled, openInstallBanner } = useApp();
 
   const [activeTab, setActiveTab] = useState<'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile'>('card');
 
@@ -67,7 +67,7 @@ export const MemberPortalView: React.FC = () => {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {!isStandalone && (
+            {!isAppInstalled && (
               <button
                 onClick={() => {
                   triggerHaptic('medium');
@@ -117,7 +117,7 @@ export const MemberPortalView: React.FC = () => {
             <img
               src={currentMember.avatar}
               alt={currentMember.fullName}
-              className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-300 dark:border-white/20 shadow-md ring-2 ring-slate-200 dark:ring-white/10 shrink-0"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-300 dark:border-white/20 shadow-md ring-2 ring-slate-200 dark:ring-white/10 shrink-0 aspect-square"
             />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">

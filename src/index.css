@@ -145,7 +145,7 @@
     gap: 0.375rem;
     padding: 0.5rem 1rem;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 600;
     border-radius: 0.75rem;
     position: relative;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
@@ -161,7 +161,9 @@
   .liquid-btn,
   .liquid-btn *,
   button,
-  button * {
+  button *,
+  a.liquid-btn,
+  a.liquid-btn * {
     text-shadow: none !important;
     -webkit-text-stroke: 0px !important;
     filter: none !important;
@@ -175,28 +177,33 @@
     transform: translateY(0px) scale(0.97);
   }
 
-  /* 1. Translucent / Default Liquid Button - High Contrast in Dark Mode */
+  /* 1. Default Liquid Button - High Contrast Solid in Dark Mode (Eliminates alpha-compositing text fringe) */
   .dark .liquid-btn-default,
-  .dark .liquid-btn-default * {
+  .dark .liquid-btn-default *,
+  .dark a.liquid-btn-default,
+  .dark a.liquid-btn-default * {
     color: #FFFFFF !important;
     text-shadow: none !important;
     -webkit-text-stroke: 0px !important;
   }
 
-  .dark .liquid-btn-default {
-    background: rgba(255, 255, 255, 0.08) !important;
+  .dark .liquid-btn-default,
+  .dark a.liquid-btn-default {
+    background-color: #181B20 !important;
     color: #FFFFFF !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid #323843 !important;
     box-shadow: none !important;
   }
 
-  .dark .liquid-btn-default:hover {
-    background: rgba(255, 255, 255, 0.16) !important;
+  .dark .liquid-btn-default:hover,
+  .dark a.liquid-btn-default:hover {
+    background-color: #232832 !important;
     color: #FFFFFF !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
+    border-color: #4B5565 !important;
   }
 
-  .dark .liquid-btn-default svg {
+  .dark .liquid-btn-default svg,
+  .dark a.liquid-btn-default svg {
     stroke: #FFFFFF !important;
   }
 
@@ -400,8 +407,9 @@
 .dark [class*="bg-[#1"] .liquid-btn-default,
 .dark [class*="bg-[#1"] .liquid-btn-default * {
   color: #FFFFFF !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+  background-color: #181B20 !important;
+  border-color: #323843 !important;
+  box-shadow: none !important;
 }
 
 .dark [class*="bg-black"] .liquid-btn-default svg,

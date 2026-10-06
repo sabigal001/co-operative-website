@@ -35,6 +35,7 @@ interface AppContextType {
   triggerInstallPrompt: () => void;
   isIOS: boolean;
   isStandalone: boolean;
+  isAppInstalled: boolean;
 
   // Toast & Confetti
   toasts: ToastNotification[];
@@ -205,6 +206,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [isIOS, setIsIOS] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
+  const [isAppInstalled, setIsAppInstalled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    const isConfirmed = localStorage.getItem('mosunmola_pwa_installed_confirmed') === 'true';
+    return isStandaloneMode || isConfirmed;
+  });
 
   useEffect(() => {
     // Check if iOS
@@ -217,12 +224,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsStandalone(isInStandalone);
     if (isInStandalone) {
       localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
+      setIsAppInstalled(true);
       setIsInstallBannerVisible(false);
     }
 
     // Listen for native appinstalled event (fired when user completes installation)
     const handleAppInstalled = () => {
       localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
+      setIsAppInstalled(true);
       setIsInstallBannerVisible(false);
       showToast('Mosunmola Cooperative PWA installed successfully!', 'success');
     };
@@ -252,6 +261,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (choiceResult.outcome === 'accepted') {
           // Successfully accepted & installed by user
           localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
+          setIsAppInstalled(true);
           showToast('Thank you for installing Mosunmola Cooperative PWA!', 'success');
           setIsInstallBannerVisible(false);
         } else {
@@ -324,6 +334,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         triggerInstallPrompt,
         isIOS,
         isStandalone,
+        isAppInstalled,
         toasts,
         showToast,
         fireConfetti,

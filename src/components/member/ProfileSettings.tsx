@@ -20,7 +20,7 @@ interface ProfileSettingsProps {
 }
 
 export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
-  const { showToast, triggerInstallPrompt, isStandalone } = useApp();
+  const { showToast, triggerInstallPrompt, isStandalone, isAppInstalled } = useApp();
 
   const [saving, setSaving] = useState(false);
 
@@ -237,14 +237,14 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
             <div>
               <h4 className="font-bold text-sm text-white">Progressive Web App (PWA)</h4>
               <p className="text-xs text-slate-300">
-                {isStandalone
-                  ? 'Application is currently running in Standalone PWA Mode.'
+                {isAppInstalled
+                  ? 'Application is currently installed as a PWA on your device.'
                   : 'Install to your device home screen for 1-tap offline wallet access.'}
               </p>
             </div>
           </div>
 
-          {!isStandalone && (
+          {!isAppInstalled && (
             <button
               type="button"
               onClick={() => {
