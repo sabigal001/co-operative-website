@@ -360,11 +360,47 @@ export const adminService = {
     deposit.reviewedBy = treasurerName;
     saveToStorage(DEPOSITS_STORAGE_KEY, deposits);
 
+    // Update savings account
+    const SAVINGS_KEY = `member_savings_${deposit.memberId}`;
+    const savings = getFromStorage<any>(SAVINGS_KEY, null);
+    if (savings) {
+      savings.totalBalance += deposit.amount;
+      if (deposit.depositType === 'target_plan') {
+        savings.targetSavings += deposit.amount;
+        if (deposit.targetPlanId && savings.targetPlans) {
+          const p = savings.targetPlans.find((tp: any) => tp.id === deposit.targetPlanId);
+          if (p) p.currentAmount += deposit.amount;
+        }
+      } else {
+        savings.voluntarySavings += deposit.amount;
+      }
+      saveToStorage(SAVINGS_KEY, savings);
+    }
+
+    // Append to immutable financial ledger
+    const ledger = getFromStorage<any[]>('financial_ledger', []);
+    ledger.unshift({
+      transactionId: `TXN-LEDGER-${Date.now().toString().slice(-6)}`,
+      memberId: deposit.memberId,
+      type: deposit.depositType === 'target_plan' ? 'TARGET_DEPOSIT' : 'THRIFT_DEPOSIT',
+      amount: deposit.amount,
+      status: 'VERIFIED',
+      reference: deposit.reference,
+      description: `Verified ${deposit.depositType.replace('_', ' ').toUpperCase()} via ${deposit.bankReference}`,
+      paymentMethod: `Bank Transfer (${deposit.bankReference})`,
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      verifiedBy: treasurerName,
+      verifiedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      balanceAfter: savings ? savings.totalBalance : 4200000 + deposit.amount
+    });
+    saveToStorage('financial_ledger', ledger);
+
     // Update transaction to successful
     const txns = getFromStorage<Transaction[]>(TXN_STORAGE_KEY, initialTransactions);
     const txn = txns.find((t) => t.reference === deposit.reference);
     if (txn) {
       txn.status = 'successful';
+      if (savings) txn.balanceAfter = savings.totalBalance;
       saveToStorage(TXN_STORAGE_KEY, txns);
     }
 
