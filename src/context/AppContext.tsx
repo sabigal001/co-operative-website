@@ -33,6 +33,7 @@ interface AppContextType {
   dismissInstallBanner: () => void;
   openInstallBanner: () => void;
   triggerInstallPrompt: () => void;
+  markAppAsInstalled: () => void;
   isIOS: boolean;
   isStandalone: boolean;
   isAppInstalled: boolean;
@@ -271,12 +272,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setDeferredPrompt(null);
       });
     } else if (isIOS) {
-      showToast('Tap the Safari Share button below and select "Add to Home Screen".', 'info');
+      const ua = typeof window !== 'undefined' ? window.navigator.userAgent.toLowerCase() : '';
+      const isChromeOnIos = /crios/.test(ua);
+      if (isChromeOnIos) {
+        showToast('In Chrome: Tap the Share button in the top right corner and select "Add to Home Screen".', 'info');
+      } else {
+        showToast('In Safari: Tap the Share button at the bottom and select "Add to Home Screen".', 'info');
+      }
+      setIsInstallBannerVisible(true);
     } else {
       // In browser without prompt (e.g. desktop), guide user without falsely marking as installed
       showToast('To install, use the Install icon in your browser address bar or menu.', 'info');
       setIsInstallBannerVisible(false);
     }
+  };
+
+  const markAppAsInstalled = () => {
+    localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
+    setIsAppInstalled(true);
+    setIsInstallBannerVisible(false);
+    showToast('Mosunmola Cooperative PWA added! You can now launch it from your home screen.', 'success');
   };
 
   const dismissInstallBanner = () => {
@@ -332,6 +347,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         dismissInstallBanner,
         openInstallBanner,
         triggerInstallPrompt,
+        markAppAsInstalled,
         isIOS,
         isStandalone,
         isAppInstalled,
