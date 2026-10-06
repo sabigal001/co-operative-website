@@ -37,8 +37,10 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
   return (
     <div className="bg-black text-white border-b border-white/10">
       
-      {/* Standalone Admin Subdomain Top Strip */}
-      <div className="bg-black/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 lg:px-8 py-3">
+      {/* Standalone Admin Subdomain Top Strip with Peak Liquid Glassmorphism */}
+      <div className="liquid-glass text-white px-4 sm:px-6 lg:px-8 py-3 relative overflow-hidden border-x-0 border-t-0 rounded-none">
+        {/* Liquid Specular Light Sheen Highlight */}
+        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl liquid-glass border border-white/15 text-white flex items-center justify-center font-display font-black text-base shadow-sm">

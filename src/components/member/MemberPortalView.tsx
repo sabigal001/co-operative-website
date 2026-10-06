@@ -48,8 +48,10 @@ export const MemberPortalView: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 pb-28 md:pb-16 transition-colors duration-300">
 
-      {/* Standalone Member Subdomain Navbar */}
-      <div className="bg-white/90 dark:bg-black/90 backdrop-blur-xl text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/10 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 sticky top-0 z-40">
+      {/* Standalone Member Subdomain Navbar with Peak Liquid Glassmorphism */}
+      <div className="liquid-glass text-slate-900 dark:text-white px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 sticky top-0 z-40 border-x-0 border-t-0 rounded-none overflow-hidden">
+        {/* Liquid Specular Light Sheen Highlight */}
+        <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/80 dark:via-white/35 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">

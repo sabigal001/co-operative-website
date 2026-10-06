@@ -34,11 +34,13 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
       <header className={`sticky z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full transition-all duration-300 ${
         scrolled ? 'top-2 sm:top-3' : 'top-3 sm:top-5'
       }`}>
-        <div className={`liquid-glass rounded-3xl sm:rounded-full flex items-center justify-between text-slate-900 dark:text-white transition-all duration-300 ${
+        <div className={`liquid-glass rounded-3xl sm:rounded-full flex items-center justify-between text-slate-900 dark:text-white transition-all duration-300 relative overflow-hidden ${
           scrolled
-            ? 'px-4 sm:px-6 py-2 sm:py-2.5 backdrop-blur-3xl bg-white/95 dark:bg-black/95 shadow-2xl border-slate-300 dark:border-white/20'
-            : 'px-4 sm:px-6 py-3 sm:py-3.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]'
+            ? 'px-4 sm:px-6 py-2 sm:py-2.5 backdrop-blur-2xl shadow-2xl scale-[0.99]'
+            : 'px-4 sm:px-6 py-3 sm:py-3.5 shadow-xl'
         }`}>
+          {/* Liquid Specular Light Sheen Highlight */}
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/80 dark:via-white/35 to-transparent pointer-events-none" />
 
           {/* Brand Logo & Name (No 'COOP' badge) */}
           <a href="/" className="flex items-center gap-2.5 group">
