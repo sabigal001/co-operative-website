@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sun, Moon, Sparkles } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { triggerHaptic } from '../../utils/haptics';
 
 // 1. Interactive Hanging Pull Cord / Tassel Component
 export const CurtainPullCord: React.FC<{ className?: string }> = ({ className = '' }) => {
@@ -13,6 +14,7 @@ export const CurtainPullCord: React.FC<{ className?: string }> = ({ className = 
   const targetTheme = theme === 'dark' ? 'light' : 'dark';
 
   const triggerCurtain = useCallback(() => {
+    triggerHaptic('medium');
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('trigger-curtain-transition'));
     }
@@ -140,6 +142,7 @@ export const CurtainThemeSwitch: React.FC = () => {
     setTimeout(() => {
       setCurtainStage('closed');
       setTheme(targetTheme);
+      triggerHaptic('selection');
 
       // Begin opening curtain
       setTimeout(() => {

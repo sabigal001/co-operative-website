@@ -1,6 +1,5 @@
 import React from 'react';
 import { CreditCard, PiggyBank, Coins, Building2, User, Clock } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface BottomNavProps {
@@ -9,8 +8,6 @@ interface BottomNavProps {
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab }) => {
-  const { showToast } = useApp();
-
   const tabs = [
     { 
       id: 'card', 
@@ -54,7 +51,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
     triggerHaptic('light');
     if (activeTab !== tab.id) {
       setActiveTab(tab.id);
-      showToast(`Navigated to: ${tab.toast}`, 'info');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

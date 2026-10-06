@@ -41,6 +41,7 @@ interface AppContextType {
   // Toast & Confetti
   toasts: ToastNotification[];
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  dismissToast: (id: string) => void;
   fireConfetti: () => void;
 
   // Theme Mode
@@ -88,7 +89,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setActiveAdminRole = (role: AdminRole) => {
     setActiveAdminRoleState(role);
     authService.switchAdminRole(role);
-    showToast(`Switched active Admin Role to: ${role.replace('_', ' ').toUpperCase()}`, 'info');
   };
 
   const currentAdmin = mockAdminUsers.find((a) => a.role === activeAdminRole) || mockAdminUsers[0];
@@ -305,12 +305,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Toast System
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
+  const dismissToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = `${Date.now()}-${Math.random()}`;
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4500);
+    }, 2800);
   };
 
   const fireConfetti = () => {
@@ -353,6 +357,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isAppInstalled,
         toasts,
         showToast,
+        dismissToast,
         fireConfetti,
         theme,
         setTheme,

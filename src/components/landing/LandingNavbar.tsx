@@ -62,7 +62,10 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
             {/* Become a Member - Strictly hidden on mobile to guarantee room for Hamburger & Theme Switcher */}
             <div className="hidden md:flex items-center">
               <button
-                onClick={onOpenApplyModal}
+                onClick={() => {
+                  triggerHaptic('medium');
+                  onOpenApplyModal();
+                }}
                 className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full"
               >
                 <UserPlus className="w-3.5 h-3.5 text-black" />
@@ -72,7 +75,10 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
 
             {/* Hamburger Button */}
             <button
-              onClick={() => setDrawerOpen(true)}
+              onClick={() => {
+                triggerHaptic('light');
+                setDrawerOpen(true);
+              }}
               className="p-2 sm:p-2.5 text-slate-700 dark:text-slate-200 hover:text-black dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-xl sm:rounded-full border border-slate-900/10 dark:border-white/15 transition-all active:scale-95"
               aria-label="Open Site Menu"
             >
@@ -112,7 +118,10 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setDrawerOpen(false)}
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setDrawerOpen(false);
+                  }}
                   className="p-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-900/10 dark:border-white/10 transition-colors"
                   aria-label="Close menu"
                 >
