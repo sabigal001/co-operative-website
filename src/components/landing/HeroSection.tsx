@@ -78,46 +78,45 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
               </a>
             </div>
 
-            {/* Green Text Link for Issued Members (Added Back) */}
-            <div className="pt-2 flex items-center justify-center lg:justify-start gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#00C853] animate-pulse" />
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                Already an issued member?{' '}
-                <button
-                  onClick={() => navigateToService('members')}
-                  className="underline hover:text-emerald-700 dark:hover:text-emerald-300 font-bold inline-flex items-center gap-1 transition-colors"
-                >
-                  <span>Install or open the Member Web App (PWA)</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
+            {/* Green Text Link for Issued Members */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 sm:gap-1.5 text-xs text-center lg:text-left">
+              <span className="text-slate-600 dark:text-slate-300 font-medium">
+                Already an issued member?
               </span>
+              <button
+                onClick={() => navigateToService('members')}
+                className="text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-700 dark:hover:text-emerald-300 font-bold inline-flex items-center gap-1 transition-colors"
+              >
+                <span>Install or open the Member Web App (PWA)</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
             </div>
 
             {/* Credibility Stats Bar with Viewport Animated Counters */}
-            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0 border-t border-slate-200 dark:border-white/10 text-left">
-              <div>
-                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">
+            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-2xl mx-auto lg:mx-0 border-t border-slate-200 dark:border-white/10 text-center lg:text-left">
+              <div className="flex flex-col items-center lg:items-start">
+                <span className="text-xl sm:text-2xl font-black font-display text-slate-900 dark:text-white block tracking-tight">
                   <StatCounter end={14850} suffix="+" duration={1800} />
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Active Members</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold mt-0.5">Active Members</span>
               </div>
-              <div>
-                <span className="text-2xl font-black font-display text-slate-900 dark:text-white block">
+              <div className="flex flex-col items-center lg:items-start">
+                <span className="text-xl sm:text-2xl font-black font-display text-slate-900 dark:text-white block tracking-tight">
                   ₦<StatCounter end={3.2} decimals={1} suffix="B+" duration={2000} />
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Managed Assets</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold mt-0.5">Managed Assets</span>
               </div>
-              <div>
-                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">
+              <div className="flex flex-col items-center lg:items-start">
+                <span className="text-xl sm:text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block tracking-tight">
                   <StatCounter end={5.0} decimals={1} suffix="%" duration={1600} />
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Flat Loan Rate</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold mt-0.5">Flat Loan Rate</span>
               </div>
-              <div>
-                <span className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block">
+              <div className="flex flex-col items-center lg:items-start">
+                <span className="text-xl sm:text-2xl font-black font-display text-emerald-600 dark:text-emerald-400 block tracking-tight">
                   <StatCounter end={18.5} decimals={1} suffix="%" duration={2200} />
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Target Yield</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-300 uppercase tracking-wider font-semibold mt-0.5">Target Yield</span>
               </div>
             </div>
 
