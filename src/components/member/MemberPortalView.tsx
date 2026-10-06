@@ -59,15 +59,9 @@ export const MemberPortalView: React.FC = () => {
               </div>
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-display font-black text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight truncate">
-                  MOSUNMOLA
-                </span>
-                <span className="hidden sm:inline-block liquid-glass border border-slate-200 dark:border-white/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full shrink-0">
-                  MEMBER PWA
-                </span>
-              </div>
-              <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">members.mosunmolacoop.com</span>
+              <span className="font-display font-black text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight truncate block">
+                MOSUNMOLA
+              </span>
             </div>
           </div>
 
@@ -87,14 +81,17 @@ export const MemberPortalView: React.FC = () => {
               </button>
             )}
 
-            <button
-              onClick={() => openRegisterModal()}
-              className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-2.5 sm:px-3 text-xs flex items-center gap-1.5"
-              title="Activate newly acquired physical RFID plastic card"
-            >
-              <CreditCard className="w-3.5 h-3.5 text-black shrink-0" />
-              <span className="hidden sm:inline">Activate Card</span>
-            </button>
+            {/* Activate Physical Card - Laptop only (hidden on mobile) */}
+            <div className="hidden md:flex items-center">
+              <button
+                onClick={() => openRegisterModal()}
+                className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5"
+                title="Activate newly acquired physical RFID plastic card"
+              >
+                <CreditCard className="w-3.5 h-3.5 text-black shrink-0" />
+                <span>Activate Physical Card</span>
+              </button>
+            </div>
 
             <button
               onClick={() => navigateToService('landing')}

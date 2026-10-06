@@ -73,15 +73,7 @@ export const MemberLoginView: React.FC = () => {
               M
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-black text-sm text-slate-900 dark:text-white tracking-tight">MOSUNMOLA</span>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                  MEMBER PORTAL
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
-                members.mosunmolacoop.com
-              </span>
+              <span className="font-display font-black text-sm text-slate-900 dark:text-white tracking-tight">MOSUNMOLA</span>
             </div>
           </div>
 
