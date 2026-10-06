@@ -31,6 +31,7 @@ interface AppContextType {
   // PWA State & Installation
   isInstallBannerVisible: boolean;
   dismissInstallBanner: () => void;
+  openInstallBanner: () => void;
   triggerInstallPrompt: () => void;
   isIOS: boolean;
   isStandalone: boolean;
@@ -189,10 +190,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallBannerVisible, setIsInstallBannerVisible] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    const isInstalled = localStorage.getItem('mosunmola_pwa_installed') === 'true';
-    const isDismissed = localStorage.getItem('mosunmola_pwa_dismissed') === 'true';
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
-    return !isInstalled && !isDismissed && !isStandaloneMode;
+    if (isStandaloneMode) return false;
+
+    // Clean up any stale false flags from previous testing
+    try {
+      localStorage.removeItem('mosunmola_pwa_installed');
+      localStorage.removeItem('mosunmola_pwa_dismissed');
+    } catch {}
+
+    // Only permanently suppress if confirmed installed via native browser prompt or standalone
+    const isInstalled = localStorage.getItem('mosunmola_pwa_installed_confirmed') === 'true';
+    return !isInstalled;
   });
   const [isIOS, setIsIOS] = useState<boolean>(false);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
@@ -207,13 +216,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
     setIsStandalone(isInStandalone);
     if (isInStandalone) {
-      localStorage.setItem('mosunmola_pwa_installed', 'true');
+      localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
       setIsInstallBannerVisible(false);
     }
 
-    // Listen for native appinstalled event
+    // Listen for native appinstalled event (fired when user completes installation)
     const handleAppInstalled = () => {
-      localStorage.setItem('mosunmola_pwa_installed', 'true');
+      localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
       setIsInstallBannerVisible(false);
       showToast('Mosunmola Cooperative PWA installed successfully!', 'success');
     };
@@ -223,9 +232,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      const isInstalled = localStorage.getItem('mosunmola_pwa_installed') === 'true';
-      const isDismissed = localStorage.getItem('mosunmola_pwa_dismissed') === 'true';
-      if (!isInstalled && !isDismissed && !isInStandalone) {
+      const isInstalled = localStorage.getItem('mosunmola_pwa_installed_confirmed') === 'true';
+      if (!isInstalled && !isInStandalone) {
         setIsInstallBannerVisible(true);
       }
     };
@@ -242,8 +250,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult: any) => {
         if (choiceResult.outcome === 'accepted') {
-          localStorage.setItem('mosunmola_pwa_installed', 'true');
+          // Successfully accepted & installed by user
+          localStorage.setItem('mosunmola_pwa_installed_confirmed', 'true');
           showToast('Thank you for installing Mosunmola Cooperative PWA!', 'success');
+          setIsInstallBannerVisible(false);
+        } else {
+          // User cancelled prompt; close modal for now
           setIsInstallBannerVisible(false);
         }
         setDeferredPrompt(null);
@@ -251,15 +263,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else if (isIOS) {
       showToast('Tap the Safari Share button below and select "Add to Home Screen".', 'info');
     } else {
-      localStorage.setItem('mosunmola_pwa_installed', 'true');
+      // In browser without prompt (e.g. desktop), guide user without falsely marking as installed
+      showToast('To install, use the Install icon in your browser address bar or menu.', 'info');
       setIsInstallBannerVisible(false);
-      showToast('To install on desktop/Android, click "Install" in your browser address bar or menu.', 'info');
     }
   };
 
   const dismissInstallBanner = () => {
-    localStorage.setItem('mosunmola_pwa_dismissed', 'true');
     setIsInstallBannerVisible(false);
+  };
+
+  const openInstallBanner = () => {
+    setIsInstallBannerVisible(true);
   };
 
   // Toast System
@@ -305,6 +320,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         prefillCardId,
         isInstallBannerVisible,
         dismissInstallBanner,
+        openInstallBanner,
         triggerInstallPrompt,
         isIOS,
         isStandalone,

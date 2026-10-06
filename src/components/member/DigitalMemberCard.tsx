@@ -30,6 +30,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const lastTouchHandledRef = useRef<number>(0);
 
   // Passive Gyroscope / DeviceOrientation Listener for subtle 3D parallax on mobile
   React.useEffect(() => {
@@ -124,6 +125,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
     const isTap = Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15 && duration < 350;
 
     if (isHorizontalSwipe || isTap) {
+      lastTouchHandledRef.current = Date.now();
       handleFlip();
     }
 
@@ -132,6 +134,12 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
       setIsHovered(false);
       setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
     }, 400);
+  };
+
+  const handleClick = () => {
+    // Prevent synthetic touch-click double triggers on mobile
+    if (Date.now() - lastTouchHandledRef.current < 600) return;
+    handleFlip();
   };
 
   const handleFlip = () => {
@@ -179,18 +187,18 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleFlip}
-            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
+            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring flex-1 sm:flex-initial justify-center"
           >
             <RotateCw className="w-3.5 h-3.5" />
-            <span>{isFlipped ? 'Show Front' : 'Flip Card 3D'}</span>
+            <span>{isFlipped ? 'Show Front' : 'Flip 3D'}</span>
           </button>
 
           <button
             onClick={copyCardId}
-            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
+            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring flex-1 sm:flex-initial justify-center"
           >
             {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy ID'}</span>
@@ -198,10 +206,10 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
 
           <button
             onClick={handlePrint}
-            className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring"
+            className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5 tap-spring flex-1 sm:flex-initial justify-center"
           >
             <Printer className="w-3.5 h-3.5 text-black" />
-            <span>Print Pass</span>
+            <span>Print</span>
           </button>
         </div>
       </div>
@@ -215,12 +223,12 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={handleFlip}
+        onClick={handleClick}
         style={{ perspective: '1500px', touchAction: 'pan-y' }}
         className="max-w-lg mx-auto cursor-pointer select-none group touch-pan-y"
       >
         <div
-          className={`relative w-full aspect-[1.586/1] rounded-3xl shadow-2xl ${
+          className={`relative w-full aspect-[1.586/1] min-h-[220px] sm:min-h-[250px] rounded-2xl sm:rounded-3xl shadow-2xl ${
             isFlipping
               ? (flipDirection === 'toBack' ? 'animate-card-flip-back' : 'animate-card-flip-front')
               : 'transition-transform ease-out'
@@ -237,7 +245,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         >
           {/* ================= CARD FRONT ================= */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-black border border-white/20 shadow-2xl flex flex-col justify-between"
+            className="absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl p-4 sm:p-7 text-white overflow-hidden bg-black border border-white/20 shadow-2xl flex flex-col justify-between"
             style={{ 
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden',
@@ -246,7 +254,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
           >
             {/* Dynamic Holographic Rainbow Sheen */}
             <div 
-              className="absolute inset-0 holo-sheen transition-opacity duration-300"
+              className="absolute inset-0 holo-sheen transition-opacity duration-300 pointer-events-none"
               style={{
                 opacity: isHovered ? 0.75 : 0.3,
                 backgroundPosition: `${tilt.glareX}% ${tilt.glareY}%`
@@ -264,40 +272,40 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
 
             {/* Top Bar: Brand, Logo & Status Badge */}
             <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl liquid-glass border border-white/15 p-0.5 shadow-sm">
-                  <div className="w-full h-full bg-black/80 rounded-[10px] flex items-center justify-center font-display font-black text-sm text-white">
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl liquid-glass border border-white/15 p-0.5 shadow-sm">
+                  <div className="w-full h-full bg-black/80 rounded-[6px] sm:rounded-[10px] flex items-center justify-center font-display font-black text-xs sm:text-sm text-white">
                     M
                   </div>
                 </div>
                 <div>
-                  <span className="font-display font-black text-xs sm:text-sm tracking-wider text-white block">
+                  <span className="font-display font-black text-[11px] sm:text-sm tracking-wider text-white block leading-tight">
                     MOSUNMOLA COOPERATIVE
                   </span>
-                  <span className="text-[9px] text-slate-400 uppercase tracking-widest font-mono">
+                  <span className="text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-widest font-mono">
                     Multipurpose Society Ltd.
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 liquid-glass text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/10">
+              <div className="flex items-center gap-1 sm:gap-1.5 liquid-glass text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span>OFFICIAL PASS</span>
               </div>
             </div>
 
             {/* Middle: Microchip & Card Number */}
-            <div className="relative z-10 my-auto">
-              <div className="flex items-center justify-between mb-2">
+            <div className="relative z-10 my-auto py-1 sm:py-0">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                 {/* Gold Microchip Graphic */}
-                <div className="w-11 h-8 rounded-lg bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 border border-amber-500/60 p-1 flex flex-col justify-around shadow-inner">
+                <div className="w-9 h-6 sm:w-11 sm:h-8 rounded-md sm:rounded-lg bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 border border-amber-500/60 p-0.5 sm:p-1 flex flex-col justify-around shadow-inner">
                   <div className="h-0.5 bg-amber-800/40 w-full" />
                   <div className="h-0.5 bg-amber-800/40 w-full" />
                 </div>
 
                 {/* Contactless symbol */}
                 <div className="flex items-center text-slate-400">
-                  <svg className="w-6 h-6 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M8.5 16.5a5 5 0 0 1 0-9" />
                     <path d="M12 19a8.5 8.5 0 0 0 0-14" />
                     <path d="M15.5 21.5a12 12 0 0 0 0-19" />
@@ -305,39 +313,39 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
                 </div>
               </div>
 
-              <div className="font-mono text-xl sm:text-2xl font-extrabold text-white tracking-widest">
+              <div className="font-mono text-base sm:text-2xl font-extrabold text-white tracking-wider sm:tracking-widest">
                 {member.memberId}
               </div>
-              <span className="text-[10px] text-slate-400 font-mono tracking-wider">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono tracking-wider">
                 ID NO. • VALIDATED
               </span>
             </div>
 
             {/* Bottom Row: Member Photo, Name, and Dynamic QR */}
-            <div className="flex items-end justify-between relative z-10 pt-2 border-t border-white/10">
-              <div className="flex items-center gap-3">
+            <div className="flex items-end justify-between relative z-10 pt-1.5 sm:pt-2 border-t border-white/10">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <img
                   src={member.avatar}
                   alt={member.fullName}
-                  className="w-12 h-12 rounded-xl object-cover border-2 border-brand-500 ring-2 ring-brand-500/30 shadow-md"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl object-cover border-2 border-brand-500 ring-2 ring-brand-500/30 shadow-md shrink-0"
                 />
-                <div>
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-mono">
+                <div className="min-w-0">
+                  <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 block font-mono">
                     MEMBER NAME
                   </span>
-                  <span className="font-bold text-white text-xs sm:text-sm uppercase tracking-wide block truncate max-w-[180px]">
+                  <span className="font-bold text-white text-[11px] sm:text-sm uppercase tracking-wide block truncate max-w-[130px] sm:max-w-[180px]">
                     {member.fullName}
                   </span>
-                  <span className="text-[10px] text-brand-400 font-mono">
+                  <span className="text-[9px] sm:text-[10px] text-brand-400 font-mono">
                     Joined: {member.joinDate}
                   </span>
                 </div>
               </div>
 
               {/* Dynamic QR Code box */}
-              <div className="bg-white p-1 rounded-xl shadow-lg flex flex-col items-center">
-                <QrCode className="w-11 h-11 text-slate-950" />
-                <span className="text-[8px] font-mono font-bold text-slate-900 mt-0.5">
+              <div className="bg-white p-1 rounded-lg sm:rounded-xl shadow-lg flex flex-col items-center shrink-0">
+                <QrCode className="w-8 h-8 sm:w-11 sm:h-11 text-slate-950" />
+                <span className="text-[7px] sm:text-[8px] font-mono font-bold text-slate-900 mt-0.5">
                   SECURE PASS
                 </span>
               </div>
@@ -346,7 +354,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
 
           {/* ================= CARD BACK ================= */}
           <div
-            className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-bl from-neutral-900 via-zinc-950 to-black border border-white/20 shadow-2xl flex flex-col justify-between"
+            className="absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl p-4 sm:p-7 text-white overflow-hidden bg-gradient-to-bl from-neutral-900 via-zinc-950 to-black border border-white/20 shadow-2xl flex flex-col justify-between"
             style={{
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden',
@@ -354,25 +362,25 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
             }}
           >
             {/* Magnetic Stripe */}
-            <div className="-mx-6 sm:-mx-7 -mt-2 h-12 bg-slate-950 border-y border-white/10" />
+            <div className="-mx-4 sm:-mx-7 -mt-1 sm:-mt-2 h-9 sm:h-12 bg-slate-950 border-y border-white/10" />
 
             {/* Signature & Security Panel */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-white/90 text-slate-900 font-serif italic text-sm px-4 py-1.5 rounded-lg text-right">
+                <div className="flex-1 bg-white/90 text-slate-900 font-serif italic text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg text-right truncate">
                   {member.fullName}
                 </div>
-                <div className="bg-slate-800 text-white font-mono text-xs px-2.5 py-1.5 rounded-lg border border-white/10 font-bold">
+                <div className="bg-slate-800 text-white font-mono text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border border-white/10 font-bold shrink-0">
                   CVV 894
                 </div>
               </div>
-              <p className="text-[9px] text-slate-400 leading-tight">
+              <p className="text-[8px] sm:text-[9px] text-slate-400 leading-tight">
                 Authorized Signature. Not transferable. This card remains the property of Mosunmola Cooperative Multipurpose Society.
               </p>
             </div>
 
             {/* Statutory Details & Helpline */}
-            <div className="text-[10px] text-slate-400 border-t border-white/10 pt-3 space-y-1">
+            <div className="text-[9px] sm:text-[10px] text-slate-400 border-t border-white/10 pt-2 sm:pt-3 space-y-0.5 sm:space-y-1">
               <div className="flex justify-between">
                 <span>Lagos State Reg No:</span>
                 <span className="font-mono text-slate-200">LSCS/2018/8941</span>

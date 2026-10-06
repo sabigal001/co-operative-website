@@ -57,13 +57,16 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
 
           {/* Action Buttons: Become a Member (hidden on mobile for spacious layout) + Hamburger Menu + Curtain Pull Cord at Right End */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            <button
-              onClick={onOpenApplyModal}
-              className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full hidden md:inline-flex"
-            >
-              <UserPlus className="w-3.5 h-3.5 text-black" />
-              <span>Become a Member</span>
-            </button>
+            {/* Become a Member - Strictly hidden on mobile to guarantee room for Hamburger & Theme Switcher */}
+            <div className="hidden md:flex items-center">
+              <button
+                onClick={onOpenApplyModal}
+                className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full"
+              >
+                <UserPlus className="w-3.5 h-3.5 text-black" />
+                <span>Become a Member</span>
+              </button>
+            </div>
 
             {/* Hamburger Button */}
             <button
