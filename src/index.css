@@ -106,8 +106,7 @@
   font-weight: 700;
   border-radius: 0.75rem;
   position: relative;
-  overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
   white-space: nowrap;
   text-shadow: none !important;
   filter: none !important;
@@ -115,12 +114,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ensure all text and icons inside buttons are razor-sharp and sit above any reflection */
-.liquid-btn > *,
-.liquid-btn span,
-.liquid-btn svg {
-  position: relative;
-  z-index: 2;
+/* Ensure all text and icons inside buttons are razor-sharp with ZERO text shadow or blur */
+.liquid-btn,
+.liquid-btn *,
+button,
+button * {
   text-shadow: none !important;
   filter: none !important;
 }
@@ -133,43 +131,13 @@
   transform: translateY(0px) scale(0.97);
 }
 
-/* Light reflection shimmer sweeping across border/surface ONLY on hover (hidden at rest) */
-.liquid-btn::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -130%;
-  width: 50%;
-  height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.28) 50%,
-    transparent 100%
-  );
-  transform: rotate(25deg);
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-}
-
-.liquid-btn:hover::after {
-  opacity: 1;
-  left: 170%;
-  transition: left 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
-}
-
 /* 1. Translucent / Default Liquid Button - High Contrast in Dark Mode */
-.liquid-btn-default,
-.liquid-btn-default *,
 .dark .liquid-btn-default,
 .dark .liquid-btn-default * {
   color: #FFFFFF !important;
   text-shadow: none !important;
 }
 
-.liquid-btn-default,
 .dark .liquid-btn-default {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #FFFFFF !important;
@@ -177,65 +145,60 @@
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4) !important;
 }
 
-.liquid-btn-default:hover,
 .dark .liquid-btn-default:hover {
   background: rgba(255, 255, 255, 0.18) !important;
   color: #FFFFFF !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
-.liquid-btn-default svg,
 .dark .liquid-btn-default svg {
   stroke: #FFFFFF !important;
 }
 
 /* 2. Primary White Action Button - Guaranteed Crisp Contrast */
-.liquid-btn-white,
-.liquid-btn-white *,
 .dark .liquid-btn-white,
 .dark .liquid-btn-white * {
   color: #000000 !important;
   text-shadow: none !important;
 }
 
-.liquid-btn-white {
+.dark .liquid-btn-white {
   background-color: #FFFFFF !important;
   color: #000000 !important;
   border: 1px solid #FFFFFF !important;
   box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.18) !important;
 }
 
-.liquid-btn-white:hover {
+.dark .liquid-btn-white:hover {
   background-color: #F8FAFC !important;
   color: #000000 !important;
   transform: translateY(-1px);
 }
 
-.liquid-btn-white svg,
 .dark .liquid-btn-white svg {
   stroke: #000000 !important;
 }
 
 /* 3. Primary Brand Accent Button */
-.liquid-btn-primary,
-.liquid-btn-primary * {
+.dark .liquid-btn-primary,
+.dark .liquid-btn-primary * {
   text-shadow: none !important;
 }
 
-.liquid-btn-primary {
+.dark .liquid-btn-primary {
   background: rgba(0, 200, 83, 0.15) !important;
   color: #00C853 !important;
   border: 1px solid rgba(0, 200, 83, 0.4) !important;
   box-shadow: 0 4px 12px -2px rgba(0, 200, 83, 0.25) !important;
 }
 
-.liquid-btn-primary:hover {
+.dark .liquid-btn-primary:hover {
   background: rgba(0, 200, 83, 0.25) !important;
   border-color: rgba(0, 200, 83, 0.7) !important;
   color: #10B981 !important;
 }
 
-.liquid-btn-primary svg {
+.dark .liquid-btn-primary svg {
   stroke: currentColor;
 }
 
@@ -253,54 +216,53 @@
   padding: 1px;
 }
 
-/* Light Theme Adaptations */
+/* Light Theme Adaptations - Razor Sharp Contrast */
 .light .liquid-glass-card {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  border: 1px solid rgba(15, 23, 42, 0.09);
-  box-shadow: 0 12px 32px -6px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.02), inset 0 1px 0 #FFFFFF;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 8px 25px -4px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.03);
 }
 
 .light .liquid-glass-card::before {
-  background: linear-gradient(
-    var(--card-sheen-angle, 135deg),
-    rgba(15, 23, 42, 0.2) 0%,
-    rgba(0, 200, 83, 0.25) 28%,
-    transparent 58%,
-    rgba(15, 23, 42, 0.1) 100%
-  );
+  display: none;
 }
 
 .light .liquid-glass-card:hover {
   background: #FFFFFF;
-  border-color: rgba(15, 23, 42, 0.22);
-  box-shadow: 0 22px 45px -8px rgba(15, 23, 42, 0.12), 0 0 24px -4px rgba(0, 200, 83, 0.15), inset 0 1px 0 #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 14px 35px -6px rgba(15, 23, 42, 0.1);
   transform: translateY(-2px);
 }
 
 .light .liquid-glass {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  box-shadow: 0 8px 28px 0 rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px 0 rgba(15, 23, 42, 0.05);
 }
 
+/* Light Mode Buttons - Guaranteed Crisp Visibility */
 .light .liquid-btn-default,
-.light .liquid-btn-default * {
+.light .liquid-btn-default *,
+.light button.liquid-btn-default,
+.light a.liquid-btn-default {
   color: #0F172A !important;
+  text-shadow: none !important;
 }
 
 .light .liquid-btn-default {
-  background: rgba(15, 23, 42, 0.07) !important;
+  background: #F1F5F9 !important;
   color: #0F172A !important;
-  border: 1px solid rgba(15, 23, 42, 0.18) !important;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid #CBD5E1 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
 }
 
-.light .liquid-btn-default:hover {
-  background: rgba(15, 23, 42, 0.14) !important;
+.light .liquid-btn-default:hover,
+.light .liquid-btn-default:hover * {
+  background: #E2E8F0 !important;
   color: #000000 !important;
-  border-color: rgba(15, 23, 42, 0.3) !important;
+  border-color: #94A3B8 !important;
 }
 
 .light .liquid-btn-default svg {
@@ -308,58 +270,78 @@
 }
 
 .light .liquid-btn-white,
-.light .liquid-btn-white * {
-  color: #FFFFFF !important;
+.light .liquid-btn-white *,
+.light button.liquid-btn-white {
+  color: #000000 !important;
+  text-shadow: none !important;
 }
 
 .light .liquid-btn-white {
-  background-color: #0F172A !important;
-  color: #FFFFFF !important;
-  border: 1px solid #0F172A !important;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.25) !important;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border: 1px solid #CBD5E1 !important;
+  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.12) !important;
 }
 
-.light .liquid-btn-white:hover {
-  background-color: #1E293B !important;
-  color: #FFFFFF !important;
+.light .liquid-btn-white:hover,
+.light .liquid-btn-white:hover * {
+  background-color: #F8FAFC !important;
+  color: #000000 !important;
+  border-color: #94A3B8 !important;
 }
 
 .light .liquid-btn-white svg {
-  stroke: #FFFFFF !important;
+  stroke: #000000 !important;
 }
 
-/* Guaranteed High-Contrast Protection for buttons inside dark modals */
-[class*="bg-black"] .liquid-btn-default,
-[class*="bg-black"] .liquid-btn-default *,
-[class*="bg-[#0"] .liquid-btn-default,
-[class*="bg-[#0"] .liquid-btn-default *,
-[class*="bg-[#1"] .liquid-btn-default,
-[class*="bg-[#1"] .liquid-btn-default * {
+.light .liquid-btn-primary,
+.light .liquid-btn-primary * {
+  color: #047857 !important;
+  text-shadow: none !important;
+}
+
+.light .liquid-btn-primary {
+  background: #ECFDF5 !important;
+  color: #047857 !important;
+  border: 1px solid #A7F3D0 !important;
+}
+
+.light .liquid-btn-primary svg {
+  stroke: #047857 !important;
+}
+
+/* Guaranteed High-Contrast Protection for buttons inside dark modals (ONLY in dark mode) */
+.dark [class*="bg-black"] .liquid-btn-default,
+.dark [class*="bg-black"] .liquid-btn-default *,
+.dark [class*="bg-[#0"] .liquid-btn-default,
+.dark [class*="bg-[#0"] .liquid-btn-default *,
+.dark [class*="bg-[#1"] .liquid-btn-default,
+.dark [class*="bg-[#1"] .liquid-btn-default * {
   color: #FFFFFF !important;
   background-color: rgba(255, 255, 255, 0.1) !important;
   border-color: rgba(255, 255, 255, 0.22) !important;
 }
 
-[class*="bg-black"] .liquid-btn-default svg,
-[class*="bg-[#0"] .liquid-btn-default svg,
-[class*="bg-[#1"] .liquid-btn-default svg {
+.dark [class*="bg-black"] .liquid-btn-default svg,
+.dark [class*="bg-[#0"] .liquid-btn-default svg,
+.dark [class*="bg-[#1"] .liquid-btn-default svg {
   stroke: #FFFFFF !important;
 }
 
-[class*="bg-black"] .liquid-btn-white,
-[class*="bg-black"] .liquid-btn-white *,
-[class*="bg-[#0"] .liquid-btn-white,
-[class*="bg-[#0"] .liquid-btn-white *,
-[class*="bg-[#1"] .liquid-btn-white,
-[class*="bg-[#1"] .liquid-btn-white * {
+.dark [class*="bg-black"] .liquid-btn-white,
+.dark [class*="bg-black"] .liquid-btn-white *,
+.dark [class*="bg-[#0"] .liquid-btn-white,
+.dark [class*="bg-[#0"] .liquid-btn-white *,
+.dark [class*="bg-[#1"] .liquid-btn-white,
+.dark [class*="bg-[#1"] .liquid-btn-white * {
   color: #000000 !important;
   background-color: #FFFFFF !important;
   border-color: rgba(255, 255, 255, 0.9) !important;
 }
 
-[class*="bg-black"] .liquid-btn-white svg,
-[class*="bg-[#0"] .liquid-btn-white svg,
-[class*="bg-[#1"] .liquid-btn-white svg {
+.dark [class*="bg-black"] .liquid-btn-white svg,
+.dark [class*="bg-[#0"] .liquid-btn-white svg,
+.dark [class*="bg-[#1"] .liquid-btn-white svg {
   stroke: #000000 !important;
 }
 

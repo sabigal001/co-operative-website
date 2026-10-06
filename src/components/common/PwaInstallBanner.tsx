@@ -4,10 +4,11 @@ import { Download, Share2, PlusSquare, X, Smartphone, Sparkles, CheckCircle2 } f
 import { triggerHaptic } from '../../utils/haptics';
 
 export const PwaInstallBanner: React.FC = () => {
-  const { isInstallBannerVisible, dismissInstallBanner, triggerInstallPrompt, isIOS, isStandalone } = useApp();
+  const { currentPortal, isInstallBannerVisible, dismissInstallBanner, triggerInstallPrompt, isIOS, isStandalone } = useApp();
   const [showIosGuide, setShowIosGuide] = useState(false);
 
-  if (!isInstallBannerVisible || isStandalone) return null;
+  // Strict check: ONLY show modal inside the Member Portal, never on landing page or admin portal
+  if (currentPortal !== 'member' || !isInstallBannerVisible || isStandalone) return null;
 
   const handleInstallClick = () => {
     triggerHaptic('medium');

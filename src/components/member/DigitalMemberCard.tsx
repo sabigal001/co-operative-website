@@ -221,7 +221,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
                 </div>
               </div>
 
-              <div className="font-mono text-xl sm:text-2xl font-black text-white tracking-widest drop-shadow">
+              <div className="font-mono text-xl sm:text-2xl font-black text-white tracking-widest">
                 {member.memberId}
               </div>
               <span className="text-[10px] text-slate-400 font-mono tracking-wider">

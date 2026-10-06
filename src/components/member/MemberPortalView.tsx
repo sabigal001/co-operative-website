@@ -58,12 +58,12 @@ export const MemberPortalView: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display font-black text-sm text-white tracking-tight">MOSUNMOLA</span>
-                <span className="liquid-glass border border-white/10 text-emerald-400 text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full">
+                <span className="font-display font-black text-sm text-slate-900 dark:text-white tracking-tight">MOSUNMOLA</span>
+                <span className="liquid-glass border border-slate-200 dark:border-white/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full">
                   MEMBER PWA
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">members.mosunmolacoop.com</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">members.mosunmolacoop.com</span>
             </div>
           </div>
 
@@ -82,7 +82,7 @@ export const MemberPortalView: React.FC = () => {
               onClick={() => navigateToService('landing')}
               className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5"
             >
-              <ExternalLink className="w-3 h-3 text-slate-300" />
+              <ExternalLink className="w-3 h-3 text-slate-700 dark:text-slate-300" />
               <span className="hidden sm:inline">Public Website</span>
             </button>
 

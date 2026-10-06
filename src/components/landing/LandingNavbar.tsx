@@ -55,11 +55,11 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
             </div>
           </a>
 
-          {/* Action Buttons: Become a Member + Hamburger Menu + Curtain Pull Cord at Right End */}
+          {/* Action Buttons: Become a Member (hidden on mobile for spacious layout) + Hamburger Menu + Curtain Pull Cord at Right End */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             <button
               onClick={onOpenApplyModal}
-              className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full"
+              className="liquid-btn liquid-btn-white text-black font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-full hidden md:inline-flex"
             >
               <UserPlus className="w-3.5 h-3.5 text-black" />
               <span>Become a Member</span>
@@ -137,8 +137,20 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
               ))}
             </nav>
 
-            {/* Bottom Actions: 1. Install App -> 2. WhatsApp -> 3. TikTok */}
+            {/* Bottom Actions: 1. Apply / Become Member -> 2. Install App -> 3. WhatsApp -> 4. TikTok */}
             <div className="pt-5 border-t border-slate-200 dark:border-white/10 max-w-sm mx-auto w-full space-y-2.5">
+
+              {/* Primary Mobile Action: Become a Member */}
+              <button
+                onClick={() => {
+                  setDrawerOpen(false);
+                  onOpenApplyModal();
+                }}
+                className="w-full py-3 px-4 rounded-xl liquid-btn liquid-btn-white text-black font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 mb-1"
+              >
+                <UserPlus className="w-4 h-4 text-black" />
+                <span>Apply / Become a Member</span>
+              </button>
 
               {/* 1. Install Mosunmola Coop App (Wide Button) */}
               <button

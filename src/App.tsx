@@ -43,6 +43,7 @@ const AppContent: React.FC = () => {
           <>
             <MemberPortalView />
             <RegisterCardModal />
+            <PwaInstallBanner />
           </>
         )}
 
@@ -50,8 +51,7 @@ const AppContent: React.FC = () => {
         {currentPortal === 'admin' && <AdminPortalView />}
       </div>
 
-      {/* Global Modals & Notifications */}
-      <PwaInstallBanner />
+      {/* Global Notifications */}
       <ToastContainer />
     </div>
   );
