@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { cardService } from '../../services/api/cardService';
 import { authService } from '../../services/api/authService';
 import { triggerHaptic } from '../../utils/haptics';
 import { 
@@ -7,9 +8,8 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ArrowRight, 
+  ArrowLeft,
   ShieldCheck, 
-  Upload, 
-  User, 
   Lock, 
   Phone, 
   Mail, 
@@ -17,8 +17,12 @@ import {
   X, 
   Sparkles,
   Camera,
-  Loader2
+  Loader2,
+  Building2,
+  UserCheck,
+  Check
 } from 'lucide-react';
+import type { CardLookupResponse } from '../../types';
 
 export const RegisterCardModal: React.FC = () => {
   const { 
@@ -31,119 +35,149 @@ export const RegisterCardModal: React.FC = () => {
     fireConfetti 
   } = useApp();
 
-  // Wizard state: 1: Lookup, 2: Verification Review, 3: Account Details & Photo, 4: OTP Activation
+  // 4 Core Steps:
+  // 1: Card Lookup
+  // 2: Member Verification
+  // 3: Account Details Setup
+  // 4: OTP Activation
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Form Fields
-  const [cardId, setCardId] = useState('');
-  const [verifiedInfo, setVerifiedInfo] = useState<{
-    fullName: string;
-    branch: string;
-    phone?: string;
-    email?: string;
-  } | null>(null);
+  // Step 1: Lookup Input & Lookup Result
+  const [cardInput, setCardInput] = useState('');
+  const [lookupResult, setLookupResult] = useState<CardLookupResponse | null>(null);
 
-  const [fullName, setFullName] = useState('');
+  // Step 2 & 3: Cooperative-Owned (Read-Only) vs Member-Managed (Editable)
+  // Cooperative-owned
+  const [canonicalMemberId, setCanonicalMemberId] = useState('');
+  const [officialLegalName, setOfficialLegalName] = useState('');
+  const [cardId, setCardId] = useState('');
+  const [issuingBranch, setIssuingBranch] = useState('');
+  const [membershipDate, setMembershipDate] = useState('');
+
+  // Member-managed editable
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('Password@123');
-  const [nin, setNin] = useState('29810482910');
-  const [address, setAddress] = useState('Plot 8, Admiralty Way, Lekki Phase 1, Lagos');
-  const [occupation, setOccupation] = useState('Business Executive / Consultant');
+  const [password, setPassword] = useState('SecurePass@2026');
+  const [confirmPassword, setConfirmPassword] = useState('SecurePass@2026');
+  const [address, setAddress] = useState('');
+  const [occupation, setOccupation] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80');
 
   // Next of kin
-  const [nokName, setNokName] = useState('Mrs. Mariam Balogun');
+  const [nokName, setNokName] = useState('');
   const [nokRel, setNokRel] = useState('Spouse');
-  const [nokPhone, setNokPhone] = useState('+234 802 889 0011');
+  const [nokPhone, setNokPhone] = useState('');
 
-  // Step 4 OTP
+  // Identity Confirmation Checkbox
+  const [confirmedIdentity, setConfirmedIdentity] = useState(false);
+
+  // Step 4: OTP Activation
   const [otpCode, setOtpCode] = useState('894201');
 
   useEffect(() => {
     if (prefillCardId) {
-      setCardId(prefillCardId);
+      setCardInput(prefillCardId);
     } else {
-      setCardId('MCS-2026-1033'); // Great demo default
+      setCardInput('MCS-2026-1033'); // Default unactivated demo card
     }
     setStep(1);
     setErrorMessage('');
+    setLookupResult(null);
+    setConfirmedIdentity(false);
   }, [prefillCardId, isRegisterModalOpen]);
 
   if (!isRegisterModalOpen) return null;
 
-  // Step 1 -> Step 2: Verify ID Card
-  const handleVerifyCard = async (overrideId?: string) => {
-    const idToVerify = (overrideId || cardId).trim().toUpperCase();
-    if (!idToVerify) {
+  // Step 01: Card Lookup
+  const handleLookupCard = async (overrideId?: string) => {
+    const idToLookup = (overrideId || cardInput).trim().toUpperCase();
+    if (!idToLookup) {
       triggerHaptic('warning');
-      setErrorMessage('Please enter your Physical Member ID Card number.');
+      setErrorMessage('Please enter your Physical Card ID or Member ID.');
       return;
     }
 
     setLoading(true);
     setErrorMessage('');
+    setLookupResult(null);
 
     try {
-      const res = await authService.verifyPhysicalCardId(idToVerify);
-      if (res.success && res.data.valid) {
+      const res = await cardService.lookupCard(idToLookup);
+      setLookupResult(res.data);
+
+      if (res.success && res.data.status === 'FOUND_ELIGIBLE') {
         triggerHaptic('success');
-        setVerifiedInfo(res.data.prefill || null);
-        if (res.data.prefill) {
-          setFullName(res.data.prefill.fullName || '');
-          if (res.data.prefill.phone) setPhone(res.data.prefill.phone);
-          if (res.data.prefill.email) setEmail(res.data.prefill.email);
+        const prefill = res.data.prefill;
+        if (prefill) {
+          setCanonicalMemberId(prefill.memberId);
+          setOfficialLegalName(prefill.fullName);
+          setCardId(prefill.cardId);
+          setIssuingBranch(prefill.branch);
+          setMembershipDate(prefill.joinDate);
+
+          setEmail(prefill.email);
+          setPhone(prefill.phone);
+          setAddress(prefill.address || 'Plot 8, Admiralty Way, Lekki, Lagos');
+          setOccupation(prefill.occupation || 'Business Executive');
+          setNokName('Family Next of Kin');
+          setNokPhone(prefill.phone);
         }
-        setStep(2);
       } else {
-        triggerHaptic('error');
-        setErrorMessage(res.message || 'Verification failed. Please check the ID.');
+        triggerHaptic('warning');
+        setErrorMessage(res.message || res.data.message);
       }
     } catch (e: any) {
       triggerHaptic('error');
-      setErrorMessage(e.message || 'Network error verifying card.');
+      setErrorMessage(e.message || 'Network error looking up card.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Step 2 -> Step 3: Proceed to Registration form
-  const handleProceedToAccount = () => {
+  // Step 01 -> Step 02: Proceed to Verification
+  const handleProceedToVerification = () => {
     triggerHaptic('selection');
+    setStep(2);
+  };
+
+  // Step 02 -> Step 03: Confirm Verification and Proceed to Credentials
+  const handleProceedToAccountSetup = () => {
+    if (!confirmedIdentity) {
+      triggerHaptic('warning');
+      setErrorMessage('Please check the box confirming you are the authorized cardholder.');
+      return;
+    }
+    triggerHaptic('selection');
+    setErrorMessage('');
     setStep(3);
   };
 
-  // Step 3 -> Step 4: Submit Account & Trigger OTP
-  const handleSubmitAccount = async (e: React.FormEvent) => {
+  // Step 03 -> Step 04: Submit Account Details & Trigger OTP
+  const handleProceedToOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !phone || !password) {
+    if (!email.trim() || !phone.trim() || !password.trim()) {
       triggerHaptic('warning');
-      setErrorMessage('Please fill in email, phone, and secure password.');
+      setErrorMessage('Please provide valid email, phone, and password.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      triggerHaptic('warning');
+      setErrorMessage('Passwords do not match. Please re-enter.');
       return;
     }
 
-    setLoading(true);
+    triggerHaptic('selection');
     setErrorMessage('');
-    try {
-      // Simulate submission and move to OTP
-      await new Promise((r) => setTimeout(r, 600));
-      triggerHaptic('selection');
-      setStep(4);
-    } catch (err: any) {
-      triggerHaptic('error');
-      setErrorMessage(err.message || 'Error creating account.');
-    } finally {
-      setLoading(false);
-    }
+    setStep(4);
   };
 
-  // Step 4: Verify OTP and Activate
-  const handleVerifyOtp = async () => {
+  // Step 04: Verify OTP & Activate Account
+  const handleVerifyOtpAndActivate = async () => {
     if (!otpCode || otpCode.length < 6) {
       triggerHaptic('warning');
-      setErrorMessage('Please enter a 6-digit verification code.');
+      setErrorMessage('Please enter the 6-digit OTP code.');
       return;
     }
 
@@ -159,76 +193,66 @@ export const RegisterCardModal: React.FC = () => {
         return;
       }
 
-      // Register in backend mock store
-      const regRes = await authService.registerMember({
-        cardId: cardId.toUpperCase(),
-        fullName,
+      // Activate via cardService
+      const activateRes = await cardService.activateCard({
+        cardId,
+        memberId: canonicalMemberId,
         email,
         phone,
-        password,
         avatarUrl,
-        nin,
         address,
         occupation,
         nextOfKin: {
           name: nokName,
+          phone: nokPhone || phone,
           relationship: nokRel,
-          phone: nokPhone,
-          address: 'Same as member'
+          address
         }
       });
 
-      if (regRes.success && regRes.data) {
+      if (activateRes.success && activateRes.data) {
         triggerHaptic('success');
-        loginMember(regRes.data);
+        loginMember(activateRes.data);
         fireConfetti();
-        showToast('Physical Card Activated! Welcome to Mosunmola Cooperative.', 'success');
+        showToast('Digital account activated! Welcome to Mosunmola Cooperative.', 'success');
         closeRegisterModal();
         setCurrentPortal('member');
       } else {
-        // If already existing, just log in
-        const loginRes = await authService.loginMember(cardId);
-        if (loginRes.success) {
-          triggerHaptic('success');
-          loginMember(loginRes.data);
-          fireConfetti();
-          closeRegisterModal();
-          setCurrentPortal('member');
-        } else {
-          triggerHaptic('error');
-          setErrorMessage(regRes.message || 'Failed to complete activation.');
-        }
+        triggerHaptic('error');
+        setErrorMessage(activateRes.message || 'Activation failed.');
       }
     } catch (err: any) {
       triggerHaptic('error');
-      setErrorMessage(err.message || 'Verification error.');
+      setErrorMessage(err.message || 'Activation verification error.');
     } finally {
       setLoading(false);
     }
   };
 
-  const sampleDemoCards = [
-    { id: 'MCS-2026-1033', name: 'Hajiya Fatima Garba', branch: 'Victoria Island' },
-    { id: 'MCS-2026-5571', name: 'Engr. Emeka Okafor', branch: 'Lekki Phase 1' },
-    { id: 'MCS-2026-7890', name: 'Mrs. Folashade Adeyemi', branch: 'Surulere Main' },
+  const sampleEligibleDemoCards = [
+    { id: 'MCS-2026-1033', name: 'Hajiya Fatima Garba (Issued)', branch: 'Victoria Island' },
+    { id: 'MCS-2026-5571', name: 'Engr. Emeka Okafor (Issued)', branch: 'Lekki Phase 1' },
+    { id: 'MCS-2026-7890', name: 'Mrs. Folashade Adeyemi (Issued)', branch: 'Surulere Sub-Station' },
     { id: 'MCS-2026-8942', name: 'Chief Adeleke Balogun (Active)', branch: 'Ikeja Central' },
+    { id: 'MCS-2026-3312', name: 'Oluwaseun Bakare (Blocked)', branch: 'Abeokuta Liaison' }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-8 animate-slide-up relative">
-        {/* Top Header */}
-        <div className="px-6 py-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-6 animate-slide-up relative flex flex-col max-h-[92vh]">
+        
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shadow-sm">
               <CreditCard className="w-5 h-5 text-slate-900 dark:text-white" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white leading-tight">
-                Physical Card Activation
+              <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-tight">
+                Activate Your Physical Card
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Link your issued plastic ID card to your digital member wallet
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Link your issued cooperative card to your secure digital member account.
               </p>
             </div>
           </div>
@@ -237,383 +261,461 @@ export const RegisterCardModal: React.FC = () => {
               triggerHaptic('light');
               closeRegisterModal();
             }}
-            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors tap-spring"
+            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Step Progress Pills */}
-        <div className="px-6 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
-          {[
-            { num: 1, title: 'Card Lookup' },
-            { num: 2, title: 'Verification' },
-            { num: 3, title: 'Account Data' },
-            { num: 4, title: 'OTP Activation' }
-          ].map((item) => {
-            const isCompleted = step > item.num;
-            const isCurrent = step === item.num;
-            return (
-              <div key={item.num} className="flex items-center gap-1.5">
-                <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
-                    isCompleted
-                      ? 'bg-emerald-600 text-white font-bold'
-                      : isCurrent
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 font-bold'
-                      : 'bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {isCompleted ? '✓' : item.num}
-                </span>
-                <span className={`hidden sm:inline text-[11px] font-medium ${isCurrent ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400'}`}>
-                  {item.title}
-                </span>
-              </div>
-            );
-          })}
+        {/* 4-Step Progress Indicator */}
+        <div className="px-6 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] shrink-0">
+          <div className="grid grid-cols-4 gap-2 text-[11px]">
+            <div className={`p-2 rounded-xl text-center font-bold border transition-all ${
+              step === 1 ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm' :
+              step > 1 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+              'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400'
+            }`}>
+              01 Lookup
+            </div>
+            <div className={`p-2 rounded-xl text-center font-bold border transition-all ${
+              step === 2 ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm' :
+              step > 2 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+              'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400'
+            }`}>
+              02 Verify
+            </div>
+            <div className={`p-2 rounded-xl text-center font-bold border transition-all ${
+              step === 3 ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm' :
+              step > 3 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+              'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400'
+            }`}>
+              03 Details
+            </div>
+            <div className={`p-2 rounded-xl text-center font-bold border transition-all ${
+              step === 4 ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm' :
+              'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400'
+            }`}>
+              04 OTP
+            </div>
+          </div>
         </div>
 
-        {/* Error Alert */}
+        {/* Error message */}
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-500/40 text-rose-800 dark:text-rose-200 text-xs flex items-start gap-2.5 animate-slide-up">
-            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-            <div className="flex-1">{errorMessage}</div>
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
-        {/* STEP 1: CARD LOOKUP */}
-        {step === 1 && (
-          <div className="p-6 space-y-6">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Physical Member ID Card Number
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={cardId}
-                  onChange={(e) => setCardId(e.target.value.toUpperCase())}
-                  placeholder="e.g. MCS-2026-1033"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-2xl px-4 py-3.5 text-base font-mono font-bold text-slate-900 dark:text-white tracking-widest focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 uppercase"
-                />
-                <CreditCard className="w-5 h-5 text-slate-400 absolute right-4 top-3.5 pointer-events-none" />
-              </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                This 12-character ID is embossed on the front and magnetic strip of your Mosunmola physical membership card.
-              </p>
-            </div>
+        {/* Modal Body */}
+        <div className="p-6 overflow-y-auto flex-1 space-y-5">
 
-            {/* Quick Demo Pickers */}
-            <div>
-              <span className="text-[11px] font-semibold text-emerald-600 dark:text-brand-400 uppercase tracking-wider block mb-2">
-                ⚡ Quick Demo Card IDs (Click to test):
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {sampleDemoCards.map((sample) => (
+          {/* ========================================================================= */}
+          {/* STEP 01 — CARD LOOKUP                                                     */}
+          {/* ========================================================================= */}
+          {step === 1 && (
+            <div className="space-y-4 animate-slide-up">
+              <div>
+                <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                  Find Your Approved Physical Membership
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Enter the canonical Member ID or Physical Card Number embossed on your plastic card.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Physical Card ID / Member ID *
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={cardInput}
+                      onChange={(e) => setCardInput(e.target.value)}
+                      placeholder="e.g. MCS-2026-1033"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
                   <button
-                    key={sample.id}
+                    type="button"
+                    onClick={() => handleLookupCard()}
+                    disabled={loading}
+                    className="liquid-btn liquid-btn-white text-black font-bold px-4 py-2.5 text-xs rounded-xl tap-spring disabled:opacity-50 shrink-0"
+                  >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : 'Find Membership'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Lookup Card Result Display */}
+              {lookupResult && lookupResult.status === 'FOUND_ELIGIBLE' && (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 space-y-3 animate-slide-up">
+                  <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-emerald-700 dark:text-emerald-300">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span>Card Found & Eligible for Digital Activation</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Member Name</span>
+                      <strong className="text-slate-900 dark:text-white">{lookupResult.prefill?.fullName}</strong>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Member ID</span>
+                      <span className="font-mono font-bold text-slate-900 dark:text-white">{lookupResult.prefill?.memberId}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Membership Status</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">ACTIVE</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Digital Account</span>
+                      <span className="font-bold text-amber-600 dark:text-amber-400">NOT ACTIVATED</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleProceedToVerification}
+                    className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md tap-spring"
+                  >
+                    <span>Proceed to Identity Verification</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-black" />
+                  </button>
+                </div>
+              )}
+
+              {/* Already Activated Case */}
+              {lookupResult && lookupResult.status === 'ALREADY_ACTIVATED' && (
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 space-y-3 animate-slide-up">
+                  <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-amber-700 dark:text-amber-300">
+                    <AlertCircle className="w-4 h-4 text-amber-500" />
+                    <span>This membership is already activated!</span>
+                  </div>
+                  <p className="text-xs">
+                    Your digital account is fully active. You do not need to register again. Please sign in directly.
+                  </p>
+                  <button
                     type="button"
                     onClick={() => {
-                      setCardId(sample.id);
-                      handleVerifyCard(sample.id);
+                      triggerHaptic('medium');
+                      closeRegisterModal();
+                      setCurrentPortal('member');
                     }}
-                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/5 hover:border-brand-500/40 text-left transition-all group"
+                    className="liquid-btn liquid-btn-white text-black font-bold py-2 text-xs rounded-xl w-full"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-brand-400">
-                        {sample.id}
-                      </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                    <div className="text-[11px] text-slate-700 dark:text-slate-300 truncate">{sample.name}</div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400">{sample.branch}</div>
+                    Sign In to Member Portal
                   </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex justify-end">
-              <button
-                type="button"
-                onClick={() => handleVerifyCard()}
-                disabled={loading}
-                className="w-full sm:w-auto liquid-btn liquid-btn-white py-2 px-5 text-xs flex items-center justify-center gap-2"
-              >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-black" />}
-                <span>Verify Card Details</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: VERIFICATION PREVIEW */}
-        {step === 2 && verifiedInfo && (
-          <div className="p-6 space-y-6">
-            <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-5 border border-slate-200 dark:border-white/10 space-y-4">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                <span>Physical Member ID Validated in Registry</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">Member ID:</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">{cardId}</span>
                 </div>
-                <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">Assigned Holder:</span>
-                  <span className="font-bold text-slate-900 dark:text-white text-sm">{verifiedInfo.fullName}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">Issuing Branch:</span>
-                  <span className="text-slate-700 dark:text-slate-200 font-semibold">{verifiedInfo.branch}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">Security Chip Status:</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-emerald-500" /> Ready for Linking
-                  </span>
+              )}
+
+              {/* Sample demo cards to click for testing */}
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10 space-y-2">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                  Quick Demo Lookup Cards:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {sampleEligibleDemoCards.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => {
+                        setCardInput(c.id);
+                        handleLookupCard(c.id);
+                      }}
+                      className="p-2 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-left text-xs flex items-center justify-between transition-colors"
+                    >
+                      <div>
+                        <div className="font-mono font-bold text-slate-800 dark:text-slate-200 text-[11px]">{c.id}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">{c.name}</div>
+                      </div>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Select</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
+          )}
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              We found your pre-allocation record. In the next step, create your login password, confirm contact phone & email, and attach your facial photo for the digital card.
-            </p>
-
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-white/10">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={handleProceedToAccount}
-                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
-              >
-                <span>Continue to Profile Setup</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: ACCOUNT CREATION FORM */}
-        {step === 3 && (
-          <form onSubmit={handleSubmitAccount} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-            {/* Photo Upload / Avatar Preview */}
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10">
-              <div className="relative">
-                <img
-                  src={avatarUrl}
-                  alt="Member Avatar Preview"
-                  className="w-16 h-16 rounded-2xl object-cover border-2 border-brand-500 ring-2 ring-brand-500/20"
-                />
-                <div className="absolute -bottom-1 -right-1 bg-brand-500 text-slate-950 p-1 rounded-full shadow">
-                  <Camera className="w-3 h-3" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <span className="text-xs font-bold text-slate-900 dark:text-white block">Digital Card Photo</span>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Select a facial portrait for your digital ID card and verification pass.
+          {/* ========================================================================= */}
+          {/* STEP 02 — MEMBER VERIFICATION                                             */}
+          {/* ========================================================================= */}
+          {step === 2 && (
+            <div className="space-y-4 animate-slide-up">
+              <div>
+                <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                  Confirm Member Identity
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Please verify that the official membership records match your identity before establishing credentials.
                 </p>
-                <div className="mt-2 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setAvatarUrl('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80')}
-                    className="text-[10px] bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 px-2 py-1 rounded-md text-slate-700 dark:text-slate-300"
-                  >
-                    Preset Photo A
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAvatarUrl('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80')}
-                    className="text-[10px] bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 px-2 py-1 rounded-md text-slate-700 dark:text-slate-300"
-                  >
-                    Preset Photo B
-                  </button>
+              </div>
+
+              {/* Verification Information Box */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Official Legal Name</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">{officialLegalName}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Canonical Member ID</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">{canonicalMemberId}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Registered Phone (Masked)</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {lookupResult?.prefill?.maskedPhone}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Registered Email (Masked)</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {lookupResult?.prefill?.maskedEmail}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Allocating Branch</span>
+                    <span className="text-slate-700 dark:text-slate-300">{issuingBranch}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Membership Join Date</span>
+                    <span className="text-slate-700 dark:text-slate-300">{membershipDate}</span>
+                  </div>
                 </div>
+
+                <div className="pt-2 border-t border-slate-200 dark:border-white/10">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 dark:text-slate-300 select-none">
+                    <input
+                      type="checkbox"
+                      checked={confirmedIdentity}
+                      onChange={(e) => setConfirmedIdentity(e.target.checked)}
+                      className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span>
+                      I solemnly confirm that I am <strong>{officialLegalName}</strong>, the lawful recipient of Member ID <strong>{canonicalMemberId}</strong>, and am activating my personal digital portal.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="liquid-btn liquid-btn-default text-xs py-2 px-4 rounded-xl flex items-center gap-1.5"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleProceedToAccountSetup}
+                  className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-5 rounded-xl flex items-center gap-1.5 shadow-md tap-spring"
+                >
+                  <span>Continue to Account Setup</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
+                </button>
               </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          {/* ========================================================================= */}
+          {/* STEP 03 — ACCOUNT DETAILS & SECURITY SETUP                                */}
+          {/* ========================================================================= */}
+          {step === 3 && (
+            <form onSubmit={handleProceedToOtp} className="space-y-4 animate-slide-up">
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Full Legal Name</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  required
-                />
+                <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                  Establish Digital Access Credentials
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Cooperative-owned data is statutory and read-only. Configure your member login email, phone, and password.
+                </p>
               </div>
 
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@email.com"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Phone Number (WhatsApp)</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+234 800 000 0000"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">National ID (NIN)</label>
-                <input
-                  type="text"
-                  value={nin}
-                  onChange={(e) => setNin(e.target.value)}
-                  placeholder="11 digits NIN"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 font-mono"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Account Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Occupation / Business</label>
-                <input
-                  type="text"
-                  value={occupation}
-                  onChange={(e) => setOccupation(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                />
-              </div>
-            </div>
-
-            {/* Next of Kin */}
-            <div className="pt-2 border-t border-slate-200 dark:border-white/10">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-brand-400 block mb-2">
-                Next of Kin Beneficiary Details
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              {/* Read-Only Statutory Badge */}
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[11px] grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-400">
                 <div>
-                  <input
-                    type="text"
-                    value={nokName}
-                    onChange={(e) => setNokName(e.target.value)}
-                    placeholder="Beneficiary Full Name"
-                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  />
+                  <span className="block text-[10px] uppercase font-bold text-slate-400">Legal Name</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{officialLegalName}</span>
                 </div>
                 <div>
+                  <span className="block text-[10px] uppercase font-bold text-slate-400">Canonical Member ID</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{canonicalMemberId}</span>
+                </div>
+              </div>
+
+              {/* Editable Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <Mail className="w-3 h-3 text-slate-400" />
+                    <span>Member Email Address *</span>
+                  </label>
                   <input
-                    type="text"
-                    value={nokRel}
-                    onChange={(e) => setNokRel(e.target.value)}
-                    placeholder="Relationship (e.g. Spouse)"
-                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
                   />
                 </div>
-                <div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-slate-400" />
+                    <span>Primary Mobile Number *</span>
+                  </label>
                   <input
                     type="tel"
-                    value={nokPhone}
-                    onChange={(e) => setNokPhone(e.target.value)}
-                    placeholder="Beneficiary Phone"
-                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Portal Password *</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>Confirm Password *</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                    required
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-white/10">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="liquid-btn liquid-btn-white py-2 px-4 text-xs flex items-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5 text-black" />}
-                <span>Send Verification OTP</span>
-              </button>
-            </div>
-          </form>
-        )}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Residential / Business Address
+                </label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
 
-        {/* STEP 4: OTP ACTIVATION MODAL */}
-        {step === 4 && (
-          <div className="p-6 space-y-6 text-center">
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center text-emerald-500 shadow-sm">
-              <KeyRound className="w-8 h-8" />
-            </div>
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="liquid-btn liquid-btn-default text-xs py-2 px-4 rounded-xl flex items-center gap-1.5"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+                <button
+                  type="submit"
+                  className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-5 rounded-xl flex items-center gap-1.5 shadow-md tap-spring"
+                >
+                  <span>Proceed to Final OTP</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-black" />
+                </button>
+              </div>
+            </form>
+          )}
 
-            <div>
-              <h4 className="font-display font-bold text-lg text-slate-900 dark:text-white">Enter 6-Digit OTP Code</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto">
-                A simulated verification code has been dispatched to <strong className="text-slate-900 dark:text-white">{phone}</strong> and <strong className="text-slate-900 dark:text-white">{email}</strong>.
-              </p>
-            </div>
+          {/* ========================================================================= */}
+          {/* STEP 04 — OTP ACTIVATION                                                  */}
+          {/* ========================================================================= */}
+          {step === 4 && (
+            <div className="space-y-4 animate-slide-up text-center">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <KeyRound className="w-7 h-7" />
+              </div>
 
-            <div className="max-w-xs mx-auto">
-              <input
-                type="text"
-                maxLength={6}
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center text-2xl tracking-[0.5em] font-mono font-bold bg-slate-50 dark:bg-black border border-slate-300 dark:border-white/20 rounded-2xl py-3 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 shadow-inner"
-              />
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-2">
-                Demo helper: Pre-filled with code <strong>894201</strong> (or enter any 6 digits).
-              </span>
-            </div>
+              <div>
+                <h4 className="font-bold text-base text-slate-900 dark:text-white">
+                  Enter 6-Digit Verification OTP
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                  A transient authorization code has been dispatched to your mobile <strong className="font-mono text-slate-800 dark:text-slate-200">{phone}</strong>.
+                </p>
+              </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10">
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs font-semibold"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={handleVerifyOtp}
-                disabled={loading}
-                className="liquid-btn liquid-btn-white py-2 px-5 text-xs flex items-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-black" />}
-                <span>Activate Account & Digital Card</span>
-              </button>
+              <div className="max-w-xs mx-auto space-y-2">
+                <input
+                  type="text"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder="894201"
+                  maxLength={6}
+                  className="w-full text-center py-3 text-2xl font-mono font-black tracking-widest rounded-2xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/20 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono block">
+                  Demo Code: 894201
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 text-left space-y-1">
+                <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  <span>Finalizing Activation:</span>
+                </div>
+                <p>• Membership: <strong>ACTIVE</strong></p>
+                <p>• Physical Plastic Card: <strong>ACTIVATED</strong></p>
+                <p>• Secure Digital Account: <strong>ACTIVE</strong></p>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="liquid-btn liquid-btn-default text-xs py-2 px-4 rounded-xl flex items-center gap-1.5"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleVerifyOtpAndActivate}
+                  disabled={loading}
+                  className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-6 rounded-xl flex items-center gap-2 shadow-lg tap-spring disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-black" />
+                      <span>Activating Digital Member Account...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 text-black" />
+                      <span>Activate Digital Member Account</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+        </div>
+
       </div>
     </div>
   );

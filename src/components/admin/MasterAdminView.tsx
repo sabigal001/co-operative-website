@@ -8,6 +8,8 @@ import type {
   MembershipApplication
 } from '../../types';
 import { adminService } from '../../services/api/adminService';
+import { applicationService } from '../../services/api/applicationService';
+import { cardService } from '../../services/api/cardService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { FluidPillBar } from '../common/FluidPillBar';
@@ -19,13 +21,21 @@ import {
   Sparkles, 
   Search, 
   X, 
-  Clock,
-  UserPlus,
-  Check,
-  CheckCircle2,
-  XCircle,
-  Eye,
-  ShieldCheck
+  Clock, 
+  UserPlus, 
+  Check, 
+  CheckCircle2, 
+  XCircle, 
+  Eye, 
+  ShieldCheck,
+  AlertCircle,
+  FileText,
+  Mail,
+  Phone,
+  MapPin,
+  Coins,
+  Calendar,
+  Briefcase
 } from 'lucide-react';
 
 interface MasterAdminViewProps {
@@ -41,13 +51,28 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [applications, setApplications] = useState<MembershipApplication[]>([]);
   const [cardSearch, setCardSearch] = useState('');
+  const [appSearch, setAppSearch] = useState('');
+  const [appStatusFilter, setAppStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [loading, setLoading] = useState(true);
 
   // Modals
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [showDividendModal, setShowDividendModal] = useState(false);
+  const [showIssueCardModal, setShowIssueCardModal] = useState(false);
+  
+  // Application Review & Approval States
+  const [selectedAppDetail, setSelectedAppDetail] = useState<MembershipApplication | null>(null);
   const [selectedAppForApproval, setSelectedAppForApproval] = useState<MembershipApplication | null>(null);
-  const [assignedCardInput, setAssignedCardInput] = useState('MCS-2026-');
+  const [assignedCardInput, setAssignedCardInput] = useState('');
+  const [cardTypeInput, setCardTypeInput] = useState<'standard_plastic' | 'rfid_executive' | 'gold_fiduciary'>('standard_plastic');
+  const [rejectionReasonInput, setRejectionReasonInput] = useState('');
+  const [showRejectPrompt, setShowRejectPrompt] = useState(false);
+
+  // Direct Card Issuance Form
+  const [issueMemberIdInput, setIssueMemberIdInput] = useState('MCS-2026-');
+  const [issueCardIdInput, setIssueCardIdInput] = useState('MCS-2026-');
+  const [issueCardType, setIssueCardType] = useState<'standard_plastic' | 'rfid_executive' | 'gold_fiduciary'>('standard_plastic');
+  const [issueBranch, setIssueBranch] = useState('Ikeja Central Secretariat');
 
   // Batch Form
   const [batchName, setBatchName] = useState('BATCH-2026-Q3-LAGOS');
@@ -65,7 +90,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         adminService.getPhysicalCards(),
         adminService.getAdminUsers(),
         adminService.getAuditLogs(),
-        adminService.getMembershipApplications()
+        applicationService.getApplications()
       ]);
 
       if (cardsRes.success) setCards(cardsRes.data);
@@ -98,6 +123,30 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     } catch (err: any) {
       triggerHaptic('error');
       showToast(err.message || 'Error importing batch', 'error');
+    }
+  };
+
+  // Handle Direct Card Issuance
+  const handleIssueCardSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await cardService.issueCard(
+        issueMemberIdInput.trim().toUpperCase(),
+        issueCardIdInput.trim().toUpperCase(),
+        issueCardType,
+        issueBranch,
+        currentAdmin.name
+      );
+      if (res.success) {
+        triggerHaptic('success');
+        showToast(res.message, 'success');
+        fireConfetti();
+        setShowIssueCardModal(false);
+        refreshData();
+      }
+    } catch (err: any) {
+      triggerHaptic('error');
+      showToast(err.message || 'Error issuing card', 'error');
     }
   };
 
@@ -139,13 +188,23 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     }
   };
 
-  // Handle Membership Application Decision
-  const handleApproveApplication = async (e: React.FormEvent) => {
+  // Open Approval Dialog for an Application
+  const openApprovalModal = (app: MembershipApplication) => {
+    triggerHaptic('selection');
+    setSelectedAppForApproval(app);
+    const suggestedId = `MCS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    setAssignedCardInput(suggestedId);
+    setCardTypeInput(app.intendedMonthlySavings >= 100000 ? 'rfid_executive' : 'standard_plastic');
+    setShowRejectPrompt(false);
+  };
+
+  // Approve Application: Generates canonical Member ID, creates membership with digitalAccountStatus: NOT_ACTIVATED, issues card
+  const handleConfirmApproval = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedAppForApproval || !assignedCardInput) return;
+    if (!selectedAppForApproval) return;
 
     try {
-      const res = await adminService.approveMembershipApplication(
+      const res = await applicationService.approveApplication(
         selectedAppForApproval.id,
         assignedCardInput.trim().toUpperCase(),
         currentAdmin.name
@@ -156,6 +215,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         showToast(res.message, 'success');
         fireConfetti();
         setSelectedAppForApproval(null);
+        setSelectedAppDetail(null);
         refreshData();
       }
     } catch (err: any) {
@@ -164,17 +224,18 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     }
   };
 
-  const handleRejectApplication = async (appId: string) => {
+  // Reject Application
+  const handleConfirmRejection = async (appId: string) => {
     try {
       triggerHaptic('warning');
-      const res = await adminService.rejectMembershipApplication(
-        appId,
-        'Does not meet statutory cooperative residency or identification criteria',
-        currentAdmin.name
-      );
+      const reason = rejectionReasonInput.trim() || 'Statutory identification criteria not met under cooperative bye-laws.';
+      const res = await applicationService.rejectApplication(appId, reason, currentAdmin.name);
 
       if (res.success) {
         showToast(res.message, 'info');
+        setShowRejectPrompt(false);
+        setSelectedAppForApproval(null);
+        setSelectedAppDetail(null);
         refreshData();
       }
     } catch (err: any) {
@@ -183,13 +244,50 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     }
   };
 
+  // Request More Info
+  const handleRequestMoreInfo = async (appId: string) => {
+    try {
+      triggerHaptic('selection');
+      const notes = prompt('Enter Secretarial request notes for applicant:') || 'Please provide updated utility bill and clear copy of identification document.';
+      const res = await applicationService.requestMoreInfo(appId, notes, currentAdmin.name);
+      if (res.success) {
+        showToast(res.message, 'info');
+        setSelectedAppDetail(null);
+        refreshData();
+      }
+    } catch (err: any) {
+      triggerHaptic('error');
+      showToast(err.message || 'Error', 'error');
+    }
+  };
+
+  // Filter applications
+  const filteredApplications = applications.filter((app) => {
+    const matchesSearch = 
+      app.id.toLowerCase().includes(appSearch.toLowerCase()) ||
+      app.fullName.toLowerCase().includes(appSearch.toLowerCase()) ||
+      app.email.toLowerCase().includes(appSearch.toLowerCase()) ||
+      app.phone.includes(appSearch);
+
+    const isPending = app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW' || app.status === 'pending_approval';
+    const isApproved = app.status === 'APPROVED' || app.status === 'approved';
+    const isRejected = app.status === 'REJECTED' || app.status === 'rejected';
+
+    if (appStatusFilter === 'PENDING') return matchesSearch && isPending;
+    if (appStatusFilter === 'APPROVED') return matchesSearch && isApproved;
+    if (appStatusFilter === 'REJECTED') return matchesSearch && isRejected;
+    return matchesSearch;
+  });
+
+  const pendingAppsCount = applications.filter((a) => 
+    a.status === 'SUBMITTED' || a.status === 'UNDER_REVIEW' || a.status === 'pending_approval'
+  ).length;
+
   const filteredCards = cards.filter((c) => 
     c.cardId.toLowerCase().includes(cardSearch.toLowerCase()) ||
     c.assignedMemberName.toLowerCase().includes(cardSearch.toLowerCase()) ||
     c.batchNumber.toLowerCase().includes(cardSearch.toLowerCase())
   );
-
-  const pendingAppsCount = applications.filter((a) => a.status === 'pending_approval').length;
 
   return (
     <div className="space-y-8">
@@ -199,8 +297,8 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         <FluidPillBar
           tabs={[
             { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
-            { id: 'cards', label: 'Physical ID Card Batch Manager', icon: <CreditCard className="w-4 h-4" /> },
-            { id: 'roles', label: 'Staff Role Management (RBAC)', icon: <Users className="w-4 h-4" /> },
+            { id: 'cards', label: 'Physical ID Card Control', icon: <CreditCard className="w-4 h-4" /> },
+            { id: 'roles', label: 'Staff Roles (RBAC)', icon: <Users className="w-4 h-4" /> },
             { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
             { id: 'audit', label: 'System Audit Logs', icon: <Clock className="w-4 h-4" /> },
           ]}
@@ -209,16 +307,28 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         />
 
         {activeTab === 'cards' && (
-          <button
-            onClick={() => {
-              triggerHaptic('selection');
-              setShowBatchModal(true);
-            }}
-            className="px-4 py-2.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Import New Card Batch (CSV)</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                triggerHaptic('selection');
+                setShowIssueCardModal(true);
+              }}
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Issue Physical Card</span>
+            </button>
+            <button
+              onClick={() => {
+                triggerHaptic('selection');
+                setShowBatchModal(true);
+              }}
+              className="px-3.5 py-2 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Import Batch (CSV)</span>
+            </button>
+          </div>
         )}
 
         {activeTab === 'dividends' && (
@@ -235,24 +345,68 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         )}
       </div>
 
-      {/* TAB 0: PROSPECTIVE MEMBERSHIP APPLICATIONS (FROM LANDING PAGE) */}
+      {/* ========================================================================= */}
+      {/* TAB 0: PROSPECTIVE MEMBERSHIP APPLICATIONS QUEUE                          */}
+      {/* ========================================================================= */}
       {activeTab === 'applications' && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
-                Prospective Membership Applications ({applications.length})
+                Membership Applications Review Queue ({applications.length})
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Applicants who registered through the public landing page awaiting Board and Super Admin approval and physical card allocation.
+                Applicants who completed the public society application. Vetting creates canonical membership and authorizes physical card embossing.
               </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Status Filter */}
+              <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl text-xs font-bold">
+                <button
+                  onClick={() => setAppStatusFilter('ALL')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'ALL' ? 'bg-white dark:bg-white/20 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}
+                >
+                  All ({applications.length})
+                </button>
+                <button
+                  onClick={() => setAppStatusFilter('PENDING')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'PENDING' ? 'bg-white dark:bg-white/20 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}
+                >
+                  Pending ({pendingAppsCount})
+                </button>
+                <button
+                  onClick={() => setAppStatusFilter('APPROVED')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'APPROVED' ? 'bg-white dark:bg-white/20 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}
+                >
+                  Approved
+                </button>
+                <button
+                  onClick={() => setAppStatusFilter('REJECTED')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'REJECTED' ? 'bg-white dark:bg-white/20 shadow-sm text-rose-600 dark:text-rose-400' : 'text-slate-400'}`}
+                >
+                  Rejected
+                </button>
+              </div>
+
+              {/* Search */}
+              <div className="relative max-w-xs w-full">
+                <input
+                  type="text"
+                  value={appSearch}
+                  onChange={(e) => setAppSearch(e.target.value)}
+                  placeholder="Search ID, name, email..."
+                  className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              </div>
             </div>
           </div>
 
           <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            {applications.length === 0 ? (
+            {filteredApplications.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
-                No prospective applications currently submitted.
+                No membership applications found matching criteria.
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -260,72 +414,76 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                     <tr>
                       <th className="py-3 px-4">Application ID</th>
-                      <th className="py-3 px-4">Applicant Name</th>
+                      <th className="py-3 px-4">Applicant</th>
                       <th className="py-3 px-4">Contact & Location</th>
-                      <th className="py-3 px-4">Occupation</th>
-                      <th className="py-3 px-4">Thrift Target</th>
-                      <th className="py-3 px-4">ID Document</th>
+                      <th className="py-3 px-4">Savings Plan</th>
+                      <th className="py-3 px-4">Submitted</th>
                       <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Super Admin Action</th>
+                      <th className="py-3 px-4 text-right">Secretariat Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
-                    {applications.map((app) => (
-                      <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
-                        <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{app.id}</td>
-                        <td className="py-3.5 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">
-                          {app.fullName}
-                          <span className="block text-[10px] text-slate-400 font-mono font-normal">{app.email}</span>
-                        </td>
-                        <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[10px]">
-                          <div>{app.phone}</div>
-                          <div>{app.lga}, {app.state}</div>
-                        </td>
-                        <td className="py-3.5 px-4 font-sans text-slate-700 dark:text-slate-300">{app.occupation}</td>
-                        <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400">
-                          ₦{app.monthlyThriftTarget.toLocaleString()}/mo
-                        </td>
-                        <td className="py-3.5 px-4 font-sans text-[10px]">
-                          <span className="font-semibold block text-slate-800 dark:text-slate-200">{app.idType}</span>
-                          <span className="font-mono text-slate-500 dark:text-slate-400">{app.idNumber}</span>
-                        </td>
-                        <td className="py-3.5 px-4 font-sans">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                            app.status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400' :
-                            app.status === 'pending_approval' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400' :
-                            'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400'
-                          }`}>
-                            {app.status.replace('_', ' ')}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-sans">
-                          {app.status === 'pending_approval' ? (
+                    {filteredApplications.map((app) => {
+                      const isPending = app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW' || app.status === 'pending_approval';
+                      const isApproved = app.status === 'APPROVED' || app.status === 'approved';
+
+                      return (
+                        <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
+                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
+                            {app.id}
+                          </td>
+                          <td className="py-3.5 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">
+                            {app.fullName}
+                            <span className="block text-[10px] text-slate-400 font-normal">{app.occupation}</span>
+                          </td>
+                          <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[10px]">
+                            <div>{app.phone}</div>
+                            <div className="text-slate-400">{app.lga}, {app.state}</div>
+                          </td>
+                          <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400">
+                            ₦{(app.intendedMonthlySavings || app.monthlyThriftTarget).toLocaleString()}/mo
+                            <span className="block text-[9px] uppercase font-normal text-slate-400">
+                              {app.savingsPlanId || 'Standard'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 font-sans text-slate-500 dark:text-slate-400 text-[10px]">
+                            {app.submittedAt.slice(0, 10)}
+                          </td>
+                          <td className="py-3.5 px-4 font-sans">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                              isApproved ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
+                              isPending ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20' :
+                              'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
+                            }`}>
+                              {app.status.replace(/_/g, ' ')}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-right font-sans">
                             <div className="flex items-center justify-end gap-1.5">
+                              {/* Review button */}
                               <button
                                 onClick={() => {
                                   triggerHaptic('selection');
-                                  setSelectedAppForApproval(app);
-                                  setAssignedCardInput(`MCS-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+                                  setSelectedAppDetail(app);
                                 }}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-sm tap-spring"
+                                className="px-2.5 py-1.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs flex items-center gap-1 tap-spring"
                               >
-                                <Check className="w-3.5 h-3.5" /> Approve & Issue ID
+                                <Eye className="w-3.5 h-3.5" /> Review
                               </button>
-                              <button
-                                onClick={() => handleRejectApplication(app.id)}
-                                className="px-2.5 py-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold rounded-lg text-xs tap-spring"
-                              >
-                                Reject
-                              </button>
+
+                              {isPending && (
+                                <button
+                                  onClick={() => openApprovalModal(app)}
+                                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-sm tap-spring"
+                                >
+                                  <Check className="w-3.5 h-3.5" /> Approve
+                                </button>
+                              )}
                             </div>
-                          ) : (
-                            <span className="text-[10px] text-slate-400">
-                              {app.status === 'approved' ? `Assigned: ${app.assignedCardId}` : 'Rejected'}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -334,7 +492,9 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* TAB 1: PHYSICAL CARD BATCH MANAGER */}
+      {/* ========================================================================= */}
+      {/* TAB 1: PHYSICAL CARD BATCH MANAGER & CONTROL                              */}
+      {/* ========================================================================= */}
       {activeTab === 'cards' && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -365,59 +525,57 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Card ID Number</th>
-                    <th className="py-3 px-4">Batch Code</th>
-                    <th className="py-3 px-4">Allocated Member Name</th>
+                    <th className="py-3 px-4">Card Type</th>
+                    <th className="py-3 px-4">Allocated Member</th>
                     <th className="py-3 px-4">Issuing Branch</th>
-                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Card Status</th>
                     <th className="py-3 px-4 text-right">Card Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
                   {filteredCards.map((card) => (
                     <tr key={card.cardId} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{card.cardId}</td>
-                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-[11px]">{card.batchNumber}</td>
+                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
+                        {card.cardId}
+                      </td>
+                      <td className="py-3.5 px-4 font-sans text-slate-500 dark:text-slate-400 text-[11px] capitalize">
+                        {card.cardType ? card.cardType.replace('_', ' ') : 'Standard Plastic'}
+                      </td>
                       <td className="py-3.5 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">
                         {card.assignedMemberName}
+                        {card.assignedMemberId && (
+                          <span className="block font-mono text-[10px] text-slate-400 font-normal">
+                            ID: {card.assignedMemberId}
+                          </span>
+                        )}
                       </td>
-                      <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[11px]">{card.branch}</td>
+                      <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[11px]">
+                        {card.branch}
+                      </td>
                       <td className="py-3.5 px-4 font-sans">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          card.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400' :
-                          card.status === 'unassigned' ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400' :
-                          card.status === 'lost' ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400' :
-                          'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400'
+                          card.status === 'ACTIVATED' || card.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
+                          card.status === 'ISSUED' || card.status === 'unassigned' ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 border border-blue-500/20' :
+                          'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
                         }`}>
                           {card.status}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right font-sans">
                         <div className="flex items-center justify-end gap-1.5">
-                          {card.status !== 'active' && (
+                          {card.status !== 'BLOCKED' && card.status !== 'lost' ? (
                             <button
-                              onClick={() => handleStatusChange(card.cardId, 'active')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-md"
-                              title="Mark as Active"
+                              onClick={() => handleStatusChange(card.cardId, 'BLOCKED')}
+                              className="px-2 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 rounded text-[10px] font-bold"
                             >
-                              Activate
+                              Block Card
                             </button>
-                          )}
-                          {card.status !== 'lost' && (
+                          ) : (
                             <button
-                              onClick={() => handleStatusChange(card.cardId, 'lost')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-800 dark:text-rose-400 rounded-md"
-                              title="Flag Lost"
+                              onClick={() => handleStatusChange(card.cardId, 'ISSUED')}
+                              className="px-2 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 rounded text-[10px] font-bold"
                             >
-                              Flag Lost
-                            </button>
-                          )}
-                          {card.status === 'lost' && (
-                            <button
-                              onClick={() => handleStatusChange(card.cardId, 'replaced')}
-                              className="px-2 py-1 text-[10px] font-bold bg-slate-100 dark:bg-white/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-800 dark:text-amber-400 rounded-md"
-                              title="Mark Replaced"
-                            >
-                              Replaced
+                              Unblock
                             </button>
                           )}
                         </div>
@@ -431,61 +589,44 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* TAB 2: STAFF ROLE MANAGEMENT (RBAC) */}
+      {/* ========================================================================= */}
+      {/* TAB 2: STAFF ROLE MANAGEMENT                                              */}
+      {/* ========================================================================= */}
       {activeTab === 'roles' && (
         <div className="space-y-4">
           <div>
             <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
-              Role-Based Access Control (RBAC) Administration
+              Fiduciary Staff & Role-Based Access Control (RBAC)
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Assign administrative permissions between Master Admin, Treasurer, and Personal Assistant officers.
+              Manage executive roles across Super Admin, Treasurer, and Principal Secretariat Officer.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {admins.map((admin) => (
-              <div
-                key={admin.id}
-                className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between space-y-4"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {admins.map((adm) => (
+              <div 
+                key={adm.id}
+                className="p-5 rounded-3xl bg-white dark:bg-black border border-slate-200 dark:border-white/10 space-y-4 shadow-sm"
               >
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <img
-                      src={admin.avatar}
-                      alt={admin.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-white/15"
-                    />
-                    <div>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-white">{admin.name}</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{admin.email}</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <img src={adm.avatar} alt={adm.name} className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-white/15" />
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">{adm.name}</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">{adm.department}</p>
                   </div>
-
-                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 ${
-                    admin.role === 'master_admin' ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300' :
-                    admin.role === 'treasurer' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400' :
-                    'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300'
-                  }`}>
-                    Current Role: {admin.role.replace('_', ' ')}
-                  </span>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Department: {admin.department}
-                  </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-white/10">
-                  <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                    Assign New Role:
-                  </label>
+                <div className="space-y-1 text-xs">
+                  <span className="text-[10px] uppercase font-mono text-slate-400 block">Assigned Role</span>
                   <select
-                    value={admin.role}
-                    onChange={(e) => handleRoleChange(admin.id, e.target.value as AdminRole)}
-                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200"
+                    value={adm.role}
+                    onChange={(e) => handleRoleChange(adm.id, e.target.value as AdminRole)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-900 dark:text-white focus:outline-none"
                   >
-                    <option value="master_admin">Master Admin (Full Access)</option>
-                    <option value="treasurer">Treasurer (Financial Disbursals Only)</option>
-                    <option value="pa_officer">PA / Admin Officer (KYC & Vetting)</option>
+                    <option value="master_admin">Master Admin (Super Admin)</option>
+                    <option value="treasurer">Chief Treasurer & Controller</option>
+                    <option value="pa_officer">Principal Secretariat Officer</option>
                   </select>
                 </div>
               </div>
@@ -494,94 +635,63 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* TAB 3: FINANCIAL MASTER & DIVIDENDS */}
+      {/* ========================================================================= */}
+      {/* TAB 3: FINANCIAL MASTER & DIVIDENDS                                       */}
+      {/* ========================================================================= */}
       {activeTab === 'dividends' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total Savings Pool</span>
-              <div className="text-2xl font-black font-display text-slate-900 dark:text-white">
-                ₦342,800,000
-              </div>
-              <p className="text-[11px] text-slate-400">Regular Thrift + Dedicated Target Plans</p>
-            </div>
-
-            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Outstanding Active Loans</span>
-              <div className="text-2xl font-black font-display text-amber-600 dark:text-amber-400">
-                ₦142,400,000
-              </div>
-              <p className="text-[11px] text-slate-400">Performing with 0.2% NPL ratio</p>
-            </div>
-
-            <div className="bg-white dark:bg-black rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm space-y-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Total AGM Dividends Distributed</span>
-              <div className="text-2xl font-black font-display text-emerald-600 dark:text-emerald-400">
-                ₦65,400,000
-              </div>
-              <p className="text-[11px] text-slate-400">Audited surplus returns credited</p>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-black rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
-            <h4 className="font-bold text-base text-slate-900 dark:text-white font-display">
-              Annual General Meeting (AGM) Surplus Profit Allocation
+        <div className="space-y-4">
+          <div className="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 text-slate-900 dark:text-white space-y-3">
+            <h4 className="font-bold text-base flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
+              <TrendingUp className="w-5 h-5 text-emerald-500" />
+              <span>Statutory AGM Dividend Allocation Engine</span>
             </h4>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-              Under Section 14 of the Cooperative Bye-Laws, net operating surplus from agro-processing, real estate capital gains, and loan interest margins are allocated pro-rata across active financial members.
+            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xl">
+              Annual General Meeting (AGM) surplus is distributed pro-rata based on members' thrift savings balance and share capital equity.
             </p>
-
-            <button
-              onClick={() => {
-                triggerHaptic('selection');
-                setShowDividendModal(true);
-              }}
-              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 shadow-sm tap-spring"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Configure & Distribute Surplus Pool</span>
-            </button>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
+                <span className="text-[10px] text-slate-400 block">Current Dividend Pool</span>
+                <strong className="text-sm font-mono text-emerald-600 dark:text-emerald-400">₦45,000,000</strong>
+              </div>
+              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
+                <span className="text-[10px] text-slate-400 block">Declared Yield Rate</span>
+                <strong className="text-sm font-mono text-emerald-600 dark:text-emerald-400">18.5% p.a.</strong>
+              </div>
+              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
+                <span className="text-[10px] text-slate-400 block">Eligible Members</span>
+                <strong className="text-sm font-mono text-slate-900 dark:text-white">14,850+</strong>
+              </div>
+              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
+                <span className="text-[10px] text-slate-400 block">Audit Sign-off</span>
+                <strong className="text-sm font-mono text-slate-900 dark:text-white">LSCS Verified</strong>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 4: SYSTEM AUDIT LOGS */}
+      {/* ========================================================================= */}
+      {/* TAB 4: SYSTEM AUDIT LOGS                                                  */}
+      {/* ========================================================================= */}
       {activeTab === 'audit' && (
         <div className="space-y-4">
-          <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
-              Immutable System Audit Trail
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Cryptographic log of all administrative approvals, disbursements, KYC verifications, and role edits.
-            </p>
-          </div>
-
           <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
-                    <th className="py-3 px-4">Log ID</th>
                     <th className="py-3 px-4">Timestamp</th>
-                    <th className="py-3 px-4">Admin Officer</th>
-                    <th className="py-3 px-4">Role</th>
+                    <th className="py-3 px-4">Staff Member</th>
                     <th className="py-3 px-4">Action</th>
-                    <th className="py-3 px-4">Audit Details</th>
+                    <th className="py-3 px-4">Details</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
                   {auditLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
-                      <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{log.id}</td>
-                      <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{log.timestamp}</td>
-                      <td className="py-3 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">{log.adminName}</td>
-                      <td className="py-3 px-4 font-sans">
-                        <span className="px-2 py-0.5 rounded text-[10px] uppercase bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-bold">
-                          {log.adminRole}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 font-bold text-brand-700 dark:text-brand-400">{log.action}</td>
+                      <td className="py-3 px-4 text-slate-400">{log.timestamp}</td>
+                      <td className="py-3 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">{log.adminName}</td>
+                      <td className="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">{log.action}</td>
                       <td className="py-3 px-4 font-sans text-slate-600 dark:text-slate-300">{log.details}</td>
                     </tr>
                   ))}
@@ -592,80 +702,379 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* ================= MODAL: CSV BATCH IMPORT SIMULATION ================= */}
-      {showBatchModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-              <h3 className="font-display font-bold text-lg text-white">Import Physical Card Batch</h3>
-              <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-white">
+      {/* ========================================================================= */}
+      {/* MODAL: APPLICATION DETAIL REVIEW DRAWER                                   */}
+      {/* ========================================================================= */}
+      {selectedAppDetail && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-6 animate-slide-up relative flex flex-col max-h-[92vh]">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40 shrink-0">
+              <div>
+                <span className="text-[10px] font-mono uppercase text-slate-400">Membership Application Review</span>
+                <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+                  {selectedAppDetail.id}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedAppDetail(null)}
+                className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleImportBatch} className="space-y-4 text-xs">
+            <div className="p-6 overflow-y-auto flex-1 space-y-4 text-xs">
+              {/* Applicant Profile */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <strong className="text-base font-bold text-slate-900 dark:text-white">{selectedAppDetail.fullName}</strong>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    {selectedAppDetail.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-slate-400 block">Occupation / Enterprise:</span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200">{selectedAppDetail.occupation}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Date of Birth:</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200">{selectedAppDetail.dateOfBirth || '1985-06-15'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Email Address:</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200">{selectedAppDetail.email}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Mobile Phone:</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200">{selectedAppDetail.phone}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">State & LGA:</span>
+                    <span className="text-slate-800 dark:text-slate-200">{selectedAppDetail.lga}, {selectedAppDetail.state}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block">Street Address:</span>
+                    <span className="text-slate-800 dark:text-slate-200">{selectedAppDetail.address}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Savings Intent */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400">Intended Contribution Target</span>
+                <div className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                  ₦{(selectedAppDetail.intendedMonthlySavings || selectedAppDetail.monthlyThriftTarget).toLocaleString()} / month
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Plan Tier: <strong className="capitalize">{selectedAppDetail.savingsPlanId || 'Standard'}</strong>
+                </p>
+              </div>
+
+              {/* Statutory ID Credentials */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Government ID Document</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    STATUS: {selectedAppDetail.idDocumentStatus || 'PROVIDED'}
+                  </span>
+                </div>
+                <div className="font-bold text-slate-900 dark:text-white">
+                  {selectedAppDetail.idType}: <span className="font-mono">{selectedAppDetail.idNumber}</span>
+                </div>
+                {selectedAppDetail.idDocumentUrl && (
+                  <div className="pt-2">
+                    <img 
+                      src={selectedAppDetail.idDocumentUrl} 
+                      alt="Identification Slip" 
+                      className="w-full h-36 object-cover rounded-xl border border-slate-200 dark:border-white/10 shadow-inner"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Next of Kin */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400">Designated Beneficiary (Next of Kin)</span>
+                <div className="font-bold text-slate-900 dark:text-white">
+                  {selectedAppDetail.nextOfKinName || 'Next of Kin'}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {selectedAppDetail.nextOfKinRelationship || 'Relative'} • {selectedAppDetail.nextOfKinPhone || selectedAppDetail.phone}
+                </div>
+              </div>
+
+              {/* Administrative Actions */}
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleRequestMoreInfo(selectedAppDetail.id)}
+                  className="px-3 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs"
+                >
+                  Request More Info
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    openApprovalModal(selectedAppDetail);
+                  }}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md tap-spring"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Approve & Issue ID</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: APPROVE MEMBERSHIP & CONFIGURE PHYSICAL CARD                        */}
+      {/* ========================================================================= */}
+      {selectedAppForApproval && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-5">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                    Approve Membership & Issue Card
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Application: {selectedAppForApproval.id}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedAppForApproval(null)} 
+                className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Applicant:</span>
+                <strong className="text-slate-900 dark:text-white">{selectedAppForApproval.fullName}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Monthly Thrift Target:</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  ₦{(selectedAppForApproval.intendedMonthlySavings || selectedAppForApproval.monthlyThriftTarget).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Location:</span>
+                <span className="text-slate-700 dark:text-slate-300">{selectedAppForApproval.lga}, {selectedAppForApproval.state}</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirmApproval} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Canonical Member ID / Physical Card ID *
+                </label>
+                <input
+                  type="text"
+                  value={assignedCardInput}
+                  onChange={(e) => setAssignedCardInput(e.target.value)}
+                  placeholder="e.g. MCS-2026-8942"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+                <span className="text-[10px] text-slate-400 block">
+                  The system generates this canonical identifier. The member uses this ID to activate their digital account.
+                </span>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Physical Card Credential Type
+                </label>
+                <select
+                  value={cardTypeInput}
+                  onChange={(e) => setCardTypeInput(e.target.value as any)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="standard_plastic">Standard Plastic RFID Card</option>
+                  <option value="rfid_executive">Executive Gold RFID Card</option>
+                  <option value="gold_fiduciary">Fiduciary Trustee Card</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setSelectedAppForApproval(null)}
+                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-md tap-spring"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Authorize Membership & Issue Card</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: DIRECT PHYSICAL CARD ISSUANCE                                      */}
+      {/* ========================================================================= */}
+      {showIssueCardModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
+              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                Issue Physical Plastic RFID Card
+              </h3>
+              <button onClick={() => setShowIssueCardModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleIssueCardSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Batch Identifier</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Approved Member ID *</label>
+                <input
+                  type="text"
+                  value={issueMemberIdInput}
+                  onChange={(e) => setIssueMemberIdInput(e.target.value)}
+                  placeholder="e.g. MCS-2026-8942"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Physical Card ID *</label>
+                <input
+                  type="text"
+                  value={issueCardIdInput}
+                  onChange={(e) => setIssueCardIdInput(e.target.value)}
+                  placeholder="e.g. MCS-2026-8942 or CARD-2026-77821"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Card Credential Type</label>
+                <select
+                  value={issueCardType}
+                  onChange={(e) => setIssueCardType(e.target.value as any)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none"
+                >
+                  <option value="standard_plastic">Standard Plastic Card</option>
+                  <option value="rfid_executive">Executive RFID Card</option>
+                  <option value="gold_fiduciary">Gold Fiduciary Card</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Issuing Branch</label>
+                <input
+                  type="text"
+                  value={issueBranch}
+                  onChange={(e) => setIssueBranch(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowIssueCardModal(false)}
+                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl"
+                >
+                  Issue Card
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: CARD BATCH IMPORT                                                  */}
+      {/* ========================================================================= */}
+      {showBatchModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
+              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">Import Card Batch (CSV)</h3>
+              <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleImportBatch} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Batch Code</label>
                 <input
                   type="text"
                   value={batchName}
                   onChange={(e) => setBatchName(e.target.value)}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">ID Card Prefix</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Card Prefix</label>
                 <input
                   type="text"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Number of Cards in Batch</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Number of Cards</label>
                 <input
                   type="number"
                   min="5"
                   max="500"
                   value={batchCount}
                   onChange={(e) => setBatchCount(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Issuing Branch</label>
-                <select
-                  value={branch}
-                  onChange={(e) => setBranch(e.target.value)}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white"
-                >
-                  <option value="Ikeja Central Secretariat">Ikeja Central Secretariat</option>
-                  <option value="Victoria Island Regional Office">Victoria Island Regional Office</option>
-                  <option value="Lekki Phase 1 Center">Lekki Phase 1 Center</option>
-                  <option value="Surulere Sub-Station">Surulere Sub-Station</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowBatchModal(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl"
+                  className="px-5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold rounded-xl"
                 >
-                  Generate & Register Cards
+                  Generate Batch
                 </button>
               </div>
             </form>
@@ -673,151 +1082,58 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* ================= MODAL: DIVIDEND ALLOCATION ================= */}
+      {/* ========================================================================= */}
+      {/* MODAL: DIVIDEND ALLOCATION                                                */}
+      {/* ========================================================================= */}
       {showDividendModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-              <h3 className="font-display font-bold text-lg text-white">Trigger Dividend Pool</h3>
-              <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
+              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">Trigger Dividend Pool</h3>
+              <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleTriggerDividends} className="space-y-4 text-xs">
+            <form onSubmit={handleTriggerDividends} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Total Pool to Allocate (₦)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Total Pool to Allocate (₦)</label>
                 <input
                   type="number"
                   min="1000000"
                   step="500000"
                   value={dividendPool}
                   onChange={(e) => setDividendPool(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Effective Annual Yield (% p.a.)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Effective Annual Yield (% p.a.)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={dividendPercent}
                   onChange={(e) => setDividendPercent(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowDividendModal(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-brand-500 hover:bg-brand-400 text-black font-bold rounded-xl"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl"
                 >
                   Authorize Allocation
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL: PROSPECTIVE APPLICANT APPROVAL & CARD ISSUANCE ================= */}
-      {selectedAppForApproval && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0A0A0A] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center border border-brand-500/30">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-base text-white">Approve Member & Allocate Card</h3>
-                  <p className="text-[11px] text-slate-400">Application: {selectedAppForApproval.id}</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setSelectedAppForApproval(null)} 
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Applicant Summary */}
-            <div className="bg-[#141414] border border-white/10 rounded-2xl p-4 mb-5 space-y-2 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Full Legal Name:</span>
-                <span className="font-bold text-white font-sans">{selectedAppForApproval.fullName}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Email & Phone:</span>
-                <span className="text-slate-300 font-mono text-[11px]">{selectedAppForApproval.email} • {selectedAppForApproval.phone}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Occupation:</span>
-                <span className="text-slate-300">{selectedAppForApproval.occupation}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Location:</span>
-                <span className="text-slate-300">{selectedAppForApproval.lga}, {selectedAppForApproval.state}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Committed Monthly Thrift:</span>
-                <span className="text-emerald-400 font-bold font-mono">₦{selectedAppForApproval.monthlyThriftTarget.toLocaleString()}/month</span>
-              </div>
-              <div className="flex justify-between items-center pt-1 border-t border-white/5">
-                <span className="text-slate-400">Govt ID ({selectedAppForApproval.idType}):</span>
-                <span className="text-slate-200 font-mono">{selectedAppForApproval.idNumber}</span>
-              </div>
-              {selectedAppForApproval.nextOfKinName && (
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Next of Kin:</span>
-                  <span className="text-slate-300">{selectedAppForApproval.nextOfKinName} ({selectedAppForApproval.nextOfKinPhone})</span>
-                </div>
-              )}
-            </div>
-
-            <form onSubmit={handleApproveApplication} className="space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">
-                  Assign Physical Member Card ID
-                </label>
-                <input
-                  type="text"
-                  value={assignedCardInput}
-                  onChange={(e) => setAssignedCardInput(e.target.value)}
-                  placeholder="e.g. MCS-2026-7842"
-                  className="w-full bg-black border border-brand-500/40 focus:border-brand-500 rounded-xl px-3.5 py-2.5 text-brand-400 font-mono font-bold tracking-wider focus:outline-none"
-                  required
-                />
-                <p className="text-[10px] text-slate-400 mt-1">
-                  This plastic RFID card code will be tied to this applicant. They can use it to self-activate on the Member Portal (members.mosunmolacoop.com).
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setSelectedAppForApproval(null)}
-                  className="px-4 py-2 text-slate-400 hover:text-white font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Confirm Approval & Allocate Card</span>
                 </button>
               </div>
             </form>

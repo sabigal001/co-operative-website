@@ -3,11 +3,17 @@ import type { MemberProfile } from '../types';
 export const primaryDemoMember: MemberProfile = {
   id: 'MEM-8942',
   memberId: 'MCS-2026-8942',
+  applicationId: 'APP-2023-00012',
   fullName: 'Chief Adeleke Balogun',
+  dateOfBirth: '1970-04-18',
   email: 'adeleke.balogun@mosunmolacoop.ng',
   phone: '+234 803 456 7890',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
   joinDate: '2023-04-12',
+  membershipStatus: 'ACTIVE',
+  digitalAccountStatus: 'ACTIVE',
+  physicalCardStatus: 'ACTIVATED',
+  assignedCardId: 'MCS-2026-8942',
   status: 'active',
   kycVerified: true,
   kycDocuments: {
@@ -30,6 +36,8 @@ export const primaryDemoMember: MemberProfile = {
   },
   qrToken: 'MOSUNMOLA-QR-MCS-2026-8942-VERIFIED-AUTH-TOKEN-90812',
   address: '14 Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
+  state: 'Lagos',
+  lga: 'Eti-Osa',
   occupation: 'Managing Director / Agro-Tech Consultant'
 };
 
@@ -38,11 +46,17 @@ export const initialMembersRegistry: MemberProfile[] = [
   {
     id: 'MEM-9921',
     memberId: 'MCS-2026-9921',
+    applicationId: 'APP-2024-00109',
     fullName: 'Dr. Babatunde Alabi',
+    dateOfBirth: '1975-08-11',
     email: 'babatunde.alabi@unilag.edu.ng',
     phone: '+234 809 112 3344',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
     joinDate: '2024-01-10',
+    membershipStatus: 'ACTIVE',
+    digitalAccountStatus: 'ACTIVE',
+    physicalCardStatus: 'ACTIVATED',
+    assignedCardId: 'MCS-2026-9921',
     status: 'active',
     kycVerified: true,
     kycDocuments: {
@@ -65,23 +79,31 @@ export const initialMembersRegistry: MemberProfile[] = [
     },
     qrToken: 'MOSUNMOLA-QR-MCS-2026-9921-VERIFIED-AUTH-TOKEN-11029',
     address: 'Senior Staff Quarters, UNILAG, Akoka, Lagos',
+    state: 'Lagos',
+    lga: 'Mainland',
     occupation: 'Professor of Biochemistry'
   },
   {
     id: 'MEM-1033',
     memberId: 'MCS-2026-1033',
+    applicationId: 'APP-2026-00301',
     fullName: 'Hajiya Fatima Garba',
+    dateOfBirth: '1988-02-14',
     email: 'fatima.garba@gmail.com',
     phone: '+234 802 334 1122',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
     joinDate: '2026-02-01',
+    membershipStatus: 'ACTIVE',
+    digitalAccountStatus: 'NOT_ACTIVATED', // Approved member, physical card issued, pending digital activation!
+    physicalCardStatus: 'ISSUED',
+    assignedCardId: 'MCS-2026-1033',
     status: 'pending_kyc',
-    kycVerified: false,
+    kycVerified: true,
     kycDocuments: {
       idType: 'NIN',
       idNumber: '39201948291',
       fileUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80',
-      status: 'pending',
+      status: 'verified',
       submittedAt: '2026-02-02'
     },
     nextOfKin: {
@@ -97,23 +119,31 @@ export const initialMembersRegistry: MemberProfile[] = [
     },
     qrToken: 'MOSUNMOLA-QR-MCS-2026-1033-PENDING-KYC-TOKEN-39201',
     address: 'Victoria Island, Lagos',
+    state: 'Lagos',
+    lga: 'Eti-Osa',
     occupation: 'Commodity Trading Specialist'
   },
   {
     id: 'MEM-5571',
     memberId: 'MCS-2026-5571',
+    applicationId: 'APP-2026-00479',
     fullName: 'Engr. Emeka Okafor',
+    dateOfBirth: '1985-03-19',
     email: 'emeka.okafor@techpulse.ng',
     phone: '+234 805 778 9900',
     avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
     joinDate: '2026-02-05',
+    membershipStatus: 'ACTIVE',
+    digitalAccountStatus: 'NOT_ACTIVATED', // Physical card issued, unactivated digitally!
+    physicalCardStatus: 'ISSUED',
+    assignedCardId: 'MCS-2026-5571',
     status: 'pending_kyc',
-    kycVerified: false,
+    kycVerified: true,
     kycDocuments: {
-      idType: 'Voters Card',
+      idType: 'INEC Voter\'s Card',
       idNumber: '90F1B28394819',
       fileUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80',
-      status: 'pending',
+      status: 'verified',
       submittedAt: '2026-02-06'
     },
     nextOfKin: {
@@ -129,6 +159,8 @@ export const initialMembersRegistry: MemberProfile[] = [
     },
     qrToken: 'MOSUNMOLA-QR-MCS-2026-5571-PENDING-KYC-TOKEN-55829',
     address: 'Chevy View Estate, Lekki, Lagos',
+    state: 'Lagos',
+    lga: 'Eti-Osa',
     occupation: 'Senior Infrastructure Engineer'
   }
 ];

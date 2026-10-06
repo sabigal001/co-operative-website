@@ -92,6 +92,8 @@ export const adminService = {
     const newApp: MembershipApplication = {
       ...payload,
       id: `APP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      intendedMonthlySavings: payload.intendedMonthlySavings || payload.monthlyThriftTarget || 50000,
+      monthlyThriftTarget: payload.monthlyThriftTarget || payload.intendedMonthlySavings || 50000,
       status: 'pending_approval',
       submittedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
     };

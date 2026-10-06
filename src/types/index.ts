@@ -1,13 +1,40 @@
 // Core Domain Types for Mosunmola Cooperative Multipurpose Society
 
-export type CardStatus = 'unassigned' | 'active' | 'pending_verification' | 'lost' | 'replaced';
+export type CardStatus = 
+  | 'PENDING_ISSUANCE' 
+  | 'ISSUED' 
+  | 'ACTIVATED' 
+  | 'BLOCKED' 
+  | 'LOST' 
+  | 'EXPIRED' 
+  | 'REASSIGNED'
+  | 'unassigned' 
+  | 'active' 
+  | 'pending_verification' 
+  | 'lost' 
+  | 'replaced';
+
+export type MembershipStatus = 
+  | 'PENDING' 
+  | 'ACTIVE' 
+  | 'INACTIVE' 
+  | 'SUSPENDED' 
+  | 'TERMINATED';
+
+export type DigitalAccountStatus = 
+  | 'NOT_ACTIVATED' 
+  | 'ACTIVE' 
+  | 'SUSPENDED' 
+  | 'BLOCKED';
 
 export interface PhysicalMemberCard {
-  cardId: string; // e.g., 'MCS-2026-8942'
-  batchNumber: string;
+  cardId: string; // e.g., 'MCS-2026-8942' or 'CARD-2026-77821'
+  assignedMemberId?: string; // Canonical Member ID e.g. 'MCS-2026-8942'
   assignedMemberName: string;
   assignedEmail?: string;
   assignedPhone?: string;
+  cardType?: 'standard_plastic' | 'rfid_executive' | 'gold_fiduciary';
+  batchNumber: string;
   status: CardStatus;
   issuedDate: string;
   activationDate?: string;
@@ -18,16 +45,22 @@ export interface PhysicalMemberCard {
 
 export interface MemberProfile {
   id: string;
-  memberId: string; // Matches physical card ID
+  memberId: string; // Canonical Member ID e.g. 'MCS-2026-8942'
+  applicationId?: string; // Links to originating MembershipApplication
   fullName: string;
+  dateOfBirth?: string;
   email: string;
   phone: string;
   avatar: string;
   joinDate: string;
+  membershipStatus?: MembershipStatus; // PENDING | ACTIVE | INACTIVE | SUSPENDED | TERMINATED
+  digitalAccountStatus?: DigitalAccountStatus; // NOT_ACTIVATED | ACTIVE
+  physicalCardStatus?: CardStatus; // PENDING_ISSUANCE | ISSUED | ACTIVATED
+  assignedCardId?: string; // Physical card identifier
   status: 'active' | 'pending_kyc' | 'suspended';
   kycVerified: boolean;
   kycDocuments: {
-    idType: 'NIN' | 'Voters Card' | 'International Passport' | 'Drivers License';
+    idType: 'NIN' | 'Voters Card' | 'International Passport' | 'Drivers License' | string;
     idNumber: string;
     fileUrl: string;
     status: 'pending' | 'verified' | 'rejected';
@@ -46,6 +79,8 @@ export interface MemberProfile {
   };
   qrToken: string;
   address: string;
+  state?: string;
+  lga?: string;
   occupation: string;
 }
 
@@ -271,43 +306,167 @@ export interface RegisterMemberPayload {
   };
 }
 
-export type MembershipApplicationStatus = 'pending_approval' | 'approved' | 'rejected';
+export type MembershipApplicationStatus = 
+  | 'DRAFT' 
+  | 'SUBMITTED' 
+  | 'UNDER_REVIEW' 
+  | 'MORE_INFORMATION_REQUIRED' 
+  | 'APPROVED' 
+  | 'REJECTED' 
+  | 'WITHDRAWN'
+  | 'pending_approval' 
+  | 'approved' 
+  | 'rejected';
 
 export interface MembershipApplication {
-  id: string;
+  id: string; // e.g. 'APP-2026-00482'
   fullName: string;
+  dateOfBirth?: string;
   email: string;
   phone: string;
   address: string;
   state: string;
   lga: string;
   occupation: string;
-  monthlyThriftTarget: number;
-  idType: 'NIN' | 'Drivers License' | 'International Passport' | 'Voters Card';
+  intendedMonthlySavings: number;
+  monthlyThriftTarget: number; // Backwards compatible alias
+  savingsPlanId?: 'basic_thrift' | 'standard' | 'executive' | 'premium' | 'institutional' | string;
+  idType: 'NIN' | 'FRSC Driver\'s License' | 'International Passport' | 'INEC Voter\'s Card' | 'Drivers License' | 'Voters Card';
   idNumber: string;
+  idDocumentStatus?: 'PROVIDED' | 'PENDING_REVIEW' | 'VERIFIED' | 'REJECTED';
+  idDocumentUrl?: string;
   reasonForJoining: string;
+  nextOfKin?: {
+    name: string;
+    phone: string;
+    relationship: string;
+    address?: string;
+  };
   nextOfKinName?: string;
   nextOfKinPhone?: string;
+  nextOfKinRelationship?: string;
   status: MembershipApplicationStatus;
   submittedAt: string;
   reviewedAt?: string;
   reviewedBy?: string;
+  adminNotes?: string;
   assignedCardId?: string;
+  approvedMemberId?: string; // Canonical Member ID e.g. 'MCS-2026-8942'
   rejectionReason?: string;
 }
 
 export interface CreateMembershipApplicationPayload {
   fullName: string;
+  dateOfBirth?: string;
   email: string;
   phone: string;
   address: string;
   state: string;
   lga: string;
   occupation: string;
+  intendedMonthlySavings?: number;
   monthlyThriftTarget: number;
-  idType: 'NIN' | 'Drivers License' | 'International Passport' | 'Voters Card';
+  savingsPlanId?: string;
+  idType: 'NIN' | 'FRSC Driver\'s License' | 'International Passport' | 'INEC Voter\'s Card' | 'Drivers License' | 'Voters Card';
   idNumber: string;
+  idDocumentStatus?: 'PROVIDED' | 'PENDING_REVIEW';
+  idDocumentUrl?: string;
   reasonForJoining: string;
+  nextOfKin?: {
+    name: string;
+    phone: string;
+    relationship: string;
+    address?: string;
+  };
   nextOfKinName?: string;
   nextOfKinPhone?: string;
+  nextOfKinRelationship?: string;
 }
+
+// Configurable Savings Plans
+export interface SavingsPlanConfig {
+  id: 'basic_thrift' | 'standard' | 'executive' | 'premium' | 'institutional';
+  name: string;
+  tier: string;
+  monthlyAmount: number;
+  description: string;
+  targetAudience: string;
+  recommendedDuration: string;
+  benefits: string[];
+}
+
+// Configurable Loan Products
+export interface LoanProductConfig {
+  id: string;
+  name: string;
+  code: string;
+  interestRatePercent: number; // Flat rate per annum
+  maxMultiplierOfSavings: number; // Max loan = savings * multiplier
+  maxAmount: number;
+  minSavingsDurationMonths: number;
+  maxTenureMonths: number;
+  processingFeePercent: number;
+  repaymentFrequency: 'monthly' | 'quarterly';
+  description: string;
+  eligibilitySummary: string;
+}
+
+// Financial Ledger & Immutable Records
+export type LedgerTransactionType = 
+  | 'OPENING_BALANCE'
+  | 'CONTRIBUTION'
+  | 'THRIFT_DEPOSIT'
+  | 'TARGET_DEPOSIT'
+  | 'SHARE_PAYMENT'
+  | 'WITHDRAWAL'
+  | 'DIVIDEND'
+  | 'LOAN_DISBURSEMENT'
+  | 'LOAN_REPAYMENT'
+  | 'INTEREST'
+  | 'ADJUSTMENT'
+  | 'REFUND';
+
+export interface LedgerTransaction {
+  transactionId: string;
+  memberId: string;
+  type: LedgerTransactionType;
+  amount: number;
+  status: 'PENDING' | 'VERIFIED' | 'FAILED' | 'REVERSED';
+  reference: string;
+  description: string;
+  paymentMethod?: string;
+  createdAt: string;
+  createdBy?: string;
+  verifiedBy?: string;
+  verifiedAt?: string;
+  balanceAfter: number;
+}
+
+// Physical Card Digital Activation DTOs
+export type CardLookupStatus = 
+  | 'FOUND_ELIGIBLE' 
+  | 'ALREADY_ACTIVATED' 
+  | 'CARD_NOT_FOUND' 
+  | 'CARD_BLOCKED' 
+  | 'MEMBERSHIP_NOT_APPROVED';
+
+export interface CardLookupResponse {
+  status: CardLookupStatus;
+  message: string;
+  card?: PhysicalMemberCard;
+  membership?: MemberProfile;
+  prefill?: {
+    fullName: string;
+    memberId: string;
+    cardId: string;
+    maskedPhone: string;
+    maskedEmail: string;
+    phone: string;
+    email: string;
+    branch: string;
+    joinDate: string;
+    occupation?: string;
+    address?: string;
+  };
+}
+
