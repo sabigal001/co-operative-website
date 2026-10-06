@@ -120,7 +120,7 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
             </div>
 
             {/* Right Graphic: Interactive 3D RFID Card Tilt Render */}
-            <div className="lg:col-span-5 flex justify-center perspective-1000">
+            <div className="lg:col-span-5 flex justify-center" style={{ perspective: '1400px' }}>
               <div 
                 ref={cardRef}
                 onPointerMove={handlePointerMove}
@@ -128,8 +128,11 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                 onPointerLeave={handlePointerLeave}
                 className="w-full max-w-sm rounded-3xl p-0.5 liquid-glass-card border border-white/20 shadow-2xl transition-transform ease-out cursor-pointer select-none"
                 style={{
-                  transform: `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`,
-                  transitionDuration: isHovered ? '75ms' : '500ms'
+                  transformStyle: 'preserve-3d',
+                  transform: isHovered
+                    ? `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg) translateZ(25px) scale(1.02)`
+                    : 'rotateY(0deg) rotateX(0deg) translateZ(0px) scale(1)',
+                  transitionDuration: isHovered ? '90ms' : '500ms'
                 }}
               >
                 <div className="bg-[#101010]/95 rounded-[22px] p-6 space-y-5 text-white relative overflow-hidden border border-white/10">

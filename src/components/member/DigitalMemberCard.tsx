@@ -21,6 +21,8 @@ interface DigitalMemberCardProps {
 export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) => {
   const { showToast } = useApp();
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState<'toBack' | 'toFront' | null>(null);
   const [copied, setCopied] = useState(false);
 
   // 3D Interactive Card Physics Tilt State
@@ -29,7 +31,7 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (isFlipping || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -52,8 +54,17 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
   };
 
   const handleFlip = () => {
+    if (isFlipping) return;
     triggerHaptic('medium');
-    setIsFlipped(!isFlipped);
+    const nextFlipped = !isFlipped;
+    setFlipDirection(nextFlipped ? 'toBack' : 'toFront');
+    setIsFlipping(true);
+    setIsFlipped(nextFlipped);
+
+    setTimeout(() => {
+      setIsFlipping(false);
+      setFlipDirection(null);
+    }, 700);
   };
 
   const copyCardId = () => {
@@ -121,21 +132,33 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={handlePointerLeave}
         onClick={handleFlip}
-        className="perspective-1000 max-w-lg mx-auto cursor-pointer select-none group"
+        style={{ perspective: '1500px' }}
+        className="max-w-lg mx-auto cursor-pointer select-none group"
       >
         <div
-          className="relative w-full aspect-[1.586/1] rounded-3xl transform-style-3d shadow-2xl transition-transform ease-out"
+          className={`relative w-full aspect-[1.586/1] rounded-3xl shadow-2xl ${
+            isFlipping
+              ? (flipDirection === 'toBack' ? 'animate-card-flip-back' : 'animate-card-flip-front')
+              : 'transition-transform ease-out'
+          }`}
           style={{
-            transform: isFlipped 
-              ? `rotateY(${180 + tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`
-              : `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`,
-            transitionDuration: isHovered ? '75ms' : '500ms'
+            transformStyle: 'preserve-3d',
+            transform: isFlipping
+              ? undefined
+              : (isFlipped 
+                  ? `rotateY(${180 + tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`
+                  : `rotateY(${tilt.rotateY}deg) rotateX(${tilt.rotateX}deg)`),
+            transitionDuration: isFlipping ? undefined : (isHovered ? '90ms' : '500ms')
           }}
         >
           {/* ================= CARD FRONT ================= */}
           <div
             className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-black border border-white/20 shadow-2xl flex flex-col justify-between"
-            style={{ backfaceVisibility: 'hidden' }}
+            style={{ 
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'translateZ(1px)'
+            }}
           >
             {/* Dynamic Holographic Rainbow Sheen */}
             <div 
@@ -242,7 +265,8 @@ export const DigitalMemberCard: React.FC<DigitalMemberCardProps> = ({ member }) 
             className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-7 text-white overflow-hidden bg-gradient-to-bl from-neutral-900 via-zinc-950 to-black border border-white/20 shadow-2xl flex flex-col justify-between"
             style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)'
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg) translateZ(1px)'
             }}
           >
             {/* Magnetic Stripe */}
