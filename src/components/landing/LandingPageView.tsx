@@ -23,7 +23,7 @@ export const LandingPageView: React.FC = () => {
         <ProductOfferings />
         <CalculatorSection />
         <PhysicalCardBanner onOpenApplyModal={() => setIsApplyModalOpen(true)} />
-        <TrustGovernance />
+        <TrustGovernance onOpenApplyModal={() => setIsApplyModalOpen(true)} />
       </main>
 
       <LandingFooter onOpenApplyModal={() => setIsApplyModalOpen(true)} />
