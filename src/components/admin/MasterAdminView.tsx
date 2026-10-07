@@ -293,27 +293,29 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     <div className="space-y-8">
       
       {/* Navigation Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <FluidPillBar
-          tabs={[
-            { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
-            { id: 'cards', label: 'Physical ID Card Control', icon: <CreditCard className="w-4 h-4" /> },
-            { id: 'roles', label: 'Staff Roles (RBAC)', icon: <Users className="w-4 h-4" /> },
-            { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
-            { id: 'audit', label: 'System Audit Logs', icon: <Clock className="w-4 h-4" /> },
-          ]}
-          activeId={activeTab}
-          onChange={(id) => setActiveTab(id as any)}
-        />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
+          <FluidPillBar
+            tabs={[
+              { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
+              { id: 'cards', label: 'Physical ID Card Control', icon: <CreditCard className="w-4 h-4" /> },
+              { id: 'roles', label: 'Staff Roles (RBAC)', icon: <Users className="w-4 h-4" /> },
+              { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
+              { id: 'audit', label: 'System Audit Logs', icon: <Clock className="w-4 h-4" /> },
+            ]}
+            activeId={activeTab}
+            onChange={(id) => setActiveTab(id as any)}
+          />
+        </div>
 
         {activeTab === 'cards' && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
             <button
               onClick={() => {
                 triggerHaptic('selection');
                 setShowIssueCardModal(true);
               }}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
+              className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring shrink-0 min-h-[40px]"
             >
               <CreditCard className="w-4 h-4" />
               <span>Issue Physical Card</span>
@@ -323,7 +325,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 triggerHaptic('selection');
                 setShowBatchModal(true);
               }}
-              className="px-3.5 py-2 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
+              className="px-3.5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring shrink-0 min-h-[40px]"
             >
               <Upload className="w-4 h-4" />
               <span>Import Batch (CSV)</span>
@@ -337,7 +339,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               triggerHaptic('selection');
               setShowDividendModal(true);
             }}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring"
+            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring min-h-[40px] shrink-0"
           >
             <Sparkles className="w-4 h-4" />
             <span>Trigger Annual Dividend Pool</span>
@@ -350,7 +352,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* ========================================================================= */}
       {activeTab === 'applications' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
                 Membership Applications Review Queue ({applications.length})
@@ -360,133 +362,197 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full md:w-auto">
               {/* Status Filter */}
-              <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl text-xs font-bold">
+              <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl text-xs font-bold overflow-x-auto no-scrollbar shrink-0">
                 <button
                   onClick={() => setAppStatusFilter('ALL')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'ALL' ? 'bg-white dark:bg-white/20 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all shrink-0 ${appStatusFilter === 'ALL' ? 'bg-white dark:bg-white/20 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}
                 >
                   All ({applications.length})
                 </button>
                 <button
                   onClick={() => setAppStatusFilter('PENDING')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'PENDING' ? 'bg-white dark:bg-white/20 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all shrink-0 ${appStatusFilter === 'PENDING' ? 'bg-white dark:bg-white/20 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}
                 >
                   Pending ({pendingAppsCount})
                 </button>
                 <button
                   onClick={() => setAppStatusFilter('APPROVED')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'APPROVED' ? 'bg-white dark:bg-white/20 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all shrink-0 ${appStatusFilter === 'APPROVED' ? 'bg-white dark:bg-white/20 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}
                 >
                   Approved
                 </button>
                 <button
                   onClick={() => setAppStatusFilter('REJECTED')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${appStatusFilter === 'REJECTED' ? 'bg-white dark:bg-white/20 shadow-sm text-rose-600 dark:text-rose-400' : 'text-slate-400'}`}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all shrink-0 ${appStatusFilter === 'REJECTED' ? 'bg-white dark:bg-white/20 shadow-sm text-rose-600 dark:text-rose-400' : 'text-slate-400'}`}
                 >
                   Rejected
                 </button>
               </div>
 
               {/* Search */}
-              <div className="relative max-w-xs w-full">
+              <div className="relative w-full sm:w-64">
                 <input
                   type="text"
                   value={appSearch}
                   onChange={(e) => setAppSearch(e.target.value)}
                   placeholder="Search ID, name, email..."
-                  className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                 />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {filteredApplications.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No membership applications found matching criteria.
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
-                    <tr>
-                      <th className="py-3 px-4">Application ID</th>
-                      <th className="py-3 px-4">Applicant</th>
-                      <th className="py-3 px-4">Contact & Location</th>
-                      <th className="py-3 px-4">Savings Plan</th>
-                      <th className="py-3 px-4">Submitted</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Secretariat Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
-                    {filteredApplications.map((app) => {
-                      const isPending = app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW' || app.status === 'pending_approval';
-                      const isApproved = app.status === 'APPROVED' || app.status === 'approved';
+              <>
+                {/* Mobile View: High-density interactive cards (sm:hidden) */}
+                <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+                  {filteredApplications.map((app) => {
+                    const isPending = app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW' || app.status === 'pending_approval';
+                    const isApproved = app.status === 'APPROVED' || app.status === 'approved';
 
-                      return (
-                        <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
-                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
-                            {app.id}
-                          </td>
-                          <td className="py-3.5 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">
-                            {app.fullName}
-                            <span className="block text-[10px] text-slate-400 font-normal">{app.occupation}</span>
-                          </td>
-                          <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[10px]">
-                            <div>{app.phone}</div>
-                            <div className="text-slate-400">{app.lga}, {app.state}</div>
-                          </td>
-                          <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400">
-                            ₦{(app.intendedMonthlySavings || app.monthlyThriftTarget).toLocaleString()}/mo
-                            <span className="block text-[9px] uppercase font-normal text-slate-400">
+                    return (
+                      <div key={app.id} className="p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">{app.id}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            isApproved ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
+                            isPending ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20' :
+                            'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
+                          }`}>
+                            {app.status.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-bold text-sm text-slate-900 dark:text-white">{app.fullName}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{app.occupation} • {app.lga}, {app.state}</div>
+                          <div className="text-[11px] text-slate-400 font-mono mt-0.5">{app.phone}</div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-white/5 p-2.5 rounded-xl border border-slate-200/60 dark:border-white/5">
+                          <div>
+                            <span className="text-[10px] text-slate-400 block uppercase">Monthly Thrift</span>
+                            <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                              ₦{(app.intendedMonthlySavings || app.monthlyThriftTarget).toLocaleString()}/mo
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] text-slate-400 block uppercase">Plan Tier</span>
+                            <span className="capitalize font-semibold text-slate-700 dark:text-slate-300">
                               {app.savingsPlanId || 'Standard'}
                             </span>
-                          </td>
-                          <td className="py-3.5 px-4 font-sans text-slate-500 dark:text-slate-400 text-[10px]">
-                            {app.submittedAt.slice(0, 10)}
-                          </td>
-                          <td className="py-3.5 px-4 font-sans">
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              isApproved ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
-                              isPending ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20' :
-                              'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
-                            }`}>
-                              {app.status.replace(/_/g, ' ')}
-                            </span>
-                          </td>
-                          <td className="py-3.5 px-4 text-right font-sans">
-                            <div className="flex items-center justify-end gap-1.5">
-                              {/* Review button */}
-                              <button
-                                onClick={() => {
-                                  triggerHaptic('selection');
-                                  setSelectedAppDetail(app);
-                                }}
-                                className="px-2.5 py-1.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs flex items-center gap-1 tap-spring"
-                              >
-                                <Eye className="w-3.5 h-3.5" /> Review
-                              </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <button
+                            onClick={() => {
+                              triggerHaptic('selection');
+                              setSelectedAppDetail(app);
+                            }}
+                            className="flex-1 py-2 px-3 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 min-h-[40px] tap-spring"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> Review
+                          </button>
+                          {isPending && (
+                            <button
+                              onClick={() => openApprovalModal(app)}
+                              className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm min-h-[40px] tap-spring"
+                            >
+                              <Check className="w-3.5 h-3.5" /> Approve
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
-                              {isPending && (
+                {/* Tablet / Desktop View: Spreadsheet Table (hidden sm:block) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left text-xs min-w-[720px]">
+                    <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
+                      <tr>
+                        <th className="py-3 px-4">Application ID</th>
+                        <th className="py-3 px-4">Applicant</th>
+                        <th className="py-3 px-4">Contact & Location</th>
+                        <th className="py-3 px-4">Savings Plan</th>
+                        <th className="py-3 px-4">Submitted</th>
+                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3 px-4 text-right">Secretariat Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
+                      {filteredApplications.map((app) => {
+                        const isPending = app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW' || app.status === 'pending_approval';
+                        const isApproved = app.status === 'APPROVED' || app.status === 'approved';
+
+                        return (
+                          <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
+                            <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
+                              {app.id}
+                            </td>
+                            <td className="py-3.5 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">
+                              {app.fullName}
+                              <span className="block text-[10px] text-slate-400 font-normal">{app.occupation}</span>
+                            </td>
+                            <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[10px]">
+                              <div>{app.phone}</div>
+                              <div className="text-slate-400">{app.lga}, {app.state}</div>
+                            </td>
+                            <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400">
+                              ₦{(app.intendedMonthlySavings || app.monthlyThriftTarget).toLocaleString()}/mo
+                              <span className="block text-[9px] uppercase font-normal text-slate-400">
+                                {app.savingsPlanId || 'Standard'}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 font-sans text-slate-500 dark:text-slate-400 text-[10px]">
+                              {app.submittedAt.slice(0, 10)}
+                            </td>
+                            <td className="py-3.5 px-4 font-sans">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                isApproved ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
+                                isPending ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20' :
+                                'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
+                              }`}>
+                                {app.status.replace(/_/g, ' ')}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right font-sans">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {/* Review button */}
                                 <button
-                                  onClick={() => openApprovalModal(app)}
-                                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-sm tap-spring"
+                                  onClick={() => {
+                                    triggerHaptic('selection');
+                                    setSelectedAppDetail(app);
+                                  }}
+                                  className="px-2.5 py-1.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs flex items-center gap-1 tap-spring"
                                 >
-                                  <Check className="w-3.5 h-3.5" /> Approve
+                                  <Eye className="w-3.5 h-3.5" /> Review
                                 </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+
+                                {isPending && (
+                                  <button
+                                    onClick={() => openApprovalModal(app)}
+                                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-sm tap-spring"
+                                  >
+                                    <Check className="w-3.5 h-3.5" /> Approve
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -507,21 +573,21 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </p>
             </div>
 
-            <div className="relative max-w-xs w-full">
+            <div className="relative w-full sm:max-w-xs">
               <input
                 type="text"
                 value={cardSearch}
                 onChange={(e) => setCardSearch(e.target.value)}
                 placeholder="Search card ID, holder, batch..."
-                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
+                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
             </div>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[650px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Card ID Number</th>
@@ -706,12 +772,12 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* MODAL: APPLICATION DETAIL REVIEW DRAWER                                   */}
       {/* ========================================================================= */}
       {selectedAppDetail && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-6 animate-slide-up relative flex flex-col max-h-[92vh]">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40 shrink-0">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto animate-slide-up relative flex flex-col max-h-[94vh]">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40 shrink-0">
               <div>
                 <span className="text-[10px] font-mono uppercase text-slate-400">Membership Application Review</span>
-                <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+                <h3 className="font-display font-bold text-sm sm:text-lg text-slate-900 dark:text-white">
                   {selectedAppDetail.id}
                 </h3>
               </div>
@@ -723,17 +789,17 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 space-y-4 text-xs">
+            <div className="p-3.5 sm:p-6 overflow-y-auto flex-1 space-y-3.5 sm:space-y-4 text-xs">
               {/* Applicant Profile */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
                 <div className="flex items-center justify-between">
-                  <strong className="text-base font-bold text-slate-900 dark:text-white">{selectedAppDetail.fullName}</strong>
+                  <strong className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">{selectedAppDetail.fullName}</strong>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                     {selectedAppDetail.status.replace(/_/g, ' ')}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
                   <div>
                     <span className="text-slate-400 block">Occupation / Enterprise:</span>
                     <span className="font-medium text-slate-800 dark:text-slate-200">{selectedAppDetail.occupation}</span>
@@ -744,7 +810,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   </div>
                   <div>
                     <span className="text-slate-400 block">Email Address:</span>
-                    <span className="font-mono text-slate-800 dark:text-slate-200">{selectedAppDetail.email}</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200 break-all">{selectedAppDetail.email}</span>
                   </div>
                   <div>
                     <span className="text-slate-400 block">Mobile Phone:</span>
@@ -762,7 +828,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </div>
 
               {/* Savings Intent */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400">Intended Contribution Target</span>
                 <div className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">
                   ₦{(selectedAppDetail.intendedMonthlySavings || selectedAppDetail.monthlyThriftTarget).toLocaleString()} / month
@@ -773,7 +839,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </div>
 
               {/* Statutory ID Credentials */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase font-bold text-slate-400">Government ID Document</span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -795,7 +861,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </div>
 
               {/* Next of Kin */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400">Designated Beneficiary (Next of Kin)</span>
                 <div className="font-bold text-slate-900 dark:text-white">
                   {selectedAppDetail.nextOfKinName || 'Next of Kin'}
@@ -806,11 +872,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               </div>
 
               {/* Administrative Actions */}
-              <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-end gap-2">
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => handleRequestMoreInfo(selectedAppDetail.id)}
-                  className="px-3 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs"
+                  className="px-4 py-2.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs min-h-[42px] flex items-center justify-center"
                 >
                   Request More Info
                 </button>
@@ -819,7 +885,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   onClick={() => {
                     openApprovalModal(selectedAppDetail);
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md tap-spring"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md tap-spring min-h-[42px]"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Approve & Issue ID</span>
@@ -834,25 +900,25 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* MODAL: APPROVE MEMBERSHIP & CONFIGURE PHYSICAL CARD                        */}
       {/* ========================================================================= */}
       {selectedAppForApproval && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-5">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+                  <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
                     Approve Membership & Issue Card
                   </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
                     Application: {selectedAppForApproval.id}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedAppForApproval(null)} 
-                className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -885,7 +951,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   value={assignedCardInput}
                   onChange={(e) => setAssignedCardInput(e.target.value)}
                   placeholder="e.g. MCS-2026-8942"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   required
                 />
                 <span className="text-[10px] text-slate-400 block">
@@ -900,7 +966,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 <select
                   value={cardTypeInput}
                   onChange={(e) => setCardTypeInput(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="standard_plastic">Standard Plastic RFID Card</option>
                   <option value="rfid_executive">Executive Gold RFID Card</option>
@@ -908,17 +974,17 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setSelectedAppForApproval(null)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-md tap-spring"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-md tap-spring min-h-[42px]"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Authorize Membership & Issue Card</span>
@@ -933,13 +999,13 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* MODAL: DIRECT PHYSICAL CARD ISSUANCE                                      */}
       {/* ========================================================================= */}
       {showIssueCardModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
+              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">
                 Issue Physical Plastic RFID Card
               </h3>
-              <button onClick={() => setShowIssueCardModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              <button onClick={() => setShowIssueCardModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -952,7 +1018,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   value={issueMemberIdInput}
                   onChange={(e) => setIssueMemberIdInput(e.target.value)}
                   placeholder="e.g. MCS-2026-8942"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
                   required
                 />
               </div>
@@ -964,7 +1030,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   value={issueCardIdInput}
                   onChange={(e) => setIssueCardIdInput(e.target.value)}
                   placeholder="e.g. MCS-2026-8942 or CARD-2026-77821"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
                   required
                 />
               </div>
@@ -974,7 +1040,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 <select
                   value={issueCardType}
                   onChange={(e) => setIssueCardType(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none"
                 >
                   <option value="standard_plastic">Standard Plastic Card</option>
                   <option value="rfid_executive">Executive RFID Card</option>
@@ -988,22 +1054,22 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   type="text"
                   value={issueBranch}
                   onChange={(e) => setIssueBranch(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowIssueCardModal(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl min-h-[42px] flex items-center justify-center"
                 >
                   Issue Card
                 </button>
@@ -1017,11 +1083,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* MODAL: CARD BATCH IMPORT                                                  */}
       {/* ========================================================================= */}
       {showBatchModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">Import Card Batch (CSV)</h3>
-              <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">Import Card Batch (CSV)</h3>
+              <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1033,7 +1099,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   type="text"
                   value={batchName}
                   onChange={(e) => setBatchName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
@@ -1044,7 +1110,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   type="text"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
@@ -1057,22 +1123,22 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   max="500"
                   value={batchCount}
                   onChange={(e) => setBatchCount(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowBatchModal(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold rounded-xl"
+                  className="px-5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold rounded-xl min-h-[42px] flex items-center justify-center"
                 >
                   Generate Batch
                 </button>
@@ -1086,11 +1152,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       {/* MODAL: DIVIDEND ALLOCATION                                                */}
       {/* ========================================================================= */}
       {showDividendModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">Trigger Dividend Pool</h3>
-              <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">Trigger Dividend Pool</h3>
+              <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1104,7 +1170,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   step="500000"
                   value={dividendPool}
                   onChange={(e) => setDividendPool(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
@@ -1116,22 +1182,22 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   step="0.1"
                   value={dividendPercent}
                   onChange={(e) => setDividendPercent(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowDividendModal(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl min-h-[42px] flex items-center justify-center"
                 >
                   Authorize Allocation
                 </button>

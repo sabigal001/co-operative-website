@@ -18,18 +18,17 @@ import {
   FileText,
   Users2,
   Search,
-  Clock,
   CreditCard,
   AlertCircle,
-  ExternalLink,
-  UploadCloud
+  UploadCloud,
+  ChevronRight
 } from 'lucide-react';
 import { applicationService } from '../../services/api/applicationService';
 import { COOPERATIVE_SAVINGS_PLANS } from '../../config/cooperativePlans';
 import { ALL_NIGERIAN_STATES, getLgasForState } from '../../utils/nigeriaLocations';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
-import type { MembershipApplication, MembershipApplicationStatus } from '../../types';
+import type { MembershipApplication } from '../../types';
 
 interface MembershipApplicationModalProps {
   isOpen: boolean;
@@ -258,41 +257,52 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden my-6 animate-slide-up relative flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 w-full max-w-2xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto animate-slide-up relative flex flex-col max-h-[94vh]">
         
-        {/* Top Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-black/40 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shadow-sm">
-              <UserPlus className="w-5 h-5 text-slate-900 dark:text-white" />
+        {/* Responsive Mobile Header */}
+        <div className="px-3.5 sm:px-6 py-3 sm:py-4 border-b border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 bg-slate-50 dark:bg-black/40 shrink-0">
+          <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shadow-sm shrink-0">
+                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5 text-slate-900 dark:text-white" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
+                  {modalMode === 'apply' ? 'Society Membership' : 'Track Application'}
+                </h3>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
+                  Mosunmola Cooperative • LSCS/2018/8941
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-tight">
-                {modalMode === 'apply' ? 'Society Membership Application' : 'Track Application Status'}
-              </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Mosunmola Cooperative Multipurpose Society Ltd. • LSCS/2018/8941
-              </p>
-            </div>
+
+            {/* Mobile close button */}
+            <button
+              onClick={resetModal}
+              className="sm:hidden text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
             {/* Mode Switcher */}
-            <div className="bg-slate-200/80 dark:bg-white/10 p-0.5 rounded-full flex text-xs">
+            <div className="bg-slate-200/80 dark:bg-white/10 p-0.5 rounded-full flex text-xs w-full sm:w-auto justify-center">
               <button
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
                   setModalMode('apply');
                 }}
-                className={`px-3 py-1 rounded-full font-bold transition-all ${
+                className={`flex-1 sm:flex-initial px-3 py-1 rounded-full font-bold text-[11px] sm:text-xs transition-all ${
                   modalMode === 'apply'
                     ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                Apply
+                Apply Form
               </button>
               <button
                 type="button"
@@ -300,7 +310,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                   triggerHaptic('light');
                   setModalMode('track');
                 }}
-                className={`px-3 py-1 rounded-full font-bold transition-all ${
+                className={`flex-1 sm:flex-initial px-3 py-1 rounded-full font-bold text-[11px] sm:text-xs transition-all ${
                   modalMode === 'track'
                     ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -310,9 +320,11 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
               </button>
             </div>
 
+            {/* Desktop close button */}
             <button
               onClick={resetModal}
-              className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              className="hidden sm:block text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -323,15 +335,15 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
         {/* MODE 1: TRACK APPLICATION STATUS                                         */}
         {/* ========================================================================= */}
         {modalMode === 'track' && (
-          <div className="p-6 space-y-6 overflow-y-auto flex-1">
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300 space-y-1">
+          <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300 space-y-1">
               <p className="font-bold text-slate-900 dark:text-white">Applicant Status Command</p>
-              <p>
-                Have you already submitted an application to Mosunmola Cooperative? Enter your Application Reference ID (e.g. <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">APP-2026-00482</span>) or your registered email to view real-time Secretarial review progress.
+              <p className="text-[11px] leading-relaxed">
+                Enter your Application Reference ID (e.g. <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">APP-2026-00482</span>) or your registered email to view real-time Secretarial review progress.
               </p>
             </div>
 
-            <form onSubmit={handleTrackSubmit} className="flex gap-2">
+            <form onSubmit={handleTrackSubmit} className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -339,13 +351,13 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                   value={trackQuery}
                   onChange={(e) => setTrackQuery(e.target.value)}
                   placeholder="e.g. APP-2026-00482 or email@domain.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <button
                 type="submit"
                 disabled={trackLoading}
-                className="liquid-btn liquid-btn-white text-black font-bold px-5 py-2.5 text-xs rounded-xl tap-spring disabled:opacity-50"
+                className="liquid-btn liquid-btn-white text-black font-bold px-5 py-2.5 text-xs rounded-xl tap-spring disabled:opacity-50 min-h-[42px] flex items-center justify-center"
               >
                 {trackLoading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : 'Find Application'}
               </button>
@@ -353,7 +365,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
             {/* Error */}
             {trackError && (
-              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{trackError}</span>
               </div>
@@ -361,20 +373,20 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
             {/* Result Found */}
             {trackResult && (
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-5 animate-slide-up">
-                <div className="flex items-start justify-between">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4 sm:space-y-5 animate-slide-up">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
                       Application Reference
                     </span>
-                    <h4 className="text-xl font-bold font-mono text-slate-900 dark:text-white">
+                    <h4 className="text-lg sm:text-xl font-bold font-mono text-slate-900 dark:text-white">
                       {trackResult.id}
                     </h4>
                     <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                       Applicant: {trackResult.fullName} • {trackResult.email}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  <span className={`self-start px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
                     trackResult.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
                     trackResult.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30' :
                     'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
@@ -383,19 +395,20 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                   </span>
                 </div>
 
-                {/* Progress Pipeline */}
+                {/* Mobile Responsive Stepper Timeline */}
                 <div className="space-y-2">
                   <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                    Application Review Pipeline:
+                    Review Pipeline:
                   </div>
 
-                  <div className="grid grid-cols-5 gap-2 text-center text-[10px]">
-                    <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">
+                  {/* Desktop 5-col / Mobile 5-column responsive stepper */}
+                  <div className="grid grid-cols-5 gap-1 sm:gap-2 text-center text-[9px] sm:text-[10px]">
+                    <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">
                       <div className="text-xs mb-0.5">✓</div>
-                      <span>Submitted</span>
+                      <span className="line-clamp-1">Submitted</span>
                     </div>
 
-                    <div className={`p-2.5 rounded-xl border font-bold ${
+                    <div className={`p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border font-bold ${
                       trackResult.status === 'UNDER_REVIEW' || trackResult.status === 'APPROVED'
                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                         : 'bg-slate-200/50 dark:bg-white/5 border-slate-300/50 dark:border-white/10 text-slate-400'
@@ -403,40 +416,40 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                       <div className="text-xs mb-0.5">
                         {trackResult.status === 'APPROVED' ? '✓' : '●'}
                       </div>
-                      <span>Under Review</span>
+                      <span className="line-clamp-1">Review</span>
                     </div>
 
-                    <div className={`p-2.5 rounded-xl border font-bold ${
+                    <div className={`p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border font-bold ${
                       trackResult.status === 'APPROVED'
                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                         : 'bg-slate-200/50 dark:bg-white/5 border-slate-300/50 dark:border-white/10 text-slate-400'
                     }`}>
                       <div className="text-xs mb-0.5">{trackResult.status === 'APPROVED' ? '✓' : '○'}</div>
-                      <span>Approved</span>
+                      <span className="line-clamp-1">Approved</span>
                     </div>
 
-                    <div className={`p-2.5 rounded-xl border font-bold ${
+                    <div className={`p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border font-bold ${
                       trackResult.approvedMemberId
                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                         : 'bg-slate-200/50 dark:bg-white/5 border-slate-300/50 dark:border-white/10 text-slate-400'
                     }`}>
                       <div className="text-xs mb-0.5">{trackResult.approvedMemberId ? '✓' : '○'}</div>
-                      <span>Card Issued</span>
+                      <span className="line-clamp-1">Card Issued</span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-200/50 dark:bg-white/5 border border-slate-300/50 dark:border-white/10 text-slate-400 font-bold">
+                    <div className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl bg-slate-200/50 dark:bg-white/5 border border-slate-300/50 dark:border-white/10 text-slate-400 font-bold">
                       <div className="text-xs mb-0.5">○</div>
-                      <span>Digital Active</span>
+                      <span className="line-clamp-1">Active</span>
                     </div>
                   </div>
                 </div>
 
                 {/* If Approved, direct to Physical Card Activation */}
                 {trackResult.status === 'APPROVED' ? (
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 space-y-2">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <Sparkles className="w-4 h-4 text-emerald-500" />
-                      <span>Congratulations! Your Society Membership is Approved</span>
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 space-y-2">
+                    <div className="flex items-center gap-1.5 font-bold text-xs sm:text-sm">
+                      <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>Membership Approved!</span>
                     </div>
                     <p className="text-xs leading-relaxed">
                       Canonical Member ID: <strong className="font-mono text-emerald-700 dark:text-emerald-300">{trackResult.approvedMemberId || 'MCS-2026-8942'}</strong>
@@ -451,7 +464,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           onClose();
                           openRegisterModal(trackResult.assignedCardId || trackResult.approvedMemberId);
                         }}
-                        className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2 px-4 rounded-xl flex items-center gap-1.5"
+                        className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full sm:w-auto min-h-[42px]"
                       >
                         <CreditCard className="w-3.5 h-3.5" />
                         <span>Proceed to Activate Physical Card</span>
@@ -459,10 +472,10 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                     </div>
                   </div>
                 ) : (
-                  <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-white/5 text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                  <div className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-xs text-slate-600 dark:text-slate-300 space-y-1">
                     <p className="font-bold text-slate-900 dark:text-white">What happens next?</p>
-                    <p>
-                      The Super Admin & Secretariat Board verify your statutory identity documents against Lagos State cooperative bye-laws. Once approved, your plastic physical card will be embossed and dispatched to your chosen branch for collection.
+                    <p className="text-[11px] leading-relaxed">
+                      The Secretariat Board verifies statutory identification. Once approved, your physical plastic card is embossed and dispatched to your liaison branch for collection.
                     </p>
                   </div>
                 )}
@@ -478,16 +491,16 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
           <>
             {/* Success Submission View */}
             {submissionSuccess ? (
-              <div className="p-8 text-center space-y-6 overflow-y-auto flex-1">
-                <div className="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center text-emerald-500 shadow-sm">
-                  <CheckCircle2 className="w-8 h-8" />
+              <div className="p-5 sm:p-8 text-center space-y-5 sm:space-y-6 overflow-y-auto flex-1">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-2xl sm:rounded-3xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center text-emerald-500 shadow-sm">
+                  <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 px-3.5 py-1 rounded-full border border-emerald-200 dark:border-white/10">
-                    Application Submitted to Secretariat
+                <div className="space-y-1.5 sm:space-y-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-200 dark:border-white/10 inline-block">
+                    Application Logged with Secretariat
                   </span>
-                  <h4 className="font-display font-black text-2xl text-slate-900 dark:text-white">
+                  <h4 className="font-display font-black text-xl sm:text-2xl text-slate-900 dark:text-white">
                     Application ID: <span className="font-mono text-slate-900 dark:text-white">{submissionSuccess.id}</span>
                   </h4>
                   <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
@@ -496,15 +509,15 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                 </div>
 
                 {/* Statutory Lifecycle Diagram */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto space-y-3 text-left">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto space-y-2.5 text-left">
                   <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span>Next Institutional Stages:</span>
                   </div>
                   <div className="space-y-2 text-[11px]">
                     <div className="flex items-start gap-2">
                       <span className="font-mono font-bold text-slate-900 dark:text-white">1.</span>
-                      <span><strong>Executive Review:</strong> Board verifies statutory identification and membership qualification.</span>
+                      <span><strong>Executive Review:</strong> Board verifies statutory identification.</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono font-bold text-slate-900 dark:text-white">2.</span>
@@ -512,16 +525,16 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono font-bold text-slate-900 dark:text-white">3.</span>
-                      <span><strong>Physical Card Issuance:</strong> Physical RFID plastic card is prepared for branch pickup.</span>
+                      <span><strong>Physical Card Issuance:</strong> Plastic RFID card is embossed for pickup.</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono font-bold text-slate-900 dark:text-white">4.</span>
-                      <span><strong>Digital Activation:</strong> You link your issued card to the digital portal via OTP.</span>
+                      <span><strong>Digital Activation:</strong> Link issued card to member portal via OTP.</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
                   <button
                     onClick={() => {
                       triggerHaptic('light');
@@ -529,13 +542,13 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                       setTrackQuery(submissionSuccess.id);
                       setSubmissionSuccess(null);
                     }}
-                    className="liquid-btn liquid-btn-default text-xs py-2.5 px-5 rounded-xl w-full sm:w-auto"
+                    className="liquid-btn liquid-btn-default text-xs py-2.5 px-5 rounded-xl w-full sm:w-auto min-h-[42px]"
                   >
                     Track Application Progress
                   </button>
                   <button
                     onClick={resetModal}
-                    className="liquid-btn liquid-btn-white text-black font-bold py-2.5 px-6 text-xs rounded-xl w-full sm:w-auto"
+                    className="liquid-btn liquid-btn-white text-black font-bold py-2.5 px-6 text-xs rounded-xl w-full sm:w-auto min-h-[42px]"
                   >
                     Done, Return to Website
                   </button>
@@ -545,9 +558,23 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
               /* Multi-Step Wizard */
               <div className="flex flex-col flex-1 overflow-hidden">
                 
-                {/* Progress Bar & Breadcrumbs */}
-                <div className="px-6 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] shrink-0">
-                  <div className="flex items-center justify-between overflow-x-auto pb-1 gap-1 text-[11px]">
+                {/* Responsive Mobile Progress Bar & Step Chips */}
+                <div className="px-3.5 sm:px-6 py-2.5 sm:py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] shrink-0">
+                  {/* Step Title for Mobile */}
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 sm:hidden">
+                    <span className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.5 rounded bg-slate-900 text-white dark:bg-white dark:text-black font-mono text-[10px]">
+                        0{currentStep}/07
+                      </span>
+                      <span>{stepsList[currentStep - 1].label}</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {Math.round((currentStep / 7) * 100)}%
+                    </span>
+                  </div>
+
+                  {/* Horizontal Scrollable Step Pills for Tablet/Desktop & Mobile swipe */}
+                  <div className="flex items-center overflow-x-auto pb-1 gap-1 text-[10px] sm:text-[11px] no-scrollbar">
                     {stepsList.map((s) => (
                       <button
                         key={s.num}
@@ -555,7 +582,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                         onClick={() => {
                           if (s.num < currentStep) setCurrentStep(s.num as any);
                         }}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
+                        className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg transition-all whitespace-nowrap shrink-0 ${
                           currentStep === s.num
                             ? 'bg-slate-900 text-white dark:bg-white dark:text-black font-bold shadow-sm'
                             : s.num < currentStep
@@ -570,7 +597,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                   </div>
 
                   {/* Horizontal visual progress line */}
-                  <div className="w-full bg-slate-200 dark:bg-white/10 h-1 rounded-full mt-2 overflow-hidden">
+                  <div className="w-full bg-slate-200 dark:bg-white/10 h-1 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
                     <div 
                       className="bg-emerald-500 h-full transition-all duration-300"
                       style={{ width: `${(currentStep / 7) * 100}%` }}
@@ -579,22 +606,22 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                 </div>
 
                 {/* Wizard Step Body */}
-                <div className="p-6 overflow-y-auto flex-1 space-y-5">
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 sm:space-y-5">
 
                   {/* STEP 01: PERSONAL */}
                   {currentStep === 1 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <UserPlus className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <UserPlus className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Tell us about yourself</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
                           Provide your legal name as it appears on official government identity credentials.
                         </p>
                       </div>
 
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                           Full Legal Name *
                         </label>
@@ -603,13 +630,13 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="e.g. Chief Adeleke Babatunde Balogun"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           required
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-slate-400" />
                             <span>Date of Birth *</span>
@@ -618,12 +645,12 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                             type="date"
                             value={dateOfBirth}
                             onChange={(e) => setDateOfBirth(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             required
                           />
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                             <Briefcase className="w-3.5 h-3.5 text-slate-400" />
                             <span>Occupation / Enterprise *</span>
@@ -632,8 +659,8 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                             type="text"
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
-                            placeholder="e.g. Managing Director / Agro-Tech Consultant"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            placeholder="e.g. Managing Director / Consultant"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             required
                           />
                         </div>
@@ -643,18 +670,18 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                   {/* STEP 02: CONTACT */}
                   {currentStep === 2 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>How can we reach you?</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          We will dispatch your application updates and physical card dispatch notifications to these contacts.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          Application notifications and plastic card dispatch alerts are sent here.
                         </p>
                       </div>
 
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                           <Mail className="w-3.5 h-3.5 text-slate-400" />
                           <span>Email Address *</span>
@@ -664,12 +691,12 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="e.g. adeleke.balogun@company.ng"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           required
                         />
                       </div>
 
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                           <Phone className="w-3.5 h-3.5 text-slate-400" />
                           <span>Phone Number / WhatsApp *</span>
@@ -679,10 +706,10 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="e.g. +234 803 456 7890"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                           required
                         />
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
                           Nigerian mobile format with SMS & WhatsApp capability.
                         </span>
                       </div>
@@ -691,26 +718,26 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                   {/* STEP 03: RESIDENCE */}
                   {currentStep === 3 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Where are you based?</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          State of residence drives branch allocation and card pickup liaison center.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          State of residence drives liaison branch allocation and card pickup center.
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             State of Residence *
                           </label>
                           <select
                             value={state}
                             onChange={(e) => handleStateChange(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           >
                             {ALL_NIGERIAN_STATES.map((st) => (
                               <option key={st} value={st}>{st}</option>
@@ -718,14 +745,14 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           </select>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Local Government Area (LGA) *
                           </label>
                           <select
                             value={lga}
                             onChange={(e) => setLga(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           >
                             {getLgasForState(state).map((lg) => (
                               <option key={lg} value={lg}>{lg}</option>
@@ -734,7 +761,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                         </div>
                       </div>
 
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                           Residential / Office Street Address *
                         </label>
@@ -743,7 +770,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           onChange={(e) => setAddress(e.target.value)}
                           rows={2}
                           placeholder="e.g. Plot 14, Admiralty Way, Lekki Phase 1"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                           required
                         />
                       </div>
@@ -752,78 +779,78 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                   {/* STEP 04: FINANCIAL INTENT */}
                   {currentStep === 4 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <Coins className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <Coins className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Intended Monthly Savings Target</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Select your initial voluntary contribution target. This determines your initial loan eligibility bracket and dividend tier.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          Select your initial contribution target. Stored as savings intent, not an immediate financial debit.
                         </p>
                       </div>
 
-                      <div className="space-y-2.5">
+                      <div className="space-y-2">
                         {COOPERATIVE_SAVINGS_PLANS.map((plan) => (
                           <div
                             key={plan.id}
                             onClick={() => handlePlanSelect(plan.id, plan.monthlyAmount)}
-                            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                            className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                               selectedPlanId === plan.id
                                 ? 'bg-emerald-500/10 border-emerald-500/40 text-slate-900 dark:text-white shadow-sm'
                                 : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                             }`}
                           >
-                            <div className="space-y-1">
+                            <div className="space-y-0.5">
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-xs text-slate-900 dark:text-white">{plan.name}</span>
-                                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400">
+                                <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400">
                                   {plan.tier}
                                 </span>
                               </div>
-                              <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm">
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm line-clamp-2">
                                 {plan.description}
                               </p>
                             </div>
 
-                            <div className="text-right pl-3 shrink-0">
-                              <div className="font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400 font-mono">
+                            <div className="sm:text-right shrink-0 flex sm:flex-col items-baseline justify-between sm:justify-start gap-1">
+                              <span className="font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400 font-mono">
                                 ₦{plan.monthlyAmount.toLocaleString()}
-                              </div>
-                              <span className="text-[10px] text-slate-400 block">/ month</span>
+                              </span>
+                              <span className="text-[10px] text-slate-400">/ month</span>
                             </div>
                           </div>
                         ))}
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-[11px] text-slate-500 dark:text-slate-400">
-                        <strong>Note:</strong> This is recorded as your intended contribution target. Actual debits or bank transfers occur only through your explicit instruction once approved.
+                        <strong>Note:</strong> Stored as intended contribution. Actual debit transfers occur only upon your instruction after approval.
                       </div>
                     </div>
                   )}
 
                   {/* STEP 05: IDENTITY */}
                   {currentStep === 5 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Verify your identity</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Mandatory cooperative vetting under the Nigerian Directorate of Cooperatives & NDPR guidelines.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          Mandatory cooperative vetting under the Nigerian Directorate of Cooperatives & NDPR.
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Government ID Type *
                           </label>
                           <select
                             value={idType}
                             onChange={(e) => setIdType(e.target.value as any)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           >
                             <option value="NIN">National Identity Number (NIN)</option>
                             <option value="FRSC Driver's License">FRSC Driver's License</option>
@@ -832,7 +859,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           </select>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Document Number *
                           </label>
@@ -841,23 +868,23 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                             value={idNumber}
                             onChange={(e) => setIdNumber(e.target.value)}
                             placeholder="e.g. 29810482910"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             required
                           />
                         </div>
                       </div>
 
-                      {/* Document Upload Simulation */}
+                      {/* Document Upload Box */}
                       <div className="border border-dashed border-slate-300 dark:border-white/20 rounded-2xl p-4 text-center space-y-2 bg-slate-50/50 dark:bg-white/[0.02]">
-                        <UploadCloud className="w-8 h-8 mx-auto text-emerald-500/80" />
+                        <UploadCloud className="w-7 h-7 mx-auto text-emerald-500/80" />
                         <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                          {idFileUploaded ? 'Document Ready for Verification' : 'Upload ID Document Slip (Optional)'}
+                          {idFileUploaded ? 'Document Ready for Verification' : 'Upload ID Slip'}
                         </div>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                        <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                           JPG, PNG, or PDF file of your NIMC slip or ID card (maximum 5MB).
                         </p>
                         <div className="inline-block px-3 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          Status: PROVIDED • PENDING SECRETARIAT REVIEW
+                          STATUS: PROVIDED • PENDING REVIEW
                         </div>
                       </div>
                     </div>
@@ -865,18 +892,18 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                   {/* STEP 06: NEXT OF KIN */}
                   {currentStep === 6 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <Users2 className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <Users2 className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Next of Kin & Beneficiary</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Designate your primary statutory beneficiary for cooperative share capital, savings, and dividends.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          Designate statutory beneficiary for cooperative share capital, savings, and dividends.
                         </p>
                       </div>
 
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                           Next of Kin Full Name *
                         </label>
@@ -885,20 +912,20 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           value={nokName}
                           onChange={(e) => setNokName(e.target.value)}
                           placeholder="e.g. Mrs. Olufunke Balogun"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           required
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Relationship *
                           </label>
                           <select
                             value={nokRelationship}
                             onChange={(e) => setNokRelationship(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                           >
                             <option value="Spouse">Spouse</option>
                             <option value="Child">Child / Dependent</option>
@@ -908,7 +935,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           </select>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                             Next of Kin Phone Number
                           </label>
@@ -917,7 +944,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                             value={nokPhone}
                             onChange={(e) => setNokPhone(e.target.value)}
                             placeholder="e.g. +234 802 889 0011"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                           />
                         </div>
                       </div>
@@ -926,20 +953,20 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                   {/* STEP 07: REVIEW APPLICATION */}
                   {currentStep === 7 && (
-                    <div className="space-y-4 animate-slide-up">
+                    <div className="space-y-3.5 sm:space-y-4 animate-slide-up">
                       <div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-emerald-500" />
+                        <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span>Review your application</span>
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Confirm all submitted details prior to formal transmission to the Super Admin review queue.
+                        <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          Confirm all submitted details before transmission to Secretariat review queue.
                         </p>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2.5">
                         {/* Section 1: Personal */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PERSONAL</span>
                             <div className="font-bold text-slate-900 dark:text-white">{fullName}</div>
@@ -948,30 +975,30 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           <button
                             type="button"
                             onClick={() => setCurrentStep(1)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
                         </div>
 
                         {/* Section 2: Contact */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">CONTACT</span>
                             <div className="font-bold text-slate-900 dark:text-white">{phone}</div>
-                            <div className="text-slate-500 dark:text-slate-400 text-[11px]">{email}</div>
+                            <div className="text-slate-500 dark:text-slate-400 text-[11px] break-all">{email}</div>
                           </div>
                           <button
                             type="button"
                             onClick={() => setCurrentStep(2)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
                         </div>
 
                         {/* Section 3: Residence */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">RESIDENCE</span>
                             <div className="font-bold text-slate-900 dark:text-white">{address}</div>
@@ -980,14 +1007,14 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           <button
                             type="button"
                             onClick={() => setCurrentStep(3)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
                         </div>
 
                         {/* Section 4: Savings Plan */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">SAVINGS INTENT</span>
                             <div className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
@@ -998,14 +1025,14 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           <button
                             type="button"
                             onClick={() => setCurrentStep(4)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
                         </div>
 
                         {/* Section 5: Identity */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">IDENTIFICATION</span>
                             <div className="font-bold text-slate-900 dark:text-white">{idType}</div>
@@ -1014,14 +1041,14 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           <button
                             type="button"
                             onClick={() => setCurrentStep(5)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
                         </div>
 
                         {/* Section 6: Next of Kin */}
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                        <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
                           <div>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">NEXT OF KIN</span>
                             <div className="font-bold text-slate-900 dark:text-white">{nokName}</div>
@@ -1030,7 +1057,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                           <button
                             type="button"
                             onClick={() => setCurrentStep(6)}
-                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                            className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold text-xs p-1"
                           >
                             <Edit2 className="w-3 h-3" /> Edit
                           </button>
@@ -1041,13 +1068,13 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
 
                 </div>
 
-                {/* Wizard Bottom Navigation Buttons */}
-                <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex items-center justify-between shrink-0">
+                {/* Wizard Bottom Navigation Buttons - Thumb friendly on mobile */}
+                <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex items-center justify-between gap-2 shrink-0">
                   {currentStep > 1 ? (
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="liquid-btn liquid-btn-default text-xs py-2 px-4 rounded-xl flex items-center gap-1.5"
+                      className="liquid-btn liquid-btn-default text-xs py-2.5 px-4 rounded-xl flex items-center gap-1.5 min-h-[42px]"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
                       <span>Back</span>
@@ -1060,27 +1087,27 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2 px-5 rounded-xl flex items-center gap-1.5 shadow-md tap-spring"
+                      className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-5 rounded-xl flex items-center gap-1.5 shadow-md tap-spring min-h-[42px]"
                     >
-                      <span>Continue to 0{currentStep + 1}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-black" />
+                      <span>Continue</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-black" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-6 rounded-xl flex items-center gap-2 shadow-lg tap-spring disabled:opacity-50"
+                      className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-5 sm:px-6 rounded-xl flex items-center gap-2 shadow-lg tap-spring disabled:opacity-50 min-h-[42px]"
                     >
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin text-black" />
-                          <span>Submitting Application...</span>
+                          <span>Submitting...</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          <span>Submit Membership Application</span>
+                          <span>Submit Application</span>
                         </>
                       )}
                     </button>

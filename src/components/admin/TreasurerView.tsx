@@ -163,9 +163,9 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[750px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Submission Ref</th>
@@ -253,14 +253,14 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             {disbursementQueue.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
                 No vetted loans currently awaiting disbursement.
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[700px]">
                   <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                     <tr>
                       <th className="py-3 px-4">Loan ID</th>
@@ -316,9 +316,9 @@ export const TreasurerView: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs min-w-[700px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Payout ID</th>
@@ -416,18 +416,18 @@ export const TreasurerView: React.FC = () => {
 
       {/* Proof Preview Modal */}
       {previewProofUrl && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-black text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-3xl p-6 max-w-sm w-full space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4">
+          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm w-full space-y-4 my-auto">
             <div className="flex justify-between items-center">
               <h4 className="font-bold text-slate-900 dark:text-white text-sm">Payment Proof Document</h4>
               <button onClick={() => setPreviewProofUrl(null)} className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <img src={previewProofUrl} alt="Deposit Proof" className="w-full h-56 object-cover rounded-2xl" />
+            <img src={previewProofUrl} alt="Deposit Proof" className="w-full h-56 object-cover rounded-2xl border border-slate-200 dark:border-white/10 shadow-inner" />
             <button
               onClick={() => setPreviewProofUrl(null)}
-              className="w-full py-2.5 bg-slate-900 dark:bg-brand-500 text-white dark:text-black font-bold text-xs rounded-xl"
+              className="w-full py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-xs rounded-xl min-h-[42px] flex items-center justify-center tap-spring"
             >
               Close Preview
             </button>
