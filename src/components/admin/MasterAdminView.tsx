@@ -475,10 +475,88 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             </div>
           </div>
 
-          {/* Members Table */}
+          {/* Members Table / Mobile Cards */}
           <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            {/* Mobile Cards View (sm:hidden) */}
+            <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+              {members
+                .filter((m) =>
+                  m.fullName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                  m.memberId.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                  m.phone.toLowerCase().includes(memberSearch.toLowerCase())
+                )
+                .map((m) => (
+                  <div key={m.id} className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={m.avatar}
+                          alt={m.fullName}
+                          className="w-10 h-10 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shrink-0"
+                        />
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                            {m.fullName}
+                          </h4>
+                          <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">
+                            {m.memberId}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                        <CheckCircle2 className="w-2.5 h-2.5" />
+                        {m.membershipStatus || 'ACTIVE'}
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 space-y-1 text-xs">
+                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Phone:</span>
+                        <span className="font-mono font-semibold">{m.phone}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Occupation:</span>
+                        <span className="font-medium">{m.occupation}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Physical Card:</span>
+                        <span className="font-mono text-slate-700 dark:text-slate-300 text-[11px] font-bold">{m.assignedCardId || m.memberId}</span>
+                      </div>
+                    </div>
+
+                    {/* Mobile Action Buttons */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          triggerHaptic('selection');
+                          setSelectedPassbookMember(m);
+                        }}
+                        className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white font-bold text-xs flex items-center justify-center gap-1.5 min-h-[40px] tap-spring transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-slate-500 dark:text-slate-300" />
+                        <span>Passbook</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          triggerHaptic('selection');
+                          setPreselectedPaymentMember(m);
+                          setShowRecordPaymentModal(true);
+                        }}
+                        className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 min-h-[40px] shadow-sm tap-spring transition-colors"
+                      >
+                        <Coins className="w-3.5 h-3.5" />
+                        <span>Record Payment</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Desktop / Tablet Spreadsheet Table (hidden sm:block) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[720px]">
                 <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 font-mono text-[10px] uppercase">
                   <tr>
                     <th className="py-3.5 px-4 font-bold">Member</th>

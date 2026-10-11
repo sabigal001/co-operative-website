@@ -103,79 +103,83 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
           </div>
 
           {/* Quick RBAC Switcher Pills inside Admin */}
-          <div className="liquid-glass p-1.5 rounded-2xl border border-white/10 shadow-inner flex flex-wrap items-center gap-1 text-xs">
-            <span className="text-[10px] font-mono text-slate-400 uppercase px-2">Role Switch:</span>
-            <button
-              onClick={() => {
-                triggerHaptic('medium');
-                setActiveAdminRole('master_admin');
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
-                activeAdminRole === 'master_admin' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Master Admin
-            </button>
-            <button
-              onClick={() => {
-                triggerHaptic('medium');
-                setActiveAdminRole('treasurer');
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
-                activeAdminRole === 'treasurer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Treasurer
-            </button>
-            <button
-              onClick={() => {
-                triggerHaptic('medium');
-                setActiveAdminRole('pa_officer');
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all tap-spring ${
-                activeAdminRole === 'pa_officer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              PA Officer
-            </button>
+          <div className="liquid-glass p-2 rounded-2xl border border-white/15 shadow-inner flex flex-wrap items-center gap-2 text-xs w-full md:w-auto">
+            <span className="text-xs font-mono text-slate-300 uppercase px-1 font-bold w-full sm:w-auto text-left">
+              Role Switch:
+            </span>
+            <div className="flex items-center gap-1.5 w-full sm:w-auto flex-1">
+              <button
+                onClick={() => {
+                  triggerHaptic('medium');
+                  setActiveAdminRole('master_admin');
+                }}
+                className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-spring min-h-[38px] ${
+                  activeAdminRole === 'master_admin' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                Master Admin
+              </button>
+              <button
+                onClick={() => {
+                  triggerHaptic('medium');
+                  setActiveAdminRole('treasurer');
+                }}
+                className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-spring min-h-[38px] ${
+                  activeAdminRole === 'treasurer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                Treasurer
+              </button>
+              <button
+                onClick={() => {
+                  triggerHaptic('medium');
+                  setActiveAdminRole('pa_officer');
+                }}
+                className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-spring min-h-[38px] ${
+                  activeAdminRole === 'pa_officer' ? 'liquid-btn-white text-black shadow-md' : 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                PA Officer
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Dynamic Metric Bar */}
         {metrics && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10 text-xs">
-            <div className="p-4 rounded-2xl liquid-glass-card border border-white/10">
-              <span className="text-slate-400 block text-[11px]">Total Cooperative Liquidity</span>
-              <span className="text-lg sm:text-xl font-black text-white font-mono">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-white/10 text-xs">
+            <div className="p-3.5 sm:p-4 rounded-2xl liquid-glass-card border border-white/15 space-y-1">
+              <span className="text-slate-300 block text-xs font-medium">Total Cooperative Liquidity</span>
+              <span className="text-xl sm:text-2xl font-black text-white font-mono block">
                 ₦{(metrics.totalLiquidity / 1000000).toFixed(1)}M
               </span>
-              <span className="text-[10px] text-emerald-400 block mt-0.5">Liquid Treasury</span>
+              <span className="text-xs text-emerald-400 block font-medium">Liquid Treasury</span>
             </div>
 
-            <div className="p-4 rounded-2xl liquid-glass-card border border-white/10">
-              <span className="text-slate-400 block text-[11px]">Pending Deposit Approvals</span>
-              <span className="text-lg sm:text-xl font-black text-white font-mono">
+            <div className="p-3.5 sm:p-4 rounded-2xl liquid-glass-card border border-white/15 space-y-1">
+              <span className="text-slate-300 block text-xs font-medium">Pending Deposit Approvals</span>
+              <span className="text-xl sm:text-2xl font-black text-white font-mono block">
                 {metrics.pendingDepositsCount} Submissions
               </span>
-              <span className="text-[10px] text-slate-400 block mt-0.5">Treasurer Queue</span>
+              <span className="text-xs text-slate-300 block">Treasurer Queue</span>
             </div>
 
-            <div className="p-4 rounded-2xl liquid-glass-card border border-white/10">
-              <span className="text-slate-400 block text-[11px]">Loans in Pipeline</span>
-              <span className="text-lg sm:text-xl font-black text-white font-mono">
+            <div className="p-3.5 sm:p-4 rounded-2xl liquid-glass-card border border-white/15 space-y-1">
+              <span className="text-slate-300 block text-xs font-medium">Loans in Pipeline</span>
+              <span className="text-xl sm:text-2xl font-black text-white font-mono block">
                 {metrics.pendingLoanVettingsCount + metrics.pendingDisbursementsCount} Total
               </span>
-              <span className="text-[10px] text-slate-400 block mt-0.5">
-                {metrics.pendingLoanVettingsCount} Vetting • {metrics.pendingDisbursementsCount} Disbursement
+              <span className="text-xs text-slate-300 block">
+                {metrics.pendingLoanVettingsCount} Vetting • {metrics.pendingDisbursementsCount} Disbursed
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl liquid-glass-card border border-white/10">
-              <span className="text-slate-400 block text-[11px]">Physical Cards Registered</span>
-              <span className="text-lg sm:text-xl font-black text-white font-mono">
+            <div className="p-3.5 sm:p-4 rounded-2xl liquid-glass-card border border-white/15 space-y-1">
+              <span className="text-slate-300 block text-xs font-medium">Physical Cards Registered</span>
+              <span className="text-xl sm:text-2xl font-black text-white font-mono block">
                 {metrics.cardsInCirculation.toLocaleString()}
               </span>
-              <span className="text-[10px] text-emerald-400 block mt-0.5">In circulation</span>
+              <span className="text-xs text-emerald-400 block font-medium">In circulation</span>
             </div>
           </div>
         )}

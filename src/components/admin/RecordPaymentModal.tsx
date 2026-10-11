@@ -208,7 +208,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                     value={memberSearchQuery}
                     onChange={(e) => setMemberSearchQuery(e.target.value)}
                     placeholder="Search by full name, Member ID (MCS-2026-...), or phone..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full pl-10 pr-4 py-3 sm:py-2.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px]"
                     autoFocus
                   />
                 </div>
@@ -294,14 +294,14 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               2. Contribution Category <span className="text-red-500">*</span>
             </label>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
               {[
-                { id: 'MONTHLY_THRIFT', label: 'Monthly Thrift (Ajo)', icon: '🔄' },
-                { id: 'VOLUNTARY_SAVINGS', label: 'Voluntary Savings', icon: '💰' },
-                { id: 'TARGET_SAVINGS', label: 'Target Savings', icon: '🎯' },
-                { id: 'SHARE_CAPITAL', label: 'Share Capital', icon: '📈' },
-                { id: 'LOAN_REPAYMENT', label: 'Loan Repayment', icon: '🤝' },
-                { id: 'REGISTRATION_FEE', label: 'Registration / Passbook', icon: '📘' }
+                { id: 'MONTHLY_THRIFT', label: 'Monthly Thrift (Ajo)', icon: '🔄', desc: 'Statutory thrift' },
+                { id: 'VOLUNTARY_SAVINGS', label: 'Voluntary Savings', icon: '💰', desc: 'Liquid withdrawable' },
+                { id: 'TARGET_SAVINGS', label: 'Target Savings', icon: '🎯', desc: 'Goal locked deposit' },
+                { id: 'SHARE_CAPITAL', label: 'Share Capital', icon: '📈', desc: 'Society equity stake' },
+                { id: 'LOAN_REPAYMENT', label: 'Loan Repayment', icon: '🤝', desc: '5% credit service' },
+                { id: 'REGISTRATION_FEE', label: 'Registration / Passbook', icon: '📘', desc: 'New member enrollment' }
               ].map((cat) => (
                 <button
                   key={cat.id}
@@ -310,14 +310,19 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                     triggerHaptic('light');
                     setCategory(cat.id as PaymentContributionCategory);
                   }}
-                  className={`p-2.5 rounded-xl text-left border text-xs font-bold transition-all flex items-center gap-2 ${
+                  className={`p-3 rounded-2xl text-left border text-xs font-bold transition-all flex items-start gap-2.5 min-h-[48px] ${
                     category === cat.id
-                      ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white shadow-sm'
-                      : 'bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:border-slate-400'
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white shadow-md'
+                      : 'bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-white/10 hover:border-slate-400'
                   }`}
                 >
-                  <span className="text-sm">{cat.icon}</span>
-                  <span className="truncate">{cat.label}</span>
+                  <span className="text-base shrink-0 mt-0.5">{cat.icon}</span>
+                  <div>
+                    <span className="block leading-snug">{cat.label}</span>
+                    <span className={`text-[10px] font-normal block mt-0.5 ${category === cat.id ? 'opacity-80' : 'text-slate-500 dark:text-slate-400'}`}>
+                      {cat.desc}
+                    </span>
+                  </div>
                 </button>
               ))}
             </div>

@@ -134,7 +134,7 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Full Name (Surname First) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -143,12 +143,12 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. Chief Adeleke Balogun"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -157,14 +157,14 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+234 803 000 0000"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white font-mono min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Email Address (Optional)
                 </label>
                 <input
@@ -172,12 +172,12 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="member@example.com (or leave blank)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Occupation / Profession
                 </label>
                 <input
@@ -185,13 +185,13 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
                   placeholder="e.g. Trader, Civil Servant, Contractor"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                 Permanent Residential Address
               </label>
               <input
@@ -199,19 +199,19 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g. 14 Commercial Avenue, Ikeja Central, Lagos"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Statutory Identification Type
                 </label>
                 <select
                   value={idType}
                   onChange={(e) => setIdType(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="NIN" className="text-black">National Identity Number (NIN)</option>
                   <option value="Voters Card" className="text-black">INEC Voter's Card</option>
@@ -221,7 +221,7 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   ID Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -230,7 +230,7 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   value={idNumber}
                   onChange={(e) => setIdNumber(e.target.value)}
                   placeholder="e.g. 29810482910"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white font-mono min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -244,7 +244,7 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Monthly Thrift Target (₦)
                 </label>
                 <input
@@ -252,18 +252,18 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                   step="5000"
                   value={initialSavingsTarget}
                   onChange={(e) => setInitialSavingsTarget(parseInt(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white font-mono min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                   Allocated Branch Secretariat
                 </label>
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="Ikeja Central Secretariat" className="text-black">Ikeja Central Secretariat</option>
                   <option value="Victoria Island Liaison" className="text-black">Victoria Island Liaison</option>

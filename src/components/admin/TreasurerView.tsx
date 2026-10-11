@@ -199,7 +199,94 @@ export const TreasurerView: React.FC = () => {
           </div>
 
           <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+            {/* Mobile Cards View (sm:hidden) */}
+            <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+              {deposits.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
+                  No member deposits currently recorded.
+                </div>
+              ) : (
+                deposits.map((dep) => (
+                  <div key={dep.id} className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
+                        {dep.reference}
+                      </span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${
+                        dep.status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
+                        dep.status === 'pending' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20' :
+                        'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
+                      }`}>
+                        {dep.status}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                        {dep.memberName}
+                      </h4>
+                      <span className="text-brand-700 dark:text-brand-400 font-mono text-xs font-bold block mt-0.5">
+                        {dep.memberId}
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Amount:</span>
+                        <span className="font-mono font-black text-base text-emerald-700 dark:text-emerald-400">
+                          ₦{dep.amount.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Category:</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 capitalize">
+                          {dep.depositType.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Bank Reference:</span>
+                        <span className="font-mono text-slate-600 dark:text-slate-300 text-[11px]">{dep.bankReference}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                      <button
+                        onClick={() => setPreviewProofUrl(dep.paymentProofUrl)}
+                        className="py-2 px-3 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-brand-700 dark:text-brand-300 font-bold text-xs rounded-xl flex items-center gap-1.5 min-h-[38px] transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View Slip</span>
+                      </button>
+
+                      {dep.status === 'pending' ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleRejectDeposit(dep.id)}
+                            className="py-2 px-3 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold rounded-xl text-xs min-h-[38px]"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleApproveDeposit(dep.id)}
+                            className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 min-h-[38px] shadow-sm transition-all"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-mono">
+                          Handled by {dep.reviewedBy || 'Treasurer'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table (hidden sm:block) */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left text-xs min-w-[750px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
@@ -294,45 +381,100 @@ export const TreasurerView: React.FC = () => {
                 No vetted loans currently awaiting disbursement.
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs min-w-[700px]">
-                  <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
-                    <tr>
-                      <th className="py-3 px-4">Loan ID</th>
-                      <th className="py-3 px-4">Beneficiary</th>
-                      <th className="py-3 px-4">Disbursement Sum</th>
-                      <th className="py-3 px-4">Tenure</th>
-                      <th className="py-3 px-4">PA Vetting Notes</th>
-                      <th className="py-3 px-4 text-right">Disburse Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
-                    {disbursementQueue.map((loan) => (
-                      <tr key={loan.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
-                        <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{loan.id}</td>
-                        <td className="py-3.5 px-4 font-sans">
-                          <span className="font-bold text-slate-900 dark:text-white block">{loan.memberName}</span>
-                          <span className="text-brand-700 dark:text-brand-400 font-mono text-[10px]">{loan.memberId}</span>
-                        </td>
-                        <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400 text-sm">
-                          ₦{loan.amount.toLocaleString()}
-                        </td>
-                        <td className="py-3.5 px-4 font-sans text-slate-700 dark:text-slate-300">{loan.durationMonths} Months</td>
-                        <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 max-w-xs text-[11px]">
-                          {loan.vettingNotes}
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-sans">
-                          <button
-                            onClick={() => handleDisburseLoan(loan.id)}
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 ml-auto shadow-sm"
-                          >
-                            <Coins className="w-3.5 h-3.5" /> Release Funds
-                          </button>
-                        </td>
+              <div>
+                {/* Mobile Cards View (sm:hidden) */}
+                <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+                  {disbursementQueue.map((loan) => (
+                    <div key={loan.id} className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
+                          {loan.id}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20">
+                          Vetted by PA
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                          {loan.memberName}
+                        </h4>
+                        <span className="text-brand-700 dark:text-brand-400 font-mono text-xs font-bold block mt-0.5">
+                          {loan.memberId}
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Disbursement Sum:</span>
+                          <span className="font-mono font-black text-base text-emerald-700 dark:text-emerald-400">
+                            ₦{loan.amount.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Tenure:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">{loan.durationMonths} Months</span>
+                        </div>
+                        {loan.vettingNotes && (
+                          <div className="pt-1 border-t border-slate-200/60 dark:border-white/5 text-[11px] text-slate-600 dark:text-slate-300">
+                            <span className="font-bold block text-[10px] text-slate-400 uppercase">PA Notes:</span>
+                            {loan.vettingNotes}
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => handleDisburseLoan(loan.id)}
+                        className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 min-h-[40px] shadow-sm transition-all"
+                      >
+                        <Coins className="w-3.5 h-3.5" />
+                        <span>Release Funds to Member Account</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table (hidden sm:block) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left text-xs min-w-[700px]">
+                    <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
+                      <tr>
+                        <th className="py-3 px-4">Loan ID</th>
+                        <th className="py-3 px-4">Beneficiary</th>
+                        <th className="py-3 px-4">Disbursement Sum</th>
+                        <th className="py-3 px-4">Tenure</th>
+                        <th className="py-3 px-4">PA Vetting Notes</th>
+                        <th className="py-3 px-4 text-right">Disburse Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
+                      {disbursementQueue.map((loan) => (
+                        <tr key={loan.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5">
+                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{loan.id}</td>
+                          <td className="py-3.5 px-4 font-sans">
+                            <span className="font-bold text-slate-900 dark:text-white block">{loan.memberName}</span>
+                            <span className="text-brand-700 dark:text-brand-400 font-mono text-[10px]">{loan.memberId}</span>
+                          </td>
+                          <td className="py-3.5 px-4 font-bold text-emerald-700 dark:text-emerald-400 text-sm">
+                            ₦{loan.amount.toLocaleString()}
+                          </td>
+                          <td className="py-3.5 px-4 font-sans text-slate-700 dark:text-slate-300">{loan.durationMonths} Months</td>
+                          <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 max-w-xs text-[11px]">
+                            {loan.vettingNotes}
+                          </td>
+                          <td className="py-3.5 px-4 text-right font-sans">
+                            <button
+                              onClick={() => handleDisburseLoan(loan.id)}
+                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 ml-auto shadow-sm"
+                            >
+                              <Coins className="w-3.5 h-3.5" /> Release Funds
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -352,7 +494,53 @@ export const TreasurerView: React.FC = () => {
           </div>
 
           <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+            {/* Mobile Cards View (sm:hidden) */}
+            <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+              {payouts.map((p) => (
+                <div key={p.id} className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">{p.id}</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                      p.status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' : 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20'
+                    }`}>
+                      {p.status}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">{p.memberName}</h4>
+                    <span className="font-mono font-black text-base text-rose-700 dark:text-rose-400 block mt-0.5">
+                      ₦{p.amount.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 space-y-1 text-xs">
+                    <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 block">Bank Account:</span>
+                    <div className="font-semibold text-slate-800 dark:text-slate-200">{p.bankName}</div>
+                    <div className="font-mono font-bold text-slate-900 dark:text-white">{p.accountNumber} ({p.accountName})</div>
+                  </div>
+
+                  <div>
+                    {p.status === 'pending' ? (
+                      <button
+                        onClick={() => handleApprovePayout(p.id)}
+                        className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 min-h-[40px] shadow-sm transition-all"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Authorize NIP Commercial Bank Transfer</span>
+                      </button>
+                    ) : (
+                      <div className="text-center py-2 text-xs text-slate-400 font-mono">
+                        Transfer Authorized by Treasurer
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (hidden sm:block) */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left text-xs min-w-[700px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>

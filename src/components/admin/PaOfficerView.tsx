@@ -161,7 +161,7 @@ export const PaOfficerView: React.FC = () => {
           onChange={(id) => setActiveTab(id as any)}
         />
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={() => {
               triggerHaptic('medium');
@@ -396,8 +396,84 @@ export const PaOfficerView: React.FC = () => {
           </div>
 
           <div className="bg-white dark:bg-black rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            {/* Mobile Cards View (sm:hidden) */}
+            <div className="sm:hidden divide-y divide-slate-100 dark:divide-white/5">
+              {filteredMembers.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400">
+                  No members found matching your search.
+                </div>
+              ) : (
+                filteredMembers.map((m) => (
+                  <div key={m.id} className="p-4 space-y-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                          {m.fullName}
+                        </h4>
+                        <span className="font-mono text-xs font-bold text-brand-700 dark:text-brand-400 block mt-0.5">
+                          {m.memberId}
+                        </span>
+                      </div>
+
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${
+                        m.kycVerified
+                          ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border border-amber-500/20'
+                      }`}>
+                        {m.kycVerified ? 'KYC Verified' : 'KYC Pending'}
+                      </span>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/70 dark:border-white/5 space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Phone:</span>
+                        <span className="font-mono font-semibold">{m.phone}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Bank Account:</span>
+                        <span className="font-medium text-right text-[11px]">{m.bankDetails.bankName} - {m.bankDetails.accountNumber}</span>
+                      </div>
+                    </div>
+
+                    {/* Mobile Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <button
+                        onClick={() => setSelectedPassbookMember(m)}
+                        className="flex-1 py-2 px-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 font-bold text-xs flex items-center justify-center gap-1.5 min-h-[38px] tap-spring transition-colors"
+                        title="View Financial Passbook & Statements"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Passbook</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setPreselectedPaymentMember(m);
+                          setShowRecordPaymentModal(true);
+                        }}
+                        className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 min-h-[38px] shadow-sm tap-spring transition-colors"
+                        title="Record Walk-in Cash or Transfer Payment"
+                      >
+                        <Coins className="w-3.5 h-3.5" />
+                        <span>Pay</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleIssueSlip(m.memberId)}
+                        className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1 min-h-[38px] tap-spring shrink-0"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Pickup Slip</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Spreadsheet Table (hidden sm:block) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[700px]">
                 <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
                   <tr>
                     <th className="py-3 px-4">Member ID</th>

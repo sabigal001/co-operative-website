@@ -145,11 +145,12 @@ export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenAppl
         </div>
 
         {/* Tab Switcher Pills with Sliding Fluid Pill */}
-        <div className="flex justify-center mb-8">
-          <div className="liquid-glass p-1 rounded-full border border-slate-200 dark:border-white/15 flex items-center shadow-lg relative overflow-hidden">
+        {/* Tab Switcher Pills with Sliding Fluid Pill */}
+        <div className="flex justify-center mb-8 px-2">
+          <div className="liquid-glass p-1 rounded-2xl sm:rounded-full border border-slate-200 dark:border-white/15 grid grid-cols-2 shadow-lg relative overflow-hidden max-w-lg w-full">
             {/* Sliding Fluid Backdrop Pill */}
             <div 
-              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-slate-900 text-white dark:bg-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-md ${
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl sm:rounded-full bg-slate-900 text-white dark:bg-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-md ${
                 activeTab === 'savings' ? 'left-1' : 'left-[calc(50%+2px)]'
               }`}
             />
@@ -159,14 +160,14 @@ export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenAppl
                 triggerHaptic('light');
                 setActiveTab('savings');
               }}
-              className={`relative z-10 px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors tap-spring ${
+              className={`relative z-10 px-3 sm:px-5 py-2.5 sm:py-2 rounded-xl sm:rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors tap-spring text-center ${
                 activeTab === 'savings'
                   ? 'text-white dark:text-black font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <TrendingUp className={`w-3.5 h-3.5 ${activeTab === 'savings' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
-              <span>Target Savings & Thrift ROI</span>
+              <TrendingUp className={`w-3.5 h-3.5 shrink-0 ${activeTab === 'savings' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
+              <span className="leading-tight">Savings & Thrift ROI</span>
             </button>
 
             <button
@@ -174,14 +175,14 @@ export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenAppl
                 triggerHaptic('light');
                 setActiveTab('loan');
               }}
-              className={`relative z-10 px-5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors tap-spring ${
+              className={`relative z-10 px-3 sm:px-5 py-2.5 sm:py-2 rounded-xl sm:rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors tap-spring text-center ${
                 activeTab === 'loan'
                   ? 'text-white dark:text-black font-black'
                   : 'text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <Coins className={`w-3.5 h-3.5 ${activeTab === 'loan' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
-              <span>Low-Interest Member Loan</span>
+              <Coins className={`w-3.5 h-3.5 shrink-0 ${activeTab === 'loan' ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-500'}`} />
+              <span className="leading-tight">5% Member Loan</span>
             </button>
           </div>
         </div>
@@ -310,7 +311,7 @@ export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenAppl
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring min-h-[42px]"
                 >
                   <span>Start This Savings Goal</span>
                   <ArrowRight className="w-3.5 h-3.5 text-black" />
@@ -440,7 +441,7 @@ export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenAppl
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
+                  className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring min-h-[42px]"
                 >
                   <span>Apply for This Loan</span>
                   <ArrowRight className="w-3.5 h-3.5 text-black" />
