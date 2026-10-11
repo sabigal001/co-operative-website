@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { CreditCard, QrCode, ShieldCheck, ArrowRight, UserPlus } from 'lucide-react';
-import { navigateToService } from '../../utils/subdomainRouter';
 
 interface PhysicalCardBannerProps {
   onOpenApplyModal?: () => void;
@@ -49,8 +48,8 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
     },
     {
       step: '04',
-      title: 'Unlock Wealth & 5% Loans',
-      desc: 'Sign into the Member Web App (members.mosunmolacoop.com) for target savings, thrift dividends, and low-interest credit.'
+      title: 'Secretariat Passbook & 5% Loans',
+      desc: 'Your card is registered in the secretariat system for in-person cash/transfer payments, ledger passbook records, and low-interest credit.'
     }
   ];
 
@@ -110,12 +109,12 @@ export const PhysicalCardBanner: React.FC<PhysicalCardBannerProps> = ({ onOpenAp
                   <ArrowRight className="w-3.5 h-3.5 text-black" />
                 </button>
 
-                <button
-                  onClick={() => navigateToService('members')}
+                <a
+                  href="#contact"
                   className="liquid-btn liquid-btn-default py-2.5 px-5 text-xs flex items-center justify-center gap-2"
                 >
-                  <span>Already Issued a Card? Member Login</span>
-                </button>
+                  <span>Secretariat Office & Inquiries</span>
+                </a>
               </div>
             </div>
 

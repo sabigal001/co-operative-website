@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { ShieldCheck, Coins, UserCheck, ExternalLink, CreditCard } from 'lucide-react';
+import { ShieldCheck, Coins, UserCheck, ExternalLink } from 'lucide-react';
 import type { SystemMetrics } from '../../types';
 import { navigateToService } from '../../utils/subdomainRouter';
 import { CurtainPullCord } from '../common/CurtainThemeSwitch';
@@ -58,13 +58,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-2.5">
-            <button
-              onClick={() => navigateToService('members')}
-              className="liquid-btn liquid-btn-white py-1.5 px-3 text-xs flex items-center gap-1.5"
-            >
-              <CreditCard className="w-3.5 h-3.5 text-black" />
-              <span className="hidden sm:inline">Member Portal</span>
-            </button>
             <button
               onClick={() => navigateToService('landing')}
               className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5"

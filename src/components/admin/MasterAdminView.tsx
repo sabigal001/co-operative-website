@@ -5,7 +5,9 @@ import type {
   AuditLog, 
   PhysicalMemberCard, 
   SystemMetrics,
-  MembershipApplication
+  MembershipApplication,
+  MemberProfile,
+  DeskPaymentRecord
 } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { applicationService } from '../../services/api/applicationService';
@@ -13,11 +15,18 @@ import { cardService } from '../../services/api/cardService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { FluidPillBar } from '../common/FluidPillBar';
+import { RecordPaymentModal } from './RecordPaymentModal';
+import { ReceiptVoucherModal } from './ReceiptVoucherModal';
+import { MemberPassbookDrawer } from './MemberPassbookDrawer';
+import { WalkInRegistrationModal } from './WalkInRegistrationModal';
+import { BulkMemberImportModal } from './BulkMemberImportModal';
+import { DailyCashbookView } from './DailyCashbookView';
 import { 
   CreditCard, 
   Users, 
   TrendingUp, 
   Upload, 
+  UploadCloud,
   Sparkles, 
   Search, 
   X, 
@@ -35,7 +44,8 @@ import {
   MapPin,
   Coins,
   Calendar,
-  Briefcase
+  Briefcase,
+  ArrowUpRight
 } from 'lucide-react';
 
 interface MasterAdminViewProps {
@@ -45,15 +55,25 @@ interface MasterAdminViewProps {
 export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => {
   const { currentAdmin, showToast, fireConfetti, dataVersion, refreshData } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'applications' | 'cards' | 'roles' | 'dividends' | 'audit'>('applications');
+  const [activeTab, setActiveTab] = useState<'payments' | 'registry' | 'applications' | 'cards' | 'roles' | 'dividends' | 'audit'>('payments');
   const [cards, setCards] = useState<PhysicalMemberCard[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [applications, setApplications] = useState<MembershipApplication[]>([]);
+  const [members, setMembers] = useState<MemberProfile[]>([]);
   const [cardSearch, setCardSearch] = useState('');
   const [appSearch, setAppSearch] = useState('');
+  const [memberSearch, setMemberSearch] = useState('');
   const [appStatusFilter, setAppStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [loading, setLoading] = useState(true);
+
+  // Desk Finance Modals State
+  const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
+  const [showWalkInModal, setShowWalkInModal] = useState(false);
+  const [selectedPassbookMember, setSelectedPassbookMember] = useState<MemberProfile | null>(null);
+  const [selectedVoucher, setSelectedVoucher] = useState<DeskPaymentRecord | null>(null);
+  const [preselectedPaymentMember, setPreselectedPaymentMember] = useState<MemberProfile | null>(null);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
   // Modals
   const [showBatchModal, setShowBatchModal] = useState(false);
@@ -86,17 +106,19 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
   const loadAll = async () => {
     try {
-      const [cardsRes, adminsRes, logsRes, appsRes] = await Promise.all([
+      const [cardsRes, adminsRes, logsRes, appsRes, membersRes] = await Promise.all([
         adminService.getPhysicalCards(),
         adminService.getAdminUsers(),
         adminService.getAuditLogs(),
-        applicationService.getApplications()
+        applicationService.getApplications(),
+        adminService.getMemberRegistry()
       ]);
 
       if (cardsRes.success) setCards(cardsRes.data);
       if (adminsRes.success) setAdmins(adminsRes.data);
       if (logsRes.success) setAuditLogs(logsRes.data);
       if (appsRes.success) setApplications(appsRes.data);
+      if (membersRes.success) setMembers(membersRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -293,62 +315,264 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     <div className="space-y-8">
       
       {/* Navigation Pills */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
+      {/* Navigation Pills & Quick Action Buttons */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
+        <div className="w-full lg:w-auto overflow-x-auto no-scrollbar">
           <FluidPillBar
             tabs={[
-              { id: 'applications', label: `Prospective Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
-              { id: 'cards', label: 'Physical ID Card Control', icon: <CreditCard className="w-4 h-4" /> },
-              { id: 'roles', label: 'Staff Roles (RBAC)', icon: <Users className="w-4 h-4" /> },
-              { id: 'dividends', label: 'Financial Master & Dividends', icon: <TrendingUp className="w-4 h-4" /> },
-              { id: 'audit', label: 'System Audit Logs', icon: <Clock className="w-4 h-4" /> },
+              { id: 'payments', label: 'Cashbook & Collections', icon: <Coins className="w-4 h-4 text-emerald-400" /> },
+              { id: 'registry', label: `Members & Passbooks (${members.length})`, icon: <Users className="w-4 h-4" /> },
+              { id: 'applications', label: `Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
+              { id: 'cards', label: 'Physical Cards', icon: <CreditCard className="w-4 h-4" /> },
+              { id: 'roles', label: 'Staff Roles (RBAC)', icon: <ShieldCheck className="w-4 h-4" /> },
+              { id: 'dividends', label: 'Financial Master', icon: <TrendingUp className="w-4 h-4" /> },
+              { id: 'audit', label: 'Audit Trail', icon: <Clock className="w-4 h-4" /> },
             ]}
             activeId={activeTab}
             onChange={(id) => setActiveTab(id as any)}
           />
         </div>
 
-        {activeTab === 'cards' && (
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-            <button
-              onClick={() => {
-                triggerHaptic('selection');
-                setShowIssueCardModal(true);
-              }}
-              className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring shrink-0 min-h-[40px]"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Issue Physical Card</span>
-            </button>
-            <button
-              onClick={() => {
-                triggerHaptic('selection');
-                setShowBatchModal(true);
-              }}
-              className="px-3.5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring shrink-0 min-h-[40px]"
-            >
-              <Upload className="w-4 h-4" />
-              <span>Import Batch (CSV)</span>
-            </button>
-          </div>
-        )}
+        {/* Global Primary Quick Desk Actions */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
+          <button
+            onClick={() => {
+              triggerHaptic('medium');
+              setPreselectedPaymentMember(null);
+              setShowRecordPaymentModal(true);
+            }}
+            className="liquid-btn liquid-btn-white py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-md tap-spring min-h-[40px] shrink-0"
+          >
+            <Coins className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+            <span>+ Record Payment</span>
+          </button>
 
-        {activeTab === 'dividends' && (
           <button
             onClick={() => {
               triggerHaptic('selection');
-              setShowDividendModal(true);
+              setShowWalkInModal(true);
             }}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all tap-spring min-h-[40px] shrink-0"
+            className="py-2 px-3.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[40px] shrink-0"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Trigger Annual Dividend Pool</span>
+            <UserPlus className="w-3.5 h-3.5 text-slate-400" />
+            <span className="hidden sm:inline">Onboard Walk-In</span>
           </button>
-        )}
+
+          <button
+            onClick={() => {
+              triggerHaptic('selection');
+              setShowBulkImportModal(true);
+            }}
+            className="py-2 px-3.5 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[40px] shrink-0"
+            title="Import legacy spreadsheets, cards & up to 5,400+ members"
+          >
+            <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+            <span>Bulk Import (5,400+)</span>
+          </button>
+
+          {activeTab === 'cards' && (
+            <>
+              <button
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setShowIssueCardModal(true);
+                }}
+                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring shrink-0 min-h-[40px]"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Issue Card</span>
+              </button>
+              <button
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setShowBatchModal(true);
+                }}
+                className="px-3 py-2 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring shrink-0 min-h-[40px]"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Import Batch</span>
+              </button>
+            </>
+          )}
+
+          {activeTab === 'dividends' && (
+            <button
+              onClick={() => {
+                triggerHaptic('selection');
+                setShowDividendModal(true);
+              }}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring min-h-[40px] shrink-0"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Trigger Dividend Pool</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 0: PROSPECTIVE MEMBERSHIP APPLICATIONS QUEUE                          */}
+      {/* TAB 1: DAILY CASHBOOK & RECONCILIATION                                    */}
+      {/* ========================================================================= */}
+      {activeTab === 'payments' && (
+        <DailyCashbookView
+          onViewVoucher={(voucher) => setSelectedVoucher(voucher)}
+          onOpenRecordModal={() => {
+            setPreselectedPaymentMember(null);
+            setShowRecordPaymentModal(true);
+          }}
+        />
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2: MEMBER REGISTRY & PASSBOOKS                                        */}
+      {/* ========================================================================= */}
+      {activeTab === 'registry' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
+                Registered Society Members ({members.length})
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Official secretariat member ledger passbooks & walk-in onboarding
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  placeholder="Search name, ID, phone..."
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <button
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setShowWalkInModal(true);
+                }}
+                className="liquid-btn liquid-btn-white py-2 px-3 text-xs font-bold flex items-center gap-1.5 shrink-0"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>+ Walk-In</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setShowBulkImportModal(true);
+                }}
+                className="py-2 px-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 shrink-0"
+                title="Bulk import 5,400 members from CSV or Excel"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+                <span>Bulk Import (5,400+)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Members Table */}
+          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 font-mono text-[10px] uppercase">
+                  <tr>
+                    <th className="py-3.5 px-4 font-bold">Member</th>
+                    <th className="py-3.5 px-4 font-bold">Canonical ID</th>
+                    <th className="py-3.5 px-4 font-bold">Phone / Contact</th>
+                    <th className="py-3.5 px-4 font-bold">Occupation</th>
+                    <th className="py-3.5 px-4 font-bold">Status</th>
+                    <th className="py-3.5 px-4 font-bold">Physical Card</th>
+                    <th className="py-3.5 px-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  {members
+                    .filter((m) =>
+                      m.fullName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                      m.memberId.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                      m.phone.toLowerCase().includes(memberSearch.toLowerCase())
+                    )
+                    .map((m) => (
+                      <tr key={m.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={m.avatar}
+                              alt={m.fullName}
+                              className="w-8 h-8 rounded-xl object-cover border border-slate-200 dark:border-white/10"
+                            />
+                            <div>
+                              <span className="font-bold text-slate-900 dark:text-white block">
+                                {m.fullName}
+                              </span>
+                              <span className="text-[10px] text-slate-400">
+                                Joined {m.joinDate}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                          {m.memberId}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-slate-600 dark:text-slate-300">
+                          {m.phone}
+                        </td>
+                        <td className="py-3 px-4 text-slate-600 dark:text-slate-300 font-medium">
+                          {m.occupation}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                            <CheckCircle2 className="w-2.5 h-2.5" />
+                            {m.membershipStatus || 'ACTIVE'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 font-mono text-[11px] text-slate-500">
+                          {m.assignedCardId || m.memberId}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => {
+                                triggerHaptic('selection');
+                                setSelectedPassbookMember(m);
+                              }}
+                              className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1"
+                              title="View Passbook & Statement"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Passbook</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                triggerHaptic('selection');
+                                setPreselectedPaymentMember(m);
+                                setShowRecordPaymentModal(true);
+                              }}
+                              className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm"
+                              title="Record Desk Payment for this Member"
+                            >
+                              <Coins className="w-3.5 h-3.5" />
+                              <span>Pay</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: PROSPECTIVE MEMBERSHIP APPLICATIONS QUEUE                          */}
       {/* ========================================================================= */}
       {activeTab === 'applications' && (
         <div className="space-y-4">
@@ -1206,6 +1430,64 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
           </div>
         </div>
       )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* DESK FINANCE & MEMBERSHIP MODALS                              */}
+      {/* ------------------------------------------------------------- */}
+      {/* Record Payment Desk Modal */}
+      <RecordPaymentModal
+        isOpen={showRecordPaymentModal}
+        onClose={() => {
+          setShowRecordPaymentModal(false);
+          setPreselectedPaymentMember(null);
+        }}
+        preselectedMember={preselectedPaymentMember}
+        onPaymentSuccess={(pmt) => {
+          setSelectedVoucher(pmt);
+        }}
+      />
+
+      {/* Official Printable Receipt Voucher Modal */}
+      <ReceiptVoucherModal
+        isOpen={!!selectedVoucher}
+        payment={selectedVoucher}
+        onClose={() => setSelectedVoucher(null)}
+        onRecordAnother={() => {
+          setSelectedVoucher(null);
+          setShowRecordPaymentModal(true);
+        }}
+      />
+
+      {/* Member Passbook & Statement Drawer */}
+      <MemberPassbookDrawer
+        isOpen={!!selectedPassbookMember}
+        member={selectedPassbookMember}
+        onClose={() => setSelectedPassbookMember(null)}
+        onRecordPaymentForMember={(mem) => {
+          setSelectedPassbookMember(null);
+          setPreselectedPaymentMember(mem);
+          setShowRecordPaymentModal(true);
+        }}
+        onViewVoucher={(pmt) => setSelectedVoucher(pmt)}
+      />
+
+      {/* Walk-In Desk Member Registration Modal */}
+      <WalkInRegistrationModal
+        isOpen={showWalkInModal}
+        onClose={() => setShowWalkInModal(false)}
+        onRegisteredSuccess={(newMem) => {
+          setSelectedPassbookMember(newMem);
+        }}
+      />
+
+      {/* Bulk Member Migration Modal (5,400+ Members) */}
+      <BulkMemberImportModal
+        isOpen={showBulkImportModal}
+        onClose={() => setShowBulkImportModal(false)}
+        onImportComplete={() => {
+          refreshData();
+        }}
+      />
 
     </div>
   );

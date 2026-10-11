@@ -11,7 +11,11 @@ import type {
   SystemMetrics,
   Transaction,
   MembershipApplication,
-  CreateMembershipApplicationPayload
+  CreateMembershipApplicationPayload,
+  WalkInMemberPayload,
+  BulkMemberImportRow,
+  BulkImportResult,
+  SavingsAccount
 } from '../../types';
 import { 
   initialAuditLogs, 
@@ -678,5 +682,264 @@ export const adminService = {
       message: `Physical card pickup slip generated: ${slipCode}`,
       data: { slipCode }
     };
+  },
+
+  // Desk Registration for Walk-In Member (Digitizing paper onboarding)
+  async registerWalkInMember(
+    payload: WalkInMemberPayload,
+    staffName: string = 'Staff Officer'
+  ): Promise<ApiResponse<MemberProfile>> {
+    await new Promise((r) => setTimeout(r, 450));
+    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
+    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
+
+    const seq = 1000 + members.length + Math.floor(Math.random() * 800);
+    const memberId = `MCS-2026-${seq}`;
+    const cardId = memberId;
+
+    const newMember: MemberProfile = {
+      id: `MEM-${seq}`,
+      memberId,
+      fullName: payload.fullName,
+      phone: payload.phone,
+      email: payload.email || `${payload.fullName.toLowerCase().replace(/\s+/g, '.')}@mosunmolacoop.ng`,
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      joinDate: new Date().toISOString().substring(0, 10),
+      membershipStatus: 'ACTIVE',
+      digitalAccountStatus: 'NOT_ACTIVATED',
+      physicalCardStatus: 'ISSUED',
+      assignedCardId: cardId,
+      status: 'active',
+      kycVerified: true,
+      kycDocuments: {
+        idType: payload.idType,
+        idNumber: payload.idNumber,
+        fileUrl: '',
+        status: 'verified',
+        submittedAt: new Date().toISOString().substring(0, 10)
+      },
+      nextOfKin: payload.nextOfKin,
+      bankDetails: {
+        bankName: 'Direct Cash / Desk Record',
+        accountNumber: 'N/A',
+        accountName: payload.fullName
+      },
+      qrToken: `MOSUNMOLA-QR-${memberId}-AUTH-TOKEN`,
+      address: payload.address,
+      occupation: payload.occupation
+    };
+
+    const newCard: PhysicalMemberCard = {
+      cardId,
+      assignedMemberId: memberId,
+      assignedMemberName: payload.fullName,
+      assignedPhone: payload.phone,
+      cardType: 'standard_plastic',
+      batchNumber: 'BATCH-2026-DESK-ONBOARD',
+      status: 'ISSUED',
+      issuedDate: new Date().toISOString().substring(0, 10),
+      securityHash: `SEC-HASH-${Date.now()}`,
+      branch: payload.branch
+    };
+
+    saveToStorage(MEMBERS_STORAGE_KEY, [newMember, ...members]);
+    saveToStorage(CARDS_STORAGE_KEY, [newCard, ...cards]);
+
+    await this.logAction(
+      staffName,
+      'pa_officer',
+      'WALK_IN_REGISTRATION',
+      `Direct desk registration of walk-in member ${payload.fullName} (Member ID: ${memberId}, Card: ${cardId})`
+    );
+
+    return {
+      success: true,
+      message: `Member ${payload.fullName} registered successfully! Assigned Member ID: ${memberId}`,
+      data: newMember
+    };
+  },
+
+  // Get Member Registry with instant search
+  async getMemberRegistry(query?: string): Promise<ApiResponse<MemberProfile[]>> {
+    await new Promise((r) => setTimeout(r, 150));
+    let members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
+
+    if (query && query.trim()) {
+      const q = query.trim().toLowerCase();
+      members = members.filter(
+        (m) =>
+          m.fullName.toLowerCase().includes(q) ||
+          m.memberId.toLowerCase().includes(q) ||
+          m.phone.toLowerCase().includes(q) ||
+          m.assignedCardId?.toLowerCase().includes(q)
+      );
+    }
+
+    return {
+      success: true,
+      message: 'Member registry retrieved.',
+      data: members
+    };
+  },
+
+  // Bulk / Batch Import Members (e.g. 5,400 legacy spreadsheet records)
+  async bulkImportMembers(
+    rows: BulkMemberImportRow[],
+    staffName: string = 'Authorized Secretariat Admin'
+  ): Promise<ApiResponse<BulkImportResult>> {
+    await new Promise((r) => setTimeout(r, 400));
+    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
+    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
+
+    const existingMemberMap = new Map<string, MemberProfile>();
+    members.forEach((m) => existingMemberMap.set(m.memberId.toUpperCase(), m));
+
+    let updatedCount = 0;
+    let newImportCount = 0;
+    let duplicateCount = 0;
+    let totalSavingsBf = 0;
+
+    const seenInBatch = new Set<string>();
+
+    const newMembersToAppend: MemberProfile[] = [];
+    const newCardsToAppend: PhysicalMemberCard[] = [];
+
+    const avatars = [
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+    ];
+
+    rows.forEach((row, idx) => {
+      const cleanId = (row.memberId || `MCS-2026-${String(idx + 1).padStart(4, '0')}`).trim().toUpperCase();
+      const savings = Number(row.totalSavings) || 0;
+      const monthly = Number(row.monthlySavings) || 15000;
+      const shareCap = Number(row.shareCapital) || 50000;
+      totalSavingsBf += savings;
+
+      if (seenInBatch.has(cleanId)) {
+        duplicateCount++;
+        return;
+      }
+      seenInBatch.add(cleanId);
+
+      const existing = existingMemberMap.get(cleanId);
+      if (existing) {
+        existing.fullName = row.fullName || existing.fullName;
+        existing.phone = row.phone || existing.phone;
+        if (row.address) existing.address = row.address;
+        if (row.occupation) existing.occupation = row.occupation;
+        
+        if (savings > 0) {
+          const savingsAcc = getFromStorage<SavingsAccount>(`savings_account_${cleanId}`, {
+            totalBalance: savings,
+            voluntarySavings: Math.round(savings * 0.7),
+            targetSavings: Math.round(savings * 0.3),
+            dividendsEarned: 0,
+            annualReturnRate: 18.5,
+            targetPlans: []
+          });
+          savingsAcc.totalBalance = savings;
+          savingsAcc.voluntarySavings = Math.round(savings * 0.7);
+          savingsAcc.targetSavings = Math.round(savings * 0.3);
+          saveToStorage(`savings_account_${cleanId}`, savingsAcc);
+        }
+        updatedCount++;
+      } else {
+        const cardId = `MCS-CARD-${cleanId.replace(/[^A-Z0-9]/g, '')}`;
+        const newMember: MemberProfile = {
+          id: `MEM-${cleanId.replace(/[^A-Z0-9]/g, '-')}`,
+          memberId: cleanId,
+          assignedCardId: cardId,
+          digitalAccountStatus: 'NOT_ACTIVATED',
+          physicalCardStatus: 'ISSUED',
+          membershipStatus: 'ACTIVE',
+          fullName: row.fullName.trim(),
+          phone: row.phone.trim(),
+          email: `${cleanId.toLowerCase().replace(/[^a-z0-9]/g, '')}@mosunmolacoop.ng`,
+          status: 'active',
+          joinDate: new Date().toISOString().substring(0, 10),
+          avatar: avatars[idx % avatars.length],
+          kycVerified: true,
+          kycDocuments: {
+            idType: 'NIN',
+            idNumber: `NIN-${cleanId}`,
+            fileUrl: '',
+            status: 'verified',
+            submittedAt: new Date().toISOString().substring(0, 10)
+          },
+          nextOfKin: {
+            name: 'Family Next of Kin',
+            relationship: 'Next of Kin',
+            phone: row.phone.trim(),
+            address: row.address || 'Lagos State, Nigeria'
+          },
+          bankDetails: {
+            bankName: 'Legacy Passbook Ledger',
+            accountNumber: 'N/A',
+            accountName: row.fullName.trim()
+          },
+          qrToken: `MOSUNMOLA-QR-${cleanId}-AUTH-TOKEN`,
+          address: row.address || 'Lagos State, Nigeria',
+          occupation: row.occupation || 'Cooperative Member'
+        };
+
+        const newCard: PhysicalMemberCard = {
+          cardId,
+          assignedMemberId: cleanId,
+          assignedMemberName: row.fullName.trim(),
+          assignedPhone: row.phone.trim(),
+          cardType: savings >= 1000000 ? 'rfid_executive' : 'standard_plastic',
+          batchNumber: 'BATCH-2026-LEGACY-MIGRATION',
+          status: 'ISSUED',
+          issuedDate: new Date().toISOString().substring(0, 10),
+          securityHash: `SEC-HASH-${cleanId}-${Date.now()}`,
+          branch: 'Head Secretariat Ikeja'
+        };
+
+        const memberSavings: SavingsAccount = {
+          totalBalance: savings,
+          voluntarySavings: Math.round(savings * 0.7),
+          targetSavings: Math.round(savings * 0.3),
+          dividendsEarned: 0,
+          annualReturnRate: 18.5,
+          targetPlans: []
+        };
+        saveToStorage(`savings_account_${cleanId}`, memberSavings);
+
+        newMembersToAppend.push(newMember);
+        newCardsToAppend.push(newCard);
+        newImportCount++;
+      }
+    });
+
+    const finalMembers = [...members, ...newMembersToAppend];
+    const finalCards = [...cards, ...newCardsToAppend];
+
+    saveToStorage(MEMBERS_STORAGE_KEY, finalMembers);
+    saveToStorage(CARDS_STORAGE_KEY, finalCards);
+
+    await this.logAction(
+      staffName,
+      'master_admin',
+      'BULK_MEMBER_IMPORT',
+      `Imported & reconciled ${newImportCount} new members (${updatedCount} updated, ${duplicateCount} duplicates skipped, ₦${totalSavingsBf.toLocaleString()} total opening balances) into central register.`
+    );
+
+    return {
+      success: true,
+      message: `Bulk migration complete: ${newImportCount} members created, ${updatedCount} updated.`,
+      data: {
+        totalParsed: rows.length,
+        totalImported: newImportCount,
+        updatedCount,
+        duplicateCount,
+        totalSavingsBroughtForward: totalSavingsBf
+      }
+    };
   }
 };
+

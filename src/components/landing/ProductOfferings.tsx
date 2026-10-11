@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { 
   PiggyBank, 
@@ -12,9 +11,11 @@ import {
   Sparkles,
   Percent
 } from 'lucide-react';
+interface ProductOfferingsProps {
+  onOpenApplyModal?: () => void;
+}
 
-export const ProductOfferings: React.FC = () => {
-  const { openRegisterModal, setCurrentPortal } = useApp();
+export const ProductOfferings: React.FC<ProductOfferingsProps> = ({ onOpenApplyModal }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +49,7 @@ export const ProductOfferings: React.FC = () => {
         'Automated bank standing order or voluntary top-up',
         'Strict lock protection with emergency liquidation',
         'Compound annual profit allocation at AGM',
-        'Track daily balances on your mobile PWA'
+        'Physical passbook & official secretariat receipts'
       ],
       icon: <PiggyBank className="w-6 h-6 text-brand-400" />,
       cta: 'Start A Savings Plan',
@@ -188,10 +189,11 @@ export const ProductOfferings: React.FC = () => {
                 <button
                   onClick={() => {
                     triggerHaptic('medium');
-                    if (p.id === 'savings' || p.id === 'loans') {
-                      setCurrentPortal('member');
+                    if (onOpenApplyModal) {
+                      onOpenApplyModal();
                     } else {
-                      openRegisterModal();
+                      const calcElem = document.getElementById('calculator');
+                      if (calcElem) calcElem.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
                   className="liquid-btn liquid-btn-white text-black font-bold w-full py-2.5 tap-spring"

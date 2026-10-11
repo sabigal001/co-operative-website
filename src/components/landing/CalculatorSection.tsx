@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
 import { Calculator, TrendingUp, Coins, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { navigateToService } from '../../utils/subdomainRouter';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface KineticGaugeProps {
@@ -97,10 +95,11 @@ const KineticGauge: React.FC<KineticGaugeProps> = ({
     </div>
   );
 };
+interface CalculatorSectionProps {
+  onOpenApplyModal?: () => void;
+}
 
-export const CalculatorSection: React.FC = () => {
-  const { setCurrentPortal } = useApp();
-
+export const CalculatorSection: React.FC<CalculatorSectionProps> = ({ onOpenApplyModal }) => {
   const [activeTab, setActiveTab] = useState<'savings' | 'loan'>('savings');
 
   // Savings Calculator State
@@ -304,7 +303,12 @@ export const CalculatorSection: React.FC = () => {
                 <button
                   onClick={() => {
                     triggerHaptic('medium');
-                    navigateToService('members');
+                    if (onOpenApplyModal) {
+                      onOpenApplyModal();
+                    } else {
+                      const el = document.getElementById('contact');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }}
                   className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
                 >
@@ -429,7 +433,12 @@ export const CalculatorSection: React.FC = () => {
                 <button
                   onClick={() => {
                     triggerHaptic('medium');
-                    navigateToService('members');
+                    if (onOpenApplyModal) {
+                      onOpenApplyModal();
+                    } else {
+                      const el = document.getElementById('contact');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }}
                   className="w-full liquid-btn liquid-btn-white text-black font-bold py-2.5 text-xs flex items-center justify-center gap-2 tap-spring"
                 >

@@ -470,3 +470,106 @@ export interface CardLookupResponse {
   };
 }
 
+// -------------------------------------------------------------
+// INTERNAL SECRETARIAT & DESK FINANCE SYSTEM TYPES
+// -------------------------------------------------------------
+export type PaymentContributionCategory =
+  | 'MONTHLY_THRIFT'       // Regular Ajo / Thrift savings
+  | 'VOLUNTARY_SAVINGS'    // General flexible savings
+  | 'TARGET_SAVINGS'       // Project / Asset specific savings
+  | 'SHARE_CAPITAL'        // Statutory cooperative equity
+  | 'LOAN_REPAYMENT'       // Installment towards an active loan
+  | 'REGISTRATION_FEE'     // New member joining / passbook fee
+  | 'DEVELOPMENT_LEVY';    // Annual administrative / building levy
+
+export type PaymentReceiptMethod =
+  | 'CASH_AT_DESK'         // Walk-in physical cash received by cashier
+  | 'BANK_TRANSFER'        // Direct bank transfer awaiting verification
+  | 'BANK_TELLER'          // Bank deposit slip presented at desk
+  | 'POS_TERMINAL';        // Secretariat card swipe
+
+export interface DeskPaymentRecord {
+  id: string;
+  receiptNumber: string; // e.g. RV-2026-00492
+  memberId: string;
+  memberName: string;
+  phone?: string;
+  category: PaymentContributionCategory;
+  categoryLabel: string;
+  amount: number;
+  amountInWords: string;
+  method: PaymentReceiptMethod;
+  reference: string;
+  recordedBy: string;
+  recordedByRole: string;
+  recordedAt: string;
+  status: 'CONFIRMED' | 'PENDING_VERIFICATION' | 'REVERSED';
+  verifiedBy?: string;
+  verifiedAt?: string;
+  reversalReason?: string;
+  reversedBy?: string;
+  reversedAt?: string;
+  notes?: string;
+  balanceAfter?: number;
+}
+
+export interface DeskPaymentPayload {
+  memberId: string;
+  memberName: string;
+  category: PaymentContributionCategory;
+  amount: number;
+  method: PaymentReceiptMethod;
+  reference?: string;
+  notes?: string;
+}
+
+export interface DailyCashbookSummary {
+  date: string;
+  totalCashReceived: number;
+  totalTransfersReceived: number;
+  totalPendingTransfers: number;
+  totalTransactionsCount: number;
+  cashierInCharge: string;
+  reconciled: boolean;
+}
+
+export interface WalkInMemberPayload {
+  fullName: string;
+  phone: string;
+  email?: string;
+  address: string;
+  occupation: string;
+  initialSavingsTarget: number;
+  initialShareCapital: number;
+  idType: 'NIN' | 'Voters Card' | 'International Passport' | 'Drivers License' | string;
+  idNumber: string;
+  nextOfKin: {
+    name: string;
+    relationship: string;
+    phone: string;
+    address: string;
+  };
+  branch: string;
+}
+
+export interface BulkMemberImportRow {
+  memberId: string;
+  fullName: string;
+  phone: string;
+  gender?: string;
+  occupation?: string;
+  address?: string;
+  totalSavings?: number;
+  monthlySavings?: number;
+  shareCapital?: number;
+}
+
+export interface BulkImportResult {
+  totalParsed: number;
+  totalImported: number;
+  updatedCount: number;
+  duplicateCount: number;
+  totalSavingsBroughtForward: number;
+}
+
+

@@ -6,7 +6,6 @@ import {
   UserPlus,
   CheckCircle2
 } from 'lucide-react';
-import { navigateToService } from '../../utils/subdomainRouter';
 import { StatCounter } from '../common/StatCounter';
 
 interface HeroSectionProps {
@@ -78,18 +77,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenApplyModal }) =>
               </a>
             </div>
 
-            {/* Green Text Link for Issued Members */}
+            {/* Secretariat Passbook & Payment Notice */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 sm:gap-1.5 text-xs text-center lg:text-left">
               <span className="text-slate-600 dark:text-slate-300 font-medium">
-                Already an issued member?
+                Registered member?
               </span>
-              <button
-                onClick={() => navigateToService('members')}
+              <a
+                href="#contact"
                 className="text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-700 dark:hover:text-emerald-300 font-bold inline-flex items-center gap-1 transition-colors"
               >
-                <span>Install or open the Member Web App (PWA)</span>
+                <span>In-person payment recording & passbooks at Head Secretariat</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </a>
             </div>
 
             {/* Credibility Stats Bar with Viewport Animated Counters */}

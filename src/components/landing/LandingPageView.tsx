@@ -20,8 +20,8 @@ export const LandingPageView: React.FC = () => {
       <main className="flex-1">
         <HeroSection onOpenApplyModal={() => setIsApplyModalOpen(true)} />
         <AboutSection onOpenApplyModal={() => setIsApplyModalOpen(true)} />
-        <ProductOfferings />
-        <CalculatorSection />
+        <ProductOfferings onOpenApplyModal={() => setIsApplyModalOpen(true)} />
+        <CalculatorSection onOpenApplyModal={() => setIsApplyModalOpen(true)} />
         <PhysicalCardBanner onOpenApplyModal={() => setIsApplyModalOpen(true)} />
         <TrustGovernance onOpenApplyModal={() => setIsApplyModalOpen(true)} />
       </main>

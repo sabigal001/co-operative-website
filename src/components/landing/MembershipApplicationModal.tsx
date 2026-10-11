@@ -456,19 +456,11 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                       <br />
                       Allocated Physical Card ID: <strong className="font-mono text-emerald-700 dark:text-emerald-300">{trackResult.assignedCardId || trackResult.approvedMemberId}</strong>
                     </p>
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('medium');
-                          onClose();
-                          openRegisterModal(trackResult.assignedCardId || trackResult.approvedMemberId);
-                        }}
-                        className="liquid-btn liquid-btn-white text-black font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full sm:w-auto min-h-[42px]"
-                      >
-                        <CreditCard className="w-3.5 h-3.5" />
-                        <span>Proceed to Activate Physical Card</span>
-                      </button>
+                    <div className="pt-1">
+                      <div className="p-2.5 rounded-xl bg-white/60 dark:bg-black/30 border border-emerald-500/20 text-xs text-slate-800 dark:text-emerald-100 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span>Please present your Member ID at any Secretariat branch to collect your official passbook and start recording contributions.</span>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -529,7 +521,7 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="font-mono font-bold text-slate-900 dark:text-white">4.</span>
-                      <span><strong>Digital Activation:</strong> Link issued card to member portal via OTP.</span>
+                      <span><strong>Secretariat Onboarding:</strong> Collect your physical passbook and begin contributions with the desk cashier.</span>
                     </div>
                   </div>
                 </div>

@@ -58,8 +58,8 @@ export const TrustGovernance: React.FC<TrustGovernanceProps> = ({ onOpenApplyMod
       category: 'cards',
       categoryLabel: 'Smart RFID Card',
       categoryIcon: <CreditCard className="w-3.5 h-3.5 text-blue-500" />,
-      question: 'How do I obtain and activate my physical smart RFID member card?',
-      answer: 'Members can collect their physical smart NFC/RFID card from any of our 4 permanent branch secretariats (Ikeja, Victoria Island, Lekki, or Surulere) or request secure door-to-door courier dispatch. Once you hold your card, click “Activate Physical Card” on this website or in the Member Web App, enter your 8-digit Card ID (MOS-2026-XXXX), and set your card PIN in under 30 seconds.'
+      question: 'How do I obtain and register my physical smart RFID member card?',
+      answer: 'Members can collect their physical smart NFC/RFID card from any of our permanent branch secretariats (Ikeja, Victoria Island, Lekki, or Surulere). The Secretariat desk officer verifies your membership record, assigns your physical card, and issues your official passbook.'
     },
     {
       id: 4,
@@ -83,7 +83,7 @@ export const TrustGovernance: React.FC<TrustGovernanceProps> = ({ onOpenApplyMod
       categoryLabel: 'Savings Withdrawals',
       categoryIcon: <PiggyBank className="w-3.5 h-3.5 text-emerald-500" />,
       question: 'Can I withdraw my voluntary savings balance at any time?',
-      answer: 'Yes. Regular voluntary savings can be withdrawn directly to your linked commercial bank account on-demand via the Member Portal PWA, provided the requested funds are not currently pledged as direct loan backing or held as an active guarantor bond for another borrower’s outstanding facility.'
+      answer: 'Yes. Regular voluntary savings can be withdrawn directly to your linked commercial bank account by submitting an official notice at any secretariat branch, provided the requested funds are not currently pledged as direct loan backing or held as an active guarantor bond for another borrower’s outstanding facility.'
     }
   ];
 

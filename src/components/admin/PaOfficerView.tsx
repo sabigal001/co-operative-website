@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import type { LoanApplication, MemberProfile } from '../../types';
+import type { LoanApplication, MemberProfile, DeskPaymentRecord } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { FluidPillBar } from '../common/FluidPillBar';
+import { RecordPaymentModal } from './RecordPaymentModal';
+import { ReceiptVoucherModal } from './ReceiptVoucherModal';
+import { MemberPassbookDrawer } from './MemberPassbookDrawer';
+import { WalkInRegistrationModal } from './WalkInRegistrationModal';
+import { BulkMemberImportModal } from './BulkMemberImportModal';
 import { 
   UserCheck, 
   Search, 
@@ -12,18 +17,30 @@ import {
   CreditCard, 
   Check, 
   X, 
-  Users 
+  Users,
+  Coins,
+  UserPlus,
+  UploadCloud,
+  FileText
 } from 'lucide-react';
 
 export const PaOfficerView: React.FC = () => {
   const { currentAdmin, showToast, fireConfetti, dataVersion, refreshData } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'kyc' | 'vetting' | 'registry'>('kyc');
+  const [activeTab, setActiveTab] = useState<'registry' | 'kyc' | 'vetting'>('registry');
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loansForVetting, setLoansForVetting] = useState<LoanApplication[]>([]);
   const [searchMember, setSearchMember] = useState('');
   const [vettingComments, setVettingComments] = useState('');
   const [activeVettingLoan, setActiveVettingLoan] = useState<LoanApplication | null>(null);
+
+  // Desk Finance Modals State
+  const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
+  const [showWalkInModal, setShowWalkInModal] = useState(false);
+  const [selectedPassbookMember, setSelectedPassbookMember] = useState<MemberProfile | null>(null);
+  const [selectedVoucher, setSelectedVoucher] = useState<DeskPaymentRecord | null>(null);
+  const [preselectedPaymentMember, setPreselectedPaymentMember] = useState<MemberProfile | null>(null);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
   const loadData = async () => {
     try {
@@ -120,28 +137,67 @@ export const PaOfficerView: React.FC = () => {
         </div>
       </div>
 
-      {/* Sliding Fluid Pill Tabs */}
-      <FluidPillBar
-        tabs={[
-          {
-            id: 'kyc',
-            label: `KYC & Document Verification (${members.filter((m) => !m.kycVerified).length})`,
-            icon: <ShieldCheck className="w-4 h-4" />
-          },
-          {
-            id: 'vetting',
-            label: `Loan Application Vetting (${loansForVetting.length})`,
-            icon: <FileCheck className="w-4 h-4" />
-          },
-          {
-            id: 'registry',
-            label: 'Member Support Registry',
-            icon: <Users className="w-4 h-4" />
-          }
-        ]}
-        activeId={activeTab}
-        onChange={(id) => setActiveTab(id as any)}
-      />
+      {/* Sliding Fluid Pill Tabs & Quick Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <FluidPillBar
+          tabs={[
+            {
+              id: 'registry',
+              label: `Member Support Registry (${members.length})`,
+              icon: <Users className="w-4 h-4" />
+            },
+            {
+              id: 'kyc',
+              label: `KYC & Verification (${members.filter((m) => !m.kycVerified).length})`,
+              icon: <ShieldCheck className="w-4 h-4" />
+            },
+            {
+              id: 'vetting',
+              label: `Loan Vetting (${loansForVetting.length})`,
+              icon: <FileCheck className="w-4 h-4" />
+            }
+          ]}
+          activeId={activeTab}
+          onChange={(id) => setActiveTab(id as any)}
+        />
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => {
+              triggerHaptic('medium');
+              setPreselectedPaymentMember(null);
+              setShowRecordPaymentModal(true);
+            }}
+            className="liquid-btn liquid-btn-white py-2 px-3 text-xs font-bold flex items-center gap-1.5 shadow-md tap-spring min-h-[38px] shrink-0"
+          >
+            <Coins className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+            <span>+ Record Payment</span>
+          </button>
+
+          <button
+            onClick={() => {
+              triggerHaptic('selection');
+              setShowWalkInModal(true);
+            }}
+            className="py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[38px] shrink-0"
+          >
+            <UserPlus className="w-3.5 h-3.5 text-slate-400" />
+            <span>Onboard Walk-In</span>
+          </button>
+
+          <button
+            onClick={() => {
+              triggerHaptic('selection');
+              setShowBulkImportModal(true);
+            }}
+            className="py-2 px-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[38px] shrink-0"
+            title="Bulk import 5,400 legacy members from CSV or Excel"
+          >
+            <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+            <span>Bulk Import (5,400+)</span>
+          </button>
+        </div>
+      </div>
 
       {/* ================= TAB 1: KYC VERIFICATION ================= */}
       {activeTab === 'kyc' && (
@@ -369,12 +425,33 @@ export const PaOfficerView: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right font-sans">
-                        <button
-                          onClick={() => handleIssueSlip(m.memberId)}
-                          className="px-3 py-1 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 font-bold rounded-lg text-[11px]"
-                        >
-                          Print Pickup Slip
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setSelectedPassbookMember(m)}
+                            className="px-2.5 py-1 bg-brand-500/10 hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 font-bold rounded-lg text-[10px] flex items-center gap-1 transition-all"
+                            title="View Financial Passbook & Statements"
+                          >
+                            <FileText className="w-3 h-3" />
+                            <span>Passbook</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setPreselectedPaymentMember(m);
+                              setShowRecordPaymentModal(true);
+                            }}
+                            className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold rounded-lg text-[10px] flex items-center gap-1 transition-all"
+                            title="Record Walk-in Cash or Transfer Payment"
+                          >
+                            <Coins className="w-3 h-3" />
+                            <span>Pay</span>
+                          </button>
+                          <button
+                            onClick={() => handleIssueSlip(m.memberId)}
+                            className="px-2.5 py-1 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 font-bold rounded-lg text-[10px]"
+                          >
+                            Pickup Slip
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -433,6 +510,61 @@ export const PaOfficerView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Record Payment Desk Modal */}
+      <RecordPaymentModal
+        isOpen={showRecordPaymentModal}
+        onClose={() => {
+          setShowRecordPaymentModal(false);
+          setPreselectedPaymentMember(null);
+        }}
+        preselectedMember={preselectedPaymentMember}
+        onPaymentSuccess={(pmt) => {
+          setSelectedVoucher(pmt);
+        }}
+      />
+
+      {/* Official Printable Receipt Voucher Modal */}
+      <ReceiptVoucherModal
+        isOpen={!!selectedVoucher}
+        payment={selectedVoucher}
+        onClose={() => setSelectedVoucher(null)}
+        onRecordAnother={() => {
+          setSelectedVoucher(null);
+          setShowRecordPaymentModal(true);
+        }}
+      />
+
+      {/* Member Passbook & Statement Drawer */}
+      <MemberPassbookDrawer
+        isOpen={!!selectedPassbookMember}
+        member={selectedPassbookMember}
+        onClose={() => setSelectedPassbookMember(null)}
+        onRecordPaymentForMember={(mem) => {
+          setSelectedPassbookMember(null);
+          setPreselectedPaymentMember(mem);
+          setShowRecordPaymentModal(true);
+        }}
+        onViewVoucher={(pmt) => setSelectedVoucher(pmt)}
+      />
+
+      {/* Walk-In Desk Member Registration Modal */}
+      <WalkInRegistrationModal
+        isOpen={showWalkInModal}
+        onClose={() => setShowWalkInModal(false)}
+        onRegisteredSuccess={(newMem) => {
+          setSelectedPassbookMember(newMem);
+        }}
+      />
+
+      {/* Bulk Member Migration Modal (5,400+ Members) */}
+      <BulkMemberImportModal
+        isOpen={showBulkImportModal}
+        onClose={() => setShowBulkImportModal(false)}
+        onImportComplete={() => {
+          refreshData();
+        }}
+      />
 
     </div>
   );

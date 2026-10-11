@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import type { DepositSubmission, LoanApplication, PayoutRequest } from '../../types';
+import type { DepositSubmission, LoanApplication, PayoutRequest, DeskPaymentRecord } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { FluidPillBar } from '../common/FluidPillBar';
+import { RecordPaymentModal } from './RecordPaymentModal';
+import { ReceiptVoucherModal } from './ReceiptVoucherModal';
+import { DailyCashbookView } from './DailyCashbookView';
 import { 
   Coins, 
   ArrowUpRight, 
@@ -17,12 +20,16 @@ import {
 export const TreasurerView: React.FC = () => {
   const { currentAdmin, showToast, fireConfetti, dataVersion, refreshData } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'deposits' | 'disbursements' | 'payouts' | 'ledger'>('deposits');
+  const [activeTab, setActiveTab] = useState<'cashbook' | 'deposits' | 'disbursements' | 'payouts' | 'ledger'>('cashbook');
   const [deposits, setDeposits] = useState<DepositSubmission[]>([]);
   const [disbursementQueue, setDisbursementQueue] = useState<LoanApplication[]>([]);
   const [payouts, setPayouts] = useState<PayoutRequest[]>([]);
   const [previewProofUrl, setPreviewProofUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Desk Payment State
+  const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState<DeskPaymentRecord | null>(null);
 
   const loadData = async () => {
     try {
@@ -123,33 +130,61 @@ export const TreasurerView: React.FC = () => {
         </div>
       </div>
 
-      {/* Sliding Fluid Pill Tabs */}
-      <FluidPillBar
-        tabs={[
-          {
-            id: 'deposits',
-            label: `Deposit Approvals (${deposits.filter((d) => d.status === 'pending').length})`,
-            icon: <ArrowDownLeft className="w-4 h-4" />
-          },
-          {
-            id: 'disbursements',
-            label: `Loan Disbursements (${disbursementQueue.length})`,
-            icon: <Coins className="w-4 h-4" />
-          },
-          {
-            id: 'payouts',
-            label: `Payout Manager (${payouts.filter((p) => p.status === 'pending').length})`,
-            icon: <ArrowUpRight className="w-4 h-4" />
-          },
-          {
-            id: 'ledger',
-            label: 'Cashflow & Ledgers',
-            icon: <FileText className="w-4 h-4" />
-          }
-        ]}
-        activeId={activeTab}
-        onChange={(id) => setActiveTab(id as any)}
-      />
+      {/* Sliding Fluid Pill Tabs & Desk Payment Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="overflow-x-auto no-scrollbar">
+          <FluidPillBar
+            tabs={[
+              {
+                id: 'cashbook',
+                label: 'Daily Cashbook & Reconciliation',
+                icon: <Coins className="w-4 h-4 text-emerald-400" />
+              },
+              {
+                id: 'deposits',
+                label: `Deposit Approvals (${deposits.filter((d) => d.status === 'pending').length})`,
+                icon: <ArrowDownLeft className="w-4 h-4" />
+              },
+              {
+                id: 'disbursements',
+                label: `Loan Disbursements (${disbursementQueue.length})`,
+                icon: <Coins className="w-4 h-4" />
+              },
+              {
+                id: 'payouts',
+                label: `Payout Manager (${payouts.filter((p) => p.status === 'pending').length})`,
+                icon: <ArrowUpRight className="w-4 h-4" />
+              },
+              {
+                id: 'ledger',
+                label: 'Cashflow & Ledgers',
+                icon: <FileText className="w-4 h-4" />
+              }
+            ]}
+            activeId={activeTab}
+            onChange={(id) => setActiveTab(id as any)}
+          />
+        </div>
+
+        <button
+          onClick={() => {
+            triggerHaptic('medium');
+            setShowRecordPaymentModal(true);
+          }}
+          className="liquid-btn liquid-btn-white py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-md tap-spring min-h-[40px] shrink-0"
+        >
+          <Coins className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+          <span>+ Record Payment</span>
+        </button>
+      </div>
+
+      {/* ================= TAB 0: DAILY CASHBOOK ================= */}
+      {activeTab === 'cashbook' && (
+        <DailyCashbookView
+          onViewVoucher={(voucher) => setSelectedVoucher(voucher)}
+          onOpenRecordModal={() => setShowRecordPaymentModal(true)}
+        />
+      )}
 
       {/* ================= TAB 1: DEPOSIT APPROVALS ================= */}
       {activeTab === 'deposits' && (
@@ -434,6 +469,24 @@ export const TreasurerView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Desk Payment Recording Modal */}
+      <RecordPaymentModal
+        isOpen={showRecordPaymentModal}
+        onClose={() => setShowRecordPaymentModal(false)}
+        onPaymentSuccess={(pmt) => setSelectedVoucher(pmt)}
+      />
+
+      {/* Official Printable Receipt Voucher Modal */}
+      <ReceiptVoucherModal
+        isOpen={!!selectedVoucher}
+        payment={selectedVoucher}
+        onClose={() => setSelectedVoucher(null)}
+        onRecordAnother={() => {
+          setSelectedVoucher(null);
+          setShowRecordPaymentModal(true);
+        }}
+      />
 
     </div>
   );

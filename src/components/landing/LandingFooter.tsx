@@ -38,13 +38,15 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
               <span>Register as a Member</span>
               <ArrowRight className="w-3.5 h-3.5 text-black" />
             </button>
-            <button
-              onClick={() => navigateToService('members')}
+            <a
+              href="https://wa.me/2348034459901?text=Hello%20Mosunmola%20Cooperative%2C%20I%20would%20like%20to%20inquire%20about%20membership"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto py-2.5 px-5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 hover:text-white border border-emerald-500/30 font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
             >
               <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Member Portal Login</span>
-            </button>
+              <span>Secretariat Inquiries</span>
+            </a>
           </div>
         </div>
 
@@ -135,7 +137,12 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenApplyModal }
             <span>•</span>
             <span className="hover:text-slate-400">NDPR Privacy Policy</span>
             <span>•</span>
-            <span className="hover:text-slate-400">Audit Reports</span>
+            <button
+              onClick={() => navigateToService('admin')}
+              className="text-slate-500 hover:text-emerald-400 transition-colors font-mono text-[10px] underline underline-offset-2"
+            >
+              Staff Admin Console
+            </button>
           </div>
         </div>
 

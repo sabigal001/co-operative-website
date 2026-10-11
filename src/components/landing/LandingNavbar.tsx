@@ -3,7 +3,7 @@ import {
   Menu,
   X,
   UserPlus,
-  Smartphone,
+  MapPin,
   ArrowRight
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -151,7 +151,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
               ))}
             </nav>
 
-            {/* Bottom Actions: 1. Apply / Become Member -> 2. Install App -> 3. WhatsApp -> 4. TikTok */}
+            {/* Bottom Actions: 1. Apply / Become Member -> 2. Secretariat -> 3. WhatsApp -> 4. TikTok */}
             <div className="pt-5 border-t border-slate-200 dark:border-white/10 max-w-sm mx-auto w-full space-y-2.5">
 
               {/* Primary Mobile Action: Become a Member */}
@@ -166,17 +166,15 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
                 <span>Apply / Become a Member</span>
               </button>
 
-              {/* 1. Install Mosunmola Coop App (Wide Button) */}
-              <button
-                onClick={() => {
-                  setDrawerOpen(false);
-                  navigateToService('members');
-                }}
+              {/* Secretariat Office & Inquiries */}
+              <a
+                href="#contact"
+                onClick={() => setDrawerOpen(false)}
                 className="w-full py-2.5 px-4 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm group active:scale-95"
               >
-                <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-brand-400 group-hover:scale-110 transition-transform" />
-                <span>1. Install Mosunmola Coop App</span>
-              </button>
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-brand-400 group-hover:scale-110 transition-transform" />
+                <span>Head Secretariat Office</span>
+              </a>
 
               {/* 2. Chat on WhatsApp (Wide Button) */}
               <a
