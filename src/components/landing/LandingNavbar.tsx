@@ -204,9 +204,20 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onOpenApplyModal }
 
             </div>
 
-            {/* Bottom Regulatory Tag */}
-            <div className="pt-4 text-center text-[10px] text-slate-500 font-mono">
-              Lagos State Certified Society LSCS/2018/8941
+            {/* Bottom Regulatory Tag & Discrete Staff Console Link */}
+            <div className="pt-4 text-center space-y-1">
+              <div className="text-[10px] text-slate-500 font-mono">
+                Lagos State Certified Society LSCS/2018/8941
+              </div>
+              <button
+                onClick={() => {
+                  setDrawerOpen(false);
+                  navigateToService('admin');
+                }}
+                className="text-slate-400 hover:text-emerald-500 text-[10px] font-mono underline underline-offset-2 transition-colors"
+              >
+                Staff Admin Console (Secretariat)
+              </button>
             </div>
 
           </div>

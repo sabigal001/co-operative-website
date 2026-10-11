@@ -24,10 +24,11 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { applicationService } from '../../services/api/applicationService';
-import { COOPERATIVE_SAVINGS_PLANS } from '../../config/cooperativePlans';
 import { ALL_NIGERIAN_STATES, getLgasForState } from '../../utils/nigeriaLocations';
+import { COOPERATIVE_SAVINGS_PLANS } from '../../config/cooperativePlans';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
+import { navigateToService } from '../../utils/subdomainRouter';
 import type { MembershipApplication } from '../../types';
 
 interface MembershipApplicationModalProps {
@@ -543,6 +544,19 @@ export const MembershipApplicationModal: React.FC<MembershipApplicationModalProp
                     className="liquid-btn liquid-btn-white text-black font-bold py-2.5 px-6 text-xs rounded-xl w-full sm:w-auto min-h-[42px]"
                   >
                     Done, Return to Website
+                  </button>
+                </div>
+
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetModal();
+                      navigateToService('admin');
+                    }}
+                    className="text-slate-400 hover:text-emerald-500 text-[10px] font-mono underline underline-offset-2 transition-colors"
+                  >
+                    Secretariat Desk: Review in Admin Console (/?app=admin)
                   </button>
                 </div>
               </div>
