@@ -20,8 +20,8 @@ const AUTH_ADMIN_KEY = 'current_admin_role';
 
 export const authService = {
   // Real Backend Login with JWT
-  async login(identifier: string, password: string): Promise<ApiResponse<{ token: string; user: any }>> {
-    const res = await apiClient.post<{ token: string; user: any }>('/auth/login', {
+  async login(identifier: string, password: string): Promise<ApiResponse<{ token: string; user: any; member?: any }>> {
+    const res = await apiClient.post<{ token: string; user: any; member?: any }>('/auth/login', {
       email: identifier,
       password
     });
@@ -210,29 +210,37 @@ export const authService = {
       const apiRes = await this.login(identifier, password);
       if (apiRes.success && apiRes.data?.user) {
         const u = apiRes.data.user;
+        const m = apiRes.data.member;
         const profile: MemberProfile = {
-          id: u.internalMemberPk ? `MEM-${u.internalMemberPk}` : u.id.toString(),
-          memberId: u.memberId || identifier.toUpperCase(),
-          fullName: u.fullName,
-          email: u.email,
-          phone: '+234 803 456 7890',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-          joinDate: '2023-04-12',
-          status: 'active',
-          kycVerified: true,
-          bankDetails: {
-            bankName: 'Access Bank PLC',
-            accountNumber: '0129482710',
-            accountName: u.fullName.toUpperCase()
+          id: m?.id ? String(m.id) : (u.internalMemberPk ? `MEM-${u.internalMemberPk}` : u.id.toString()),
+          memberId: m?.memberId || u.memberId || identifier.toUpperCase(),
+          fullName: m?.fullName || u.fullName,
+          email: m?.email || u.email,
+          phone: m?.phone || '+234 803 456 7890',
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(m?.fullName || u.fullName)}&backgroundColor=059669&textColor=ffffff`,
+          joinDate: m?.createdAt?.substring(0, 10) || '2023-04-12',
+          membershipStatus: (m?.status || 'active').toUpperCase(),
+          digitalAccountStatus: 'ACTIVATED',
+          physicalCardStatus: 'ISSUED',
+          assignedCardId: m?.memberId || u.memberId || identifier.toUpperCase(),
+          status: m?.status || 'active',
+          kycVerified: m?.kycVerified ?? true,
+          bankDetails: m?.bankDetails || {
+            bankName: m?.bank_name || 'Access Bank PLC',
+            accountNumber: m?.account_number || '0129482710',
+            accountName: (m?.account_name || m?.fullName || u.fullName).toUpperCase()
           },
-          qrToken: `MOSUNMOLA-QR-${u.memberId || 'MCS-2026'}-VERIFIED`,
-          address: 'Victoria Island, Lagos, Nigeria',
-          occupation: 'Member'
+          qrToken: `MOSUNMOLA-QR-${m?.memberId || u.memberId || 'MCS-2026'}-VERIFIED`,
+          address: m?.address || 'Victoria Island, Lagos, Nigeria',
+          occupation: m?.occupation || 'Member',
+          financialSummary: m?.financialSummary || undefined,
+          recentTransactions: m?.recentTransactions || undefined,
+          _dbId: m?.id || u.internalMemberPk
         };
         saveToStorage(AUTH_MEMBER_KEY, profile.id);
         return {
           success: true,
-          message: `Welcome back, ${u.fullName}!`,
+          message: `Welcome back, ${profile.fullName}!`,
           data: profile
         };
       }

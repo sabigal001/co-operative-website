@@ -364,3 +364,43 @@ def test_financial_reports_summary(client, seeded_users):
     assert 'todayTotalCollectionNaira' in data
     assert data['totalMembers'] >= 1
 
+# 12. MEMBER LOGIN VIA REGISTERED PHONE NUMBER AS PASSWORD
+def test_member_login_via_phone_password(client, seeded_users, app):
+    # Alhaji Sikiru Adeleke has member_id='MCS-2026-9001' and phone='+234 802 111 2233'
+    # Test logging in using normalized 08021112233 as password:
+    res = client.post('/api/auth/login', json={
+        'memberId': 'MCS-2026-9001',
+        'password': '08021112233'
+    })
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data['success'] is True
+    assert 'token' in data['data']
+    assert data['data']['user']['memberId'] == 'MCS-2026-9001'
+    assert data['data']['member']['phone'] == '+234 802 111 2233'
+
+    # Test fresh member without existing User record
+    with app.app_context():
+        fresh_member = Member(
+            member_id='MCS-2026-9999',
+            full_name='Hon. Tunde Bakare',
+            phone='08055554433',
+            email='tunde.bakare@mosunmolacoop.ng',
+            status='active'
+        )
+        db.session.add(fresh_member)
+        db.session.commit()
+
+    # Log in using phone as password - should auto-provision User and return token
+    fresh_login_res = client.post('/api/auth/login', json={
+        'memberId': 'MCS-2026-9999',
+        'password': '08055554433'
+    })
+    assert fresh_login_res.status_code == 200
+    fresh_data = fresh_login_res.get_json()
+    assert fresh_data['success'] is True
+    assert 'token' in fresh_data['data']
+    assert fresh_data['data']['user']['role'] == 'member'
+    assert fresh_data['data']['member']['fullName'] == 'Hon. Tunde Bakare'
+
+

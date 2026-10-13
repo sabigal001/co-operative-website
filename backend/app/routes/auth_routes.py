@@ -42,7 +42,8 @@ def login():
             'message': 'Login successful.',
             'data': {
                 'token': token,
-                'user': user.to_dict()
+                'user': user.to_dict(),
+                'member': user.member.to_dict(include_financials=True) if user.member else None
             }
         }), 200
     except PermissionError as pe:
