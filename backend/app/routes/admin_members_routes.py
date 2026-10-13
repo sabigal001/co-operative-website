@@ -204,19 +204,44 @@ def create_member():
         'data': member.to_dict()
     }), 201
 
+def _find_member_by_id_or_code(identifier):
+    # Try integer lookup first
+    if isinstance(identifier, int) or (isinstance(identifier, str) and identifier.isdigit()):
+        m = Member.query.get(int(identifier))
+        if m:
+            return m
+    # Otherwise try member_id (e.g. MCS-2026-1033)
+    if isinstance(identifier, str):
+        m = Member.query.filter_by(member_id=identifier.strip()).first()
+        if m:
+            return m
+    return None
+
 @admin_members_bp.route('/<int:id>', methods=['GET'])
+@admin_members_bp.route('/<string:id_or_code>', methods=['GET'])
 @roles_required('master_admin', 'secretary', 'treasurer')
-def get_member(id):
-    member = db.get_or_404(Member, id)
+def get_member(id=None, id_or_code=None):
+    target = id if id is not None else id_or_code
+    member = _find_member_by_id_or_code(target)
+    if not member:
+        return jsonify({'success': False, 'message': f"Member '{target}' not found."}), 404
+
     m_dict = member.to_dict()
     m_dict['financialSummary'] = FinancialService.calculate_member_financials(member.id)
     m_dict['recentTransactions'] = [t.to_dict() for t in member.transactions[:25]]
     return jsonify({'success': True, 'data': m_dict}), 200
 
-@admin_members_bp.route('/<int:id>', methods=['PATCH'])
+@admin_members_bp.route('/<int:id>', methods=['PATCH', 'PUT', 'POST'])
+@admin_members_bp.route('/<string:id_or_code>', methods=['PATCH', 'PUT', 'POST'])
+@admin_members_bp.route('/<int:id>/status', methods=['PATCH', 'PUT', 'POST'])
+@admin_members_bp.route('/<string:id_or_code>/status', methods=['PATCH', 'PUT', 'POST'])
 @roles_required('master_admin', 'secretary')
-def update_member(id):
-    member = Member.query.get_or_404(id)
+def update_member(id=None, id_or_code=None):
+    target = id if id is not None else id_or_code
+    member = _find_member_by_id_or_code(target)
+    if not member:
+        return jsonify({'success': False, 'message': f"Member '{target}' not found."}), 404
+
     data = request.get_json() or {}
 
     if 'fullName' in data:

@@ -249,9 +249,11 @@ export const WalkInRegistrationModal: React.FC<WalkInRegistrationModalProps> = (
                 </label>
                 <input
                   type="number"
-                  step="5000"
-                  value={initialSavingsTarget}
-                  onChange={(e) => setInitialSavingsTarget(parseInt(e.target.value) || 0)}
+                  min="0"
+                  step="any"
+                  value={initialSavingsTarget || ''}
+                  placeholder="0"
+                  onChange={(e) => setInitialSavingsTarget(parseFloat(e.target.value) || 0)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm sm:text-xs text-slate-900 dark:text-white font-mono min-h-[42px] focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
