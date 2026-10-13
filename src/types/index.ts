@@ -24,6 +24,7 @@ export type MembershipStatus =
 export type DigitalAccountStatus = 
   | 'NOT_ACTIVATED' 
   | 'ACTIVE' 
+  | 'ACTIVATED'
   | 'SUSPENDED' 
   | 'BLOCKED';
 
@@ -59,14 +60,14 @@ export interface MemberProfile {
   assignedCardId?: string; // Physical card identifier
   status: 'active' | 'pending_kyc' | 'suspended';
   kycVerified: boolean;
-  kycDocuments: {
+  kycDocuments?: {
     idType: 'NIN' | 'Voters Card' | 'International Passport' | 'Drivers License' | string;
     idNumber: string;
     fileUrl: string;
     status: 'pending' | 'verified' | 'rejected';
-    submittedAt: string;
+    submittedAt?: string;
   };
-  nextOfKin: {
+  nextOfKin?: {
     name: string;
     relationship: string;
     phone: string;
@@ -82,6 +83,16 @@ export interface MemberProfile {
   state?: string;
   lga?: string;
   occupation: string;
+  financialSummary?: {
+    totalSavings: number;
+    voluntarySavings?: number;
+    targetSavings?: number;
+    shareCapital?: number;
+    activeLoanBalance?: number;
+    regularThrift?: number;
+  };
+  recentTransactions?: any[];
+  _dbId?: number;
 }
 
 export interface SavingsAccount {
@@ -149,6 +160,7 @@ export interface LoanApplication {
   treasurerNotes?: string;
   disbursedBy?: string;
   totalPaid: number;
+  outstandingBalance?: number;
 }
 
 export interface InvestmentAsset {
@@ -254,25 +266,38 @@ export interface AuditLog {
 }
 
 export interface SystemMetrics {
-  totalLiquidity: number;
-  totalSavingsPool: number;
-  totalOutstandingLoans: number;
-  totalDisbursedLoans: number;
-  totalDividendsPaid: number;
-  activeMemberCount: number;
-  pendingDepositsCount: number;
-  pendingLoanVettingsCount: number;
-  pendingDisbursementsCount: number;
-  cardsInCirculation: number;
-  availableCardStock: number;
+  totalLiquidity?: number;
+  totalSavingsPool?: number;
+  totalOutstandingLoans?: number;
+  totalDisbursedLoans?: number;
+  totalDividendsPaid?: number;
+  activeMemberCount?: number;
+  totalMembers?: number;
+  activeMembers?: number;
+  dailyIntakeNaira?: number;
+  activeLoansCount?: number;
+  totalSavingsNaira?: number;
+  totalShareCapitalNaira?: number;
+  pendingDepositsCount?: number;
+  pendingLoanVettingsCount?: number;
+  pendingDisbursementsCount?: number;
+  cardsInCirculation?: number;
+  availableCardStock?: number;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  error?: string;
-}
+export type ApiResponse<T = any> =
+  | {
+      success: true;
+      message: string;
+      data: T;
+      error?: string;
+    }
+  | {
+      success: false;
+      message: string;
+      data?: T;
+      error?: string;
+    };
 
 // DTOs for registration and verification
 export interface CardVerificationResult {
@@ -480,7 +505,8 @@ export type PaymentContributionCategory =
   | 'SHARE_CAPITAL'        // Statutory cooperative equity
   | 'LOAN_REPAYMENT'       // Installment towards an active loan
   | 'REGISTRATION_FEE'     // New member joining / passbook fee
-  | 'DEVELOPMENT_LEVY';    // Annual administrative / building levy
+  | 'DEVELOPMENT_LEVY'     // Annual administrative / building levy
+  | 'CUSTOM';              // Manually entered custom financial category
 
 export type PaymentReceiptMethod =
   | 'CASH_AT_DESK'         // Walk-in physical cash received by cashier
@@ -517,6 +543,7 @@ export interface DeskPaymentPayload {
   memberId: string;
   memberName: string;
   category: PaymentContributionCategory;
+  customCategoryLabel?: string;
   amount: number;
   method: PaymentReceiptMethod;
   reference?: string;
@@ -556,12 +583,21 @@ export interface BulkMemberImportRow {
   memberId: string;
   fullName: string;
   phone: string;
+  email?: string;
   gender?: string;
   occupation?: string;
   address?: string;
+  // 5 Financial balances brought forward (b/f)
+  savingsBf?: number;
   totalSavings?: number;
-  monthlySavings?: number;
+  sharesBf?: number;
   shareCapital?: number;
+  loansBf?: number;
+  loanPrincipalBf?: number;
+  loanInterestBf?: number;
+  coopDeductionBf?: number;
+  cooperativeDeductionBf?: number;
+  monthlySavings?: number;
 }
 
 export interface BulkImportResult {
@@ -570,6 +606,8 @@ export interface BulkImportResult {
   updatedCount: number;
   duplicateCount: number;
   totalSavingsBroughtForward: number;
+  totalSharesBroughtForward?: number;
+  totalLoansBroughtForward?: number;
 }
 
 

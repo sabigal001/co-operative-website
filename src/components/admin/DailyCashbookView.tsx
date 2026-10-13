@@ -197,8 +197,9 @@ export const DailyCashbookView: React.FC<DailyCashbookViewProps> = ({
 
           <button
             onClick={onOpenRecordModal}
-            className="liquid-btn liquid-btn-white py-1.5 px-3.5 text-xs font-bold flex items-center gap-1.5"
+            className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black py-2 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm tap-spring transition-colors shrink-0"
           >
+            <Coins className="w-3.5 h-3.5 text-emerald-500" />
             <span>+ Record Payment</span>
           </button>
         </div>

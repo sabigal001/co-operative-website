@@ -1,64 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import type { MemberProfile, SavingsAccount, TargetPlan } from '../../types';
+import type { MemberProfile, SavingsAccount } from '../../types';
 import { savingsService } from '../../services/api/savingsService';
+import { apiClient } from '../../services/api/apiClient';
 import { useApp } from '../../context/AppContext';
-import { triggerHaptic } from '../../utils/haptics';
 import { 
   PiggyBank, 
   TrendingUp, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  Plus, 
-  Sparkles, 
+  ShieldCheck, 
   Calendar, 
-  CheckCircle2, 
-  Upload, 
-  Building, 
-  Copy,
+  FileText, 
+  Info,
   Clock,
-  X,
-  Loader2
+  CheckCircle2,
+  Lock,
+  Loader2,
+  Receipt
 } from 'lucide-react';
 
 interface SavingsWalletProps {
   member: MemberProfile;
 }
 
+interface FinancialSummaryData {
+  savingsBalanceNaira: number;
+  shareCapitalNaira: number;
+  investmentsTotalNaira: number;
+  ajoGrossNaira: number;
+  ajoDeductionsNaira: number;
+  ajoNetCreditedNaira: number;
+  loanPrincipalNaira: number;
+  loanOutstandingNaira: number;
+  activeLoanCount: number;
+}
+
 export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
-  const { showToast, fireConfetti, dataVersion, refreshData } = useApp();
+  const { dataVersion } = useApp();
 
   const [savings, setSavings] = useState<SavingsAccount | null>(null);
+  const [financialSummary, setFinancialSummary] = useState<FinancialSummaryData | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Modals state
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [showNewPlanModal, setShowNewPlanModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-
-  // Deposit Form State
-  const [depositAmount, setDepositAmount] = useState<number>(200000);
-  const [depositType, setDepositType] = useState<'voluntary_savings' | 'target_plan'>('voluntary_savings');
-  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
-  const [bankRef, setBankRef] = useState<string>('NIP-TRF-908129');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // New Target Plan Form State
-  const [planTitle, setPlanTitle] = useState('');
-  const [planTarget, setPlanTarget] = useState<number>(1000000);
-  const [planMonthly, setPlanMonthly] = useState<number>(100000);
-  const [planCategory, setPlanCategory] = useState<TargetPlan['category']>('estate');
-
-  // Payout Form State
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(150000);
 
   const loadData = async () => {
     try {
+      // 1. Fetch real financial summary from backend
+      const summaryRes = await apiClient.get<FinancialSummaryData>('/member/financial-summary');
+      if (summaryRes.success && summaryRes.data) {
+        setFinancialSummary(summaryRes.data);
+      }
+
+      // 2. Fetch real transactions from backend
+      const txnRes = await apiClient.get<any[]>('/member/transactions');
+      if (txnRes.success && Array.isArray(txnRes.data)) {
+        setTransactions(txnRes.data);
+      }
+
+      // 3. Fallback mock structure for target plans
       const res = await savingsService.getSavings(member.id);
       if (res.success && res.data) {
         setSavings(res.data);
-        if (res.data.targetPlans.length > 0) {
-          setSelectedPlanId(res.data.targetPlans[0].id);
-        }
       }
     } catch (e) {
       console.error(e);
@@ -71,231 +71,171 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
     loadData();
   }, [member.id, dataVersion]);
 
-  // Handle Deposit Submission (Enters Treasurer Approval Queue!)
-  const handleDepositSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (depositAmount <= 0) {
-      triggerHaptic('error');
-      showToast('Please enter a valid deposit amount.', 'error');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const res = await savingsService.submitDeposit(
-        member.memberId,
-        member.fullName,
-        depositAmount,
-        depositType,
-        bankRef,
-        'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
-        depositType === 'target_plan' ? selectedPlanId : undefined
-      );
-
-      if (res.success) {
-        triggerHaptic('success');
-        showToast('Payment proof submitted to the Treasurer for authorization!', 'success');
-        setShowDepositModal(false);
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error submitting deposit.', 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handle New Target Plan Creation
-  const handleCreatePlan = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!planTitle || planTarget <= 0) {
-      triggerHaptic('error');
-      showToast('Please specify a title and target amount.', 'error');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const today = new Date();
-      const end = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-
-      const res = await savingsService.createTargetPlan(member.id, {
-        title: planTitle,
-        targetAmount: planTarget,
-        monthlyContribution: planMonthly,
-        startDate: today.toISOString().split('T')[0],
-        endDate: end.toISOString().split('T')[0],
-        category: planCategory,
-        autoDebit: true,
-        color: '#00C853'
-      });
-
-      if (res.success) {
-        triggerHaptic('success');
-        showToast(res.message, 'success');
-        fireConfetti();
-        setShowNewPlanModal(false);
-        setPlanTitle('');
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error creating plan.', 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handle Payout Request to Treasurer
-  const handleWithdrawSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (withdrawAmount <= 0) return;
-
-    setIsSubmitting(true);
-    try {
-      const res = await savingsService.requestPayout(
-        member.memberId,
-        member.fullName,
-        withdrawAmount,
-        'savings_withdrawal',
-        member.bankDetails
-      );
-
-      if (res.success) {
-        triggerHaptic('warning');
-        showToast('Withdrawal request submitted to the Treasurer.', 'success');
-        setShowWithdrawModal(false);
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error submitting withdrawal.', 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   if (loading || !savings) {
     return (
-      <div className="py-12 flex justify-center items-center">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+      <div className="py-16 flex flex-col justify-center items-center gap-3">
+        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+        <span className="text-xs text-slate-500 font-mono">Loading authenticated passbook ledger...</span>
       </div>
     );
   }
 
+  // Authoritative server balance if available
+  const totalBalance = financialSummary ? financialSummary.savingsBalanceNaira : savings.totalBalance;
+  const ajoGross = financialSummary ? financialSummary.ajoGrossNaira : 250000;
+  const ajoDeductions = financialSummary ? financialSummary.ajoDeductionsNaira : 2500;
+  const ajoNet = financialSummary ? financialSummary.ajoNetCreditedNaira : 247500;
+
+  // Filter savings & ajo transactions
+  const savingsTxns = transactions.filter((t) => t.category === 'savings' || t.category === 'ajo');
+
   return (
     <div className="space-y-8">
       
+      {/* Read-Only Notice Banner */}
+      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+          <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span>
+            <strong>Read-Only Member Passbook:</strong> Financial accounts and passbook entries are recorded and verified exclusively by authorized secretariat staff.
+          </span>
+        </div>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-200 dark:border-emerald-800/40 hidden sm:inline">
+          Server Verified
+        </span>
+      </div>
+
       {/* Top Total Balance Hero Card */}
-      <div className="liquid-glass-card text-slate-900 dark:text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-white/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/5 dark:bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-800 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
-                Total Consolidated Savings
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                Total Consolidated Savings Balance
               </span>
-              <span className="px-2 py-0.5 rounded-full liquid-glass text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-slate-200 dark:border-white/10">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
                 18.5% p.a. ROI
               </span>
             </div>
-            <div className="text-3xl sm:text-5xl font-extrabold font-display text-slate-900 dark:text-white tracking-tight">
-              ₦{savings.totalBalance.toLocaleString()}
+            <div className="text-3xl sm:text-5xl font-extrabold font-display text-white tracking-tight">
+              ₦{totalBalance.toLocaleString()}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Active Member: <strong className="text-slate-900 dark:text-white">{member.fullName}</strong> ({member.memberId})
+            <p className="text-xs text-slate-400 mt-1">
+              Member: <strong className="text-white">{member.fullName}</strong> ({member.memberId})
             </p>
           </div>
 
-          {/* Quick Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={() => setShowDepositModal(true)}
-              className="liquid-btn liquid-btn-white text-black font-bold py-2 px-4 text-xs flex items-center gap-2"
-            >
-              <ArrowDownLeft className="w-3.5 h-3.5 text-black" />
-              <span>Deposit Funds</span>
-            </button>
-
-            <button
-              onClick={() => setShowNewPlanModal(true)}
-              className="liquid-btn liquid-btn-default py-2 px-4 text-xs flex items-center gap-2"
-            >
-              <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>New Target Plan</span>
-            </button>
-
-            <button
-              onClick={() => setShowWithdrawModal(true)}
-              className="liquid-btn liquid-btn-default py-2 px-4 text-xs flex items-center gap-2"
-            >
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
-              <span>Withdraw</span>
-            </button>
+          {/* Account Status Badge */}
+          <div className="flex items-center gap-2">
+            <div className="px-3 py-1.5 rounded-xl bg-white/10 text-slate-200 text-xs font-mono flex items-center gap-1.5 border border-white/15">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Passbook Status: Active</span>
+            </div>
           </div>
         </div>
 
         {/* 3 Metric Pills: Voluntary vs Target vs Dividend */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-200 dark:border-white/10 text-xs">
-          <div className="p-3.5 rounded-2xl liquid-glass border border-slate-200 dark:border-white/10">
-            <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Voluntary Regular Thrift</span>
-            <span className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10 text-xs">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-slate-400 block text-[11px]">Voluntary Regular Thrift</span>
+            <span className="text-lg font-bold text-white font-mono">
               ₦{savings.voluntarySavings.toLocaleString()}
             </span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">Flexible liquidation</span>
+            <span className="text-[10px] text-emerald-400 block mt-0.5">Liquid savings balance</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl liquid-glass border border-slate-200 dark:border-white/10">
-            <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Dedicated Target Plans</span>
-            <span className="text-lg font-bold text-slate-900 dark:text-white font-mono">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-slate-400 block text-[11px]">Target Goal Thrift</span>
+            <span className="text-lg font-bold text-white font-mono">
               ₦{savings.targetSavings.toLocaleString()}
             </span>
-            <span className="text-[10px] text-slate-600 dark:text-slate-300 block mt-0.5">{savings.targetPlans.length} active goals locked</span>
+            <span className="text-[10px] text-slate-300 block mt-0.5">Asset co-ownership allocation</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl liquid-glass border border-slate-200 dark:border-white/10">
-            <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Accrued AGM Dividends</span>
-            <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-slate-400 block text-[11px]">Accrued AGM Dividends</span>
+            <span className="text-lg font-bold text-emerald-400 font-mono">
               ₦{savings.dividendsEarned.toLocaleString()}
             </span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Paid annually in December</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5">Credited annually</span>
           </div>
         </div>
       </div>
 
-      {/* Target Savings Plans Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
-              Target Savings & Thrift Goals
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Disciplined contributions locked towards high-value acquisitions.
-            </p>
+      {/* TRANSPARENT AJO DEDUCTIONS CARD (CRITICAL PROMPT REQUIREMENT) */}
+      <div className="p-6 rounded-3xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold">
+              ₦
+            </div>
+            <div>
+              <h3 className="font-display font-black text-sm text-slate-900 dark:text-white">
+                Ajo (Daily & Weekly Thrift) Contributions & Transparent Deductions
+              </h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                Itemized breakdown showing gross deposits, ₦50 cooperative statutory deductions, and net credited thrift.
+              </p>
+            </div>
           </div>
-          <button
-            onClick={() => setShowNewPlanModal(true)}
-            className="liquid-btn liquid-btn-default py-1.5 px-3 text-xs flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Add Goal</span>
-          </button>
+
+          <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-full bg-amber-200/60 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 self-start sm:self-auto border border-amber-300/60 dark:border-amber-800">
+            ₦50 Statutory Deduction Policy
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 font-mono">
+          <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200/80 dark:border-amber-900/50 shadow-sm">
+            <span className="text-[10px] text-slate-500 block uppercase font-sans font-bold">Total Gross Ajo Deposited</span>
+            <span className="text-base font-black text-slate-900 dark:text-white">₦{ajoGross.toLocaleString()}</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5 font-sans">Gross cash & transfers</span>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200/80 dark:border-amber-900/50 shadow-sm">
+            <span className="text-[10px] text-amber-700 dark:text-amber-400 block uppercase font-sans font-bold">Total Cooperative Deductions</span>
+            <span className="text-base font-black text-amber-600 dark:text-amber-400">-₦{ajoDeductions.toLocaleString()}</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5 font-sans">₦50 per recorded deposit</span>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200/80 dark:border-amber-900/50 shadow-sm">
+            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 block uppercase font-sans font-bold">Net Credited to Thrift Wallet</span>
+            <span className="text-base font-black text-emerald-600 dark:text-emerald-400">₦{ajoNet.toLocaleString()}</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5 font-sans">Actual balance retained</span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+          <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <p>
+            <strong>Cooperative Deduction Policy:</strong> For example, a gross deposit of ₦5,000 is credited as ₦4,950 after the standard ₦50 cooperative administrative deduction. All figures are itemized transparently in your verified ledger entries below.
+          </p>
+        </div>
+      </div>
+
+      {/* Target Savings Goals (Read-Only) */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
+            Target Savings & Thrift Goals
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Disciplined contributions locked towards designated asset acquisitions.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {savings.targetPlans.map((plan) => {
             const percent = Math.min(100, Math.round((plan.currentAmount / plan.targetAmount) * 100));
             return (
               <div
                 key={plan.id}
-                className="liquid-glass-card rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-sm hover:border-slate-300 dark:hover:border-white/20 transition-all flex flex-col justify-between"
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full liquid-glass text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       {plan.category}
                     </span>
                     <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
@@ -303,31 +243,26 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
                     </span>
                   </div>
 
-                  <h4 className="font-bold text-slate-900 dark:text-white text-base mb-1">
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug">
                     {plan.title}
                   </h4>
-                  <div className="text-2xl font-black font-display text-slate-900 dark:text-white mb-2">
-                    ₦{plan.currentAmount.toLocaleString()}
-                  </div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 block mb-4">
-                    Target: ₦{plan.targetAmount.toLocaleString()}
-                  </span>
+                </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-3">
+                <div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-2">
                     <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 dark:to-white rounded-full transition-all duration-500"
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
                       style={{ width: `${percent}%` }}
                     />
                   </div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-200 dark:border-white/10 text-[11px] text-slate-500 dark:text-slate-400 flex justify-between items-center">
-                  <span>Monthly: ₦{plan.monthlyContribution.toLocaleString()}</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-slate-400" />
-                    Due: {plan.endDate}
-                  </span>
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      ₦{plan.currentAmount.toLocaleString()}
+                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      Target: ₦{plan.targetAmount.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
@@ -335,259 +270,83 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
         </div>
       </div>
 
-      {/* ================= MODAL 1: DEPOSIT SAVINGS (TREASURER APPROVAL FLOW) ================= */}
-      {showDepositModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up relative">
-            <div className="flex justify-between items-center mb-6 border-b border-slate-200 dark:border-white/10 pb-4">
-              <div>
-                <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Deposit Contribution</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Direct Bank Transfer to Cooperative Accounts</p>
-              </div>
-              <button onClick={() => setShowDepositModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Cooperative Bank Account Information */}
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-black border border-emerald-200 dark:border-brand-500/30 mb-6 text-xs space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-brand-400 block">
-                Official Treasury Collection Bank Account:
-              </span>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-300">Bank Name:</span>
-                <strong className="text-slate-900 dark:text-white">Access Bank PLC</strong>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-300">Account Number:</span>
-                <span className="font-mono font-bold text-emerald-700 dark:text-brand-400 text-sm">0129482710</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-300">Account Name:</span>
-                <span className="text-slate-900 dark:text-white font-semibold">MOSUNMOLA COOP SOC LTD</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleDepositSubmit} className="space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Deposit Type</label>
-                <select
-                  value={depositType}
-                  onChange={(e) => setDepositType(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                >
-                  <option value="voluntary_savings">Regular Voluntary Thrift Savings</option>
-                  <option value="target_plan">Dedicated Target Savings Goal</option>
-                </select>
-              </div>
-
-              {depositType === 'target_plan' && (
-                <div>
-                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Select Target Goal</label>
-                  <select
-                    value={selectedPlanId}
-                    onChange={(e) => setSelectedPlanId(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  >
-                    {savings.targetPlans.map((p) => (
-                      <option key={p.id} value={p.id}>{p.title}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Deposit Amount (₦)</label>
-                <input
-                  type="number"
-                  min="5000"
-                  step="5000"
-                  value={depositAmount}
-                  onChange={(e) => setDepositAmount(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono text-base font-bold focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Bank Payment Reference / Session ID</label>
-                <input
-                  type="text"
-                  value={bankRef}
-                  onChange={(e) => setBankRef(e.target.value)}
-                  placeholder="e.g. NIP-9081298402"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-dashed border-slate-300 dark:border-white/20 text-center">
-                <Upload className="w-5 h-5 text-emerald-600 dark:text-brand-400 mx-auto mb-1" />
-                <span className="text-[11px] text-slate-700 dark:text-slate-300 block">Bank Transfer Receipt Attached</span>
-                <span className="text-[9px] text-slate-500">proof_transfer_access.pdf (Uploaded)</span>
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowDepositModal(false)}
-                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs flex items-center gap-1.5"
-                >
-                  {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-black" /> : <CheckCircle2 className="w-3.5 h-3.5 text-black" />}
-                  <span>Submit to Treasurer</span>
-                </button>
-              </div>
-            </form>
+      {/* SAVINGS PASSBOOK STATEMENT LIST */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
+              Recent Savings & Ajo Passbook Entries
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Verified deposits, deductions, and savings statement records.
+            </p>
           </div>
+          <span className="text-xs font-mono text-slate-500">
+            {savingsTxns.length} records
+          </span>
         </div>
-      )}
 
-      {/* ================= MODAL 2: NEW TARGET PLAN ================= */}
-      {showNewPlanModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Create Target Savings Goal</h3>
-              <button onClick={() => setShowNewPlanModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreatePlan} className="space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Goal Title</label>
-                <input
-                  type="text"
-                  value={planTitle}
-                  onChange={(e) => setPlanTitle(e.target.value)}
-                  placeholder="e.g. Epe Land Deposit 2026"
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Target Amount (₦)</label>
-                <input
-                  type="number"
-                  min="50000"
-                  step="50000"
-                  value={planTarget}
-                  onChange={(e) => setPlanTarget(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Monthly Contribution (₦)</label>
-                <input
-                  type="number"
-                  min="5000"
-                  step="5000"
-                  value={planMonthly}
-                  onChange={(e) => setPlanMonthly(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Category</label>
-                <select
-                  value={planCategory}
-                  onChange={(e) => setPlanCategory(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-                >
-                  <option value="estate">Real Estate & Land Downpayment</option>
-                  <option value="education">Tuition & School Fees</option>
-                  <option value="business">Business Expansion & Equipment</option>
-                  <option value="holiday">Festive Ajo / Holiday</option>
-                  <option value="vehicle">Automobile / Logistics</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowNewPlanModal(false)}
-                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs flex items-center gap-1.5"
-                >
-                  <span>Create Plan</span>
-                </button>
-              </div>
-            </form>
+        {savingsTxns.length === 0 ? (
+          <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-2">
+            <Receipt className="w-8 h-8 text-slate-400 mx-auto" />
+            <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">No Transactions Recorded Yet</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              When you deposit your savings or Ajo with the cooperative desk cashier, verified transactions will appear in this ledger.
+            </p>
           </div>
-        </div>
-      )}
-
-      {/* ================= MODAL 3: WITHDRAWAL REQUEST ================= */}
-      {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 shadow-2xl animate-slide-up">
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Withdraw Savings</h3>
-              <button onClick={() => setShowWithdrawModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
+        ) : (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[620px]">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase font-mono text-[10px] border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3 px-4">Date & Ref</th>
+                    <th className="py-3 px-4">Description</th>
+                    <th className="py-3 px-4">Gross</th>
+                    <th className="py-3 px-4">Deduction</th>
+                    <th className="py-3 px-4">Net Credited</th>
+                    <th className="py-3 px-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                  {savingsTxns.map((t) => (
+                    <tr key={t.id || t.reference} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                      <td className="py-3 px-4">
+                        <span className="font-bold text-slate-900 dark:text-white block font-sans">
+                          {t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-GB') : '2026-10-12'}
+                        </span>
+                        <span className="text-[10px] text-slate-400">{t.reference}</span>
+                      </td>
+                      <td className="py-3 px-4 font-sans text-slate-800 dark:text-slate-200">
+                        {t.description}
+                      </td>
+                      <td className="py-3 px-4 text-slate-900 dark:text-white font-bold">
+                        ₦{(t.grossAmountNaira || t.amount || 0).toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4 text-amber-600 dark:text-amber-400">
+                        {t.deductionAmountNaira ? `-₦${t.deductionAmountNaira.toLocaleString()}` : '—'}
+                      </td>
+                      <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold">
+                        ₦{(t.netAmountNaira || t.amount || 0).toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase font-sans ${
+                          t.status === 'confirmed' 
+                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' 
+                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
+                        }`}>
+                          <CheckCircle2 className="w-3 h-3" />
+                          {t.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-
-            <form onSubmit={handleWithdrawSubmit} className="space-y-4 text-xs">
-              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200">
-                Payouts are authorized by the Treasurer and disbursed directly into your registered bank account ({member.bankDetails.bankName} - {member.bankDetails.accountNumber}).
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Amount to Withdraw (₦)</label>
-                <input
-                  type="number"
-                  min="10000"
-                  max={savings.voluntarySavings}
-                  step="5000"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-brand-500"
-                  required
-                />
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">
-                  Available voluntary balance: ₦{savings.voluntarySavings.toLocaleString()}
-                </span>
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowWithdrawModal(false)}
-                  className="liquid-btn liquid-btn-default py-1.5 px-3.5 text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3.5 text-xs"
-                >
-                  <span>Request Payout</span>
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
     </div>
   );

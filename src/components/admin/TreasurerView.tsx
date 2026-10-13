@@ -120,11 +120,11 @@ export const TreasurerView: React.FC = () => {
     <div className="space-y-6">
       
       {/* RBAC Scope Notice Banner */}
-      <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3 text-xs text-emerald-200">
-        <Coins className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 flex items-start gap-3 text-xs text-emerald-900 dark:text-emerald-200">
+        <Coins className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="flex-1">
-          <strong className="text-white block mb-0.5">Treasurer Financial Operations Authority Active</strong>
-          <span>
+          <strong className="text-slate-900 dark:text-white block mb-0.5">Treasurer Financial Operations Authority Active</strong>
+          <span className="text-slate-700 dark:text-emerald-200/90">
             You have full authorization to verify member bank transfer deposits, release loan disbursements, and authorize payouts. Access to member profile editing, role assignment, and Secretariat onboarding logbook is restricted.
           </span>
         </div>

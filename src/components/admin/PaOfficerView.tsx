@@ -127,11 +127,11 @@ export const PaOfficerView: React.FC = () => {
     <div className="space-y-6">
       
       {/* RBAC Notice Banner */}
-      <div className="p-4 rounded-2xl bg-black/90 border border-brand-500/30 flex items-start gap-3 text-xs text-slate-300">
-        <UserCheck className="w-5 h-5 text-brand-400 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-2xl bg-amber-50 dark:bg-black/90 border border-amber-200 dark:border-brand-500/30 flex items-start gap-3 text-xs text-amber-900 dark:text-slate-300">
+        <UserCheck className="w-5 h-5 text-amber-600 dark:text-brand-400 shrink-0 mt-0.5" />
         <div className="flex-1">
-          <strong className="text-white block mb-0.5">Secretariat Operations & KYC Desk Authority Active</strong>
-          <span>
+          <strong className="text-slate-900 dark:text-white block mb-0.5">Secretariat Operations & KYC Desk Authority Active</strong>
+          <span className="text-slate-700 dark:text-slate-300">
             You have full authorization to verify member national identification, review guarantor eligibility, and perform first-stage loan vetting before forwarding to the Treasurer. Financial disbursements and direct wallet balance manipulation are restricted.
           </span>
         </div>
@@ -190,11 +190,11 @@ export const PaOfficerView: React.FC = () => {
               triggerHaptic('selection');
               setShowBulkImportModal(true);
             }}
-            className="py-2 px-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[38px] shrink-0"
-            title="Bulk import 5,400 legacy members from CSV or Excel"
+            className="py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[38px] shrink-0"
+            title="Onboard members with balance brought forward for savings, shares, loans, loan interest & cooperative deductions"
           >
-            <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-            <span>Bulk Import (5,400+)</span>
+            <Coins className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>+ Onboard Member (B/F Balances)</span>
           </button>
         </div>
       </div>
@@ -240,11 +240,11 @@ export const PaOfficerView: React.FC = () => {
                 <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400">Doc Type:</span>
-                    <strong className="text-slate-800 dark:text-slate-200">{m.kycDocuments.idType}</strong>
+                    <strong className="text-slate-800 dark:text-slate-200">{m.kycDocuments?.idType || 'NIN'}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400">Document / NIN Number:</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">{m.kycDocuments.idNumber}</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">{m.kycDocuments?.idNumber || '—'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400">Contact Phone:</span>

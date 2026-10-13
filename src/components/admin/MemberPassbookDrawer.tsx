@@ -206,11 +206,11 @@ export const MemberPassbookDrawer: React.FC<MemberPassbookDrawerProps> = ({
                 onClose();
                 onRecordPaymentForMember(member);
               }}
-              className="w-full py-3 px-4 rounded-2xl liquid-btn liquid-btn-white text-black font-bold text-xs flex items-center justify-center gap-2 shadow-sm tap-spring"
+              className="w-full py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center gap-2 shadow-sm tap-spring transition-colors"
             >
-              <Sparkles className="w-4 h-4 text-black" />
+              <Sparkles className="w-4 h-4" />
               <span>Record Walk-In Payment for {member.fullName}</span>
-              <ArrowUpRight className="w-4 h-4 text-black" />
+              <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
 

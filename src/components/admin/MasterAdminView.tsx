@@ -341,9 +341,9 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               setPreselectedPaymentMember(null);
               setShowRecordPaymentModal(true);
             }}
-            className="liquid-btn liquid-btn-white py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-md tap-spring min-h-[40px] shrink-0"
+            className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black py-2 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md tap-spring min-h-[40px] shrink-0 transition-colors"
           >
-            <Coins className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+            <Coins className="w-4 h-4 text-emerald-400" />
             <span>+ Record Payment</span>
           </button>
 
@@ -363,11 +363,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               triggerHaptic('selection');
               setShowBulkImportModal(true);
             }}
-            className="py-2 px-3.5 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[40px] shrink-0"
-            title="Import legacy spreadsheets, cards & up to 5,400+ members"
+            className="py-2 px-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[40px] shrink-0"
+            title="Onboard members with balance brought forward for savings, shares, loans, loan interest & cooperative deductions"
           >
-            <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-            <span>Bulk Import (5,400+)</span>
+            <Coins className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>+ Onboard Member (B/F Balances)</span>
           </button>
 
           {activeTab === 'cards' && (
@@ -466,11 +466,11 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                   triggerHaptic('selection');
                   setShowBulkImportModal(true);
                 }}
-                className="py-2 px-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-700 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 shrink-0"
-                title="Bulk import 5,400 members from CSV or Excel"
+                className="py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5 shrink-0"
+                title="Onboard members with balance brought forward for savings, shares, loans, loan interest & cooperative deductions"
               >
-                <UploadCloud className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-                <span>Bulk Import (5,400+)</span>
+                <Coins className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>+ B/F Balances</span>
               </button>
             </div>
           </div>

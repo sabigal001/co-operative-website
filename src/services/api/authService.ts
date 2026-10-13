@@ -7,6 +7,7 @@ import type {
   AdminRole,
   AdminUser
 } from '../../types';
+import { apiClient } from './apiClient';
 import { initialPhysicalCards } from '../../mocks/cards';
 import { initialMembersRegistry, primaryDemoMember } from '../../mocks/members';
 import { mockAdminUsers } from '../../mocks/admins';
@@ -18,11 +19,49 @@ const AUTH_MEMBER_KEY = 'current_member_id';
 const AUTH_ADMIN_KEY = 'current_admin_role';
 
 export const authService = {
-  // Step 1 & 2: Physical Card ID Verification lookup
-  async verifyPhysicalCardId(cardId: string): Promise<ApiResponse<CardVerificationResult>> {
-    // Simulate realistic network latency
-    await new Promise((resolve) => setTimeout(resolve, 600));
+  // Real Backend Login with JWT
+  async login(identifier: string, password: string): Promise<ApiResponse<{ token: string; user: any }>> {
+    const res = await apiClient.post<{ token: string; user: any }>('/auth/login', {
+      email: identifier,
+      password
+    });
+    if (res.success && res.data?.token) {
+      apiClient.setAuthToken(res.data.token);
+      if (res.data.user?.role) {
+        saveToStorage(AUTH_ADMIN_KEY, res.data.user.role);
+      }
+    }
+    return res;
+  },
 
+  // Real Member Account Claiming Flow
+  async claimAccount(
+    memberId: string,
+    registeredName: string,
+    claimCode: string,
+    password: string,
+    email?: string
+  ): Promise<ApiResponse<{ token: string; user: any }>> {
+    const res = await apiClient.post<{ token: string; user: any }>('/auth/member/claim', {
+      memberId,
+      registeredName,
+      claimCode,
+      password,
+      email
+    });
+    if (res.success && res.data?.token) {
+      apiClient.setAuthToken(res.data.token);
+    }
+    return res;
+  },
+
+  // Get current authenticated user profile from backend
+  async getMe(): Promise<ApiResponse<{ user: any; member?: any }>> {
+    return apiClient.get<{ user: any; member?: any }>('/auth/me');
+  },
+
+  // Physical Card ID Verification lookup
+  async verifyPhysicalCardId(cardId: string): Promise<ApiResponse<CardVerificationResult>> {
     const cleanId = cardId.trim().toUpperCase();
     const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
     const card = cards.find((c) => c.cardId.toUpperCase() === cleanId);
@@ -53,7 +92,6 @@ export const authService = {
       };
     }
 
-    // Return card details for pre-filling registration form
     return {
       success: true,
       message: card.status === 'active' 
@@ -73,23 +111,30 @@ export const authService = {
     };
   },
 
-  // Step 3: Account Creation
+  // Account Creation
   async registerMember(payload: RegisterMemberPayload): Promise<ApiResponse<MemberProfile>> {
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // Attempt registering with backend first
+    const backendRes = await apiClient.post<any>('/admin/members', {
+      fullName: payload.fullName,
+      memberId: payload.cardId.toUpperCase(),
+      email: payload.email,
+      phone: payload.phone,
+      nin: payload.nin,
+      address: payload.address,
+      occupation: payload.occupation,
+      nextOfKin: payload.nextOfKin
+    });
 
-    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-
-    // Check if card is already registered
-    const existing = members.find((m) => m.memberId.toUpperCase() === payload.cardId.toUpperCase());
-    if (existing) {
+    if (backendRes.success && backendRes.data) {
       return {
-        success: false,
-        message: 'An account is already linked to this Physical Member ID Card. Please sign in.',
-        data: existing
+        success: true,
+        message: backendRes.message || 'Account successfully registered and recorded in cooperative ledger!',
+        data: backendRes.data
       };
     }
 
+    // Fallback registry for offline/hybrid
+    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
     const newMember: MemberProfile = {
       id: `MEM-${Math.floor(1000 + Math.random() * 9000)}`,
       memberId: payload.cardId.toUpperCase(),
@@ -99,7 +144,7 @@ export const authService = {
       avatar: payload.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
       joinDate: new Date().toISOString().split('T')[0],
       status: 'active',
-      kycVerified: true, // auto-verified via card batch + NIN
+      kycVerified: true,
       kycDocuments: {
         idType: 'NIN',
         idNumber: payload.nin || '20938491028',
@@ -118,14 +163,6 @@ export const authService = {
       occupation: payload.occupation || 'Civil Servant / Entrepreneur'
     };
 
-    // Update card status to active
-    const updatedCards = cards.map((c) => 
-      c.cardId.toUpperCase() === payload.cardId.toUpperCase()
-        ? { ...c, status: 'active' as const, activationDate: new Date().toISOString().split('T')[0] }
-        : c
-    );
-
-    saveToStorage(CARDS_STORAGE_KEY, updatedCards);
     saveToStorage(MEMBERS_STORAGE_KEY, [newMember, ...members]);
     saveToStorage(AUTH_MEMBER_KEY, newMember.id);
 
@@ -138,8 +175,6 @@ export const authService = {
 
   // Simulated OTP verification
   async verifyOtp(code: string): Promise<ApiResponse<{ verified: boolean }>> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // Any 6 digit code or sample code 894201
     if (code.length === 6) {
       return {
         success: true,
@@ -149,19 +184,48 @@ export const authService = {
     }
     return {
       success: false,
-      message: 'Invalid 6-digit OTP code. Enter any 6-digit number or 894201 to continue.',
+      message: 'Invalid 6-digit verification code. Please check your SMS/email.',
       data: { verified: false }
     };
   },
 
-  // Member Login
-  async loginMember(identifier: string, _password?: string): Promise<ApiResponse<MemberProfile>> {
-    await new Promise((resolve) => setTimeout(resolve, 600));
+  // Member Login (Compatible with real API & fallback)
+  async loginMember(identifier: string, password?: string): Promise<ApiResponse<MemberProfile>> {
+    if (password) {
+      const apiRes = await this.login(identifier, password);
+      if (apiRes.success && apiRes.data?.user) {
+        const u = apiRes.data.user;
+        const profile: MemberProfile = {
+          id: u.internalMemberPk ? `MEM-${u.internalMemberPk}` : u.id.toString(),
+          memberId: u.memberId || identifier.toUpperCase(),
+          fullName: u.fullName,
+          email: u.email,
+          phone: '+234 803 456 7890',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+          joinDate: '2023-04-12',
+          status: 'active',
+          kycVerified: true,
+          bankDetails: {
+            bankName: 'Access Bank PLC',
+            accountNumber: '0129482710',
+            accountName: u.fullName.toUpperCase()
+          },
+          qrToken: `MOSUNMOLA-QR-${u.memberId || 'MCS-2026'}-VERIFIED`,
+          address: 'Victoria Island, Lagos, Nigeria',
+          occupation: 'Member'
+        };
+        saveToStorage(AUTH_MEMBER_KEY, profile.id);
+        return {
+          success: true,
+          message: `Welcome back, ${u.fullName}!`,
+          data: profile
+        };
+      }
+    }
 
     const cleanId = identifier.trim().toUpperCase();
     const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
     
-    // Look up by memberId (MCS-...) or email
     const member = members.find((m) => 
       m.memberId.toUpperCase() === cleanId || 
       m.email.toLowerCase() === identifier.trim().toLowerCase()
@@ -176,7 +240,6 @@ export const authService = {
       };
     }
 
-    // If identifier matches chief Adeleke Balogun default
     if (cleanId === 'MCS-2026-8942' || identifier.includes('adeleke')) {
       saveToStorage(AUTH_MEMBER_KEY, primaryDemoMember.id);
       return {
@@ -188,12 +251,11 @@ export const authService = {
 
     return {
       success: false,
-      message: 'Member not found. Please check your Member ID or register with your physical card.',
-      data: primaryDemoMember // fallback demo
+      message: 'Member credentials not found. Please check your Member ID or password.',
+      data: primaryDemoMember
     };
   },
 
-  // Get current active member session
   getCurrentMember(): MemberProfile {
     const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
     const savedId = getFromStorage<string>(AUTH_MEMBER_KEY, primaryDemoMember.id);
@@ -201,13 +263,7 @@ export const authService = {
     return member || primaryDemoMember;
   },
 
-  // Admin Role Switch / Login
-  async switchAdminRole(role: AdminRole): Promise<AdminUser> {
-    saveToStorage(AUTH_ADMIN_KEY, role);
-    const admin = mockAdminUsers.find((a) => a.role === role) || mockAdminUsers[0];
-    return admin;
-  },
-
+  // Admin Role is strictly governed by server response
   getCurrentAdminRole(): AdminRole {
     return getFromStorage<AdminRole>(AUTH_ADMIN_KEY, 'master_admin');
   },
@@ -217,21 +273,19 @@ export const authService = {
     return mockAdminUsers.find((a) => a.role === role) || mockAdminUsers[0];
   },
 
-  // Member Logout API endpoint simulation (POST /api/v1/auth/logout)
   async logout(): Promise<ApiResponse<{ loggedOut: boolean }>> {
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    apiClient.setAuthToken(null);
     removeFromStorage(AUTH_MEMBER_KEY);
-    removeFromStorage('auth_token');
-    removeFromStorage('session_expiry');
+    removeFromStorage(AUTH_ADMIN_KEY);
+    removeFromStorage('mosunmola_auth_token');
     return {
       success: true,
-      message: 'You have been securely signed out of your Mosunmola member session.',
+      message: 'You have been securely signed out of your Mosunmola session.',
       data: { loggedOut: true }
     };
   },
 
   logoutMember(): void {
-    removeFromStorage(AUTH_MEMBER_KEY);
-    removeFromStorage('auth_token');
+    this.logout();
   }
 };

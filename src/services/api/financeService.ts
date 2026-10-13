@@ -140,7 +140,7 @@ export const financeService = {
       memberId: payload.memberId,
       memberName: payload.memberName,
       category: payload.category,
-      categoryLabel: CATEGORY_LABELS[payload.category] || payload.category,
+      categoryLabel: payload.customCategoryLabel || CATEGORY_LABELS[payload.category] || payload.category,
       amount: payload.amount,
       amountInWords: numberToWordsNaira(payload.amount),
       method: payload.method,

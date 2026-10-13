@@ -103,9 +103,9 @@ export const RegisterCardModal: React.FC = () => {
 
     try {
       const res = await cardService.lookupCard(idToLookup);
-      setLookupResult(res.data);
+      setLookupResult(res.data ?? null);
 
-      if (res.success && res.data.status === 'FOUND_ELIGIBLE') {
+      if (res.success && res.data && res.data.status === 'FOUND_ELIGIBLE') {
         triggerHaptic('success');
         const prefill = res.data.prefill;
         if (prefill) {
@@ -124,7 +124,7 @@ export const RegisterCardModal: React.FC = () => {
         }
       } else {
         triggerHaptic('warning');
-        setErrorMessage(res.message || res.data.message);
+        setErrorMessage(res.message || (res.data as any)?.message || 'Card verification failed.');
       }
     } catch (e: any) {
       triggerHaptic('error');

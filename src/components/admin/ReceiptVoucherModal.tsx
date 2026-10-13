@@ -60,7 +60,7 @@ export const ReceiptVoucherModal: React.FC<ReceiptVoucherModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="liquid-btn liquid-btn-white py-1.5 px-3 text-xs flex items-center gap-1.5 font-bold"
+              className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black dark:hover:bg-slate-100 py-1.5 px-3 text-xs flex items-center gap-1.5 font-bold rounded-xl transition-all shadow-sm"
               title="Print Receipt Voucher"
             >
               <Printer className="w-3.5 h-3.5" />
@@ -242,7 +242,7 @@ export const ReceiptVoucherModal: React.FC<ReceiptVoucherModalProps> = ({
         <div className="p-4 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 print:hidden">
           <button
             onClick={handlePrint}
-            className="w-full sm:w-auto liquid-btn liquid-btn-white py-2 px-5 text-xs font-bold flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black dark:hover:bg-slate-100 py-2.5 px-5 text-xs font-bold flex items-center justify-center gap-2 rounded-xl transition-all shadow-md"
           >
             <Printer className="w-4 h-4" />
             <span>Print Receipt Voucher (A4/Thermal)</span>

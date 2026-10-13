@@ -30,10 +30,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ member }) => {
   const [occupation, setOccupation] = useState(member.occupation);
 
   // Next of kin
-  const [nokName, setNokName] = useState(member.nextOfKin.name);
-  const [nokRel, setNokRel] = useState(member.nextOfKin.relationship);
-  const [nokPhone, setNokPhone] = useState(member.nextOfKin.phone);
-  const [nokAddress, setNokAddress] = useState(member.nextOfKin.address);
+  const [nokName, setNokName] = useState(member.nextOfKin?.name || '');
+  const [nokRel, setNokRel] = useState(member.nextOfKin?.relationship || '');
+  const [nokPhone, setNokPhone] = useState(member.nextOfKin?.phone || '');
+  const [nokAddress, setNokAddress] = useState(member.nextOfKin?.address || '');
 
   // Bank details
   const [bankName, setBankName] = useState(member.bankDetails.bankName);

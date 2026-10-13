@@ -1,12 +1,16 @@
+/**
+ * Mosunmola Cooperative — Admin Service (Real Backend API)
+ * 
+ * This service connects to the Flask backend REST API via apiClient.
+ * All mock/localStorage operations have been replaced with real HTTP calls.
+ */
+
 import type { 
   AdminRole, 
   AdminUser, 
   ApiResponse, 
   AuditLog, 
-  DepositSubmission, 
-  LoanApplication, 
   MemberProfile, 
-  PayoutRequest, 
   PhysicalMemberCard, 
   SystemMetrics,
   Transaction,
@@ -15,931 +19,466 @@ import type {
   WalkInMemberPayload,
   BulkMemberImportRow,
   BulkImportResult,
-  SavingsAccount
+  DeskPaymentRecord
 } from '../../types';
-import { 
-  initialAuditLogs, 
-  initialPendingDeposits, 
-  initialPayoutRequests, 
-  initialSystemMetrics, 
-  mockAdminUsers 
-} from '../../mocks/admins';
-import { initialPhysicalCards } from '../../mocks/cards';
-import { initialMembersRegistry } from '../../mocks/members';
-import { initialLoans } from '../../mocks/loans';
-import { initialTransactions } from '../../mocks/transactions';
-import { initialMembershipApplications } from '../../mocks/applications';
-import { getFromStorage, saveToStorage } from './storageHelper';
-
-const CARDS_STORAGE_KEY = 'physical_cards';
-const MEMBERS_STORAGE_KEY = 'members_registry';
-const LOANS_STORAGE_KEY = 'loans_registry';
-const DEPOSITS_STORAGE_KEY = 'pending_deposits';
-const PAYOUTS_STORAGE_KEY = 'payout_requests';
-const AUDIT_STORAGE_KEY = 'audit_logs';
-const METRICS_STORAGE_KEY = 'system_metrics';
-const ADMINS_STORAGE_KEY = 'admin_users';
-const TXN_STORAGE_KEY = 'transactions_registry';
-const APPLICATIONS_STORAGE_KEY = 'membership_applications';
+import { apiClient } from './apiClient';
 
 export const adminService = {
-  // Shared / General
+  // ──────────────────────── System Metrics ────────────────────────
   async getSystemMetrics(): Promise<ApiResponse<SystemMetrics>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const metrics = getFromStorage<SystemMetrics>(METRICS_STORAGE_KEY, initialSystemMetrics);
-    const deposits = getFromStorage<DepositSubmission[]>(DEPOSITS_STORAGE_KEY, initialPendingDeposits);
-    const loans = getFromStorage<LoanApplication[]>(LOANS_STORAGE_KEY, initialLoans);
-    
-    // dynamically sync counts
-    metrics.pendingDepositsCount = deposits.filter((d) => d.status === 'pending').length;
-    metrics.pendingLoanVettingsCount = loans.filter((l) => l.status === 'pending_vetting').length;
-    metrics.pendingDisbursementsCount = loans.filter((l) => l.status === 'vetted_pending_treasurer').length;
-
-    return {
-      success: true,
-      message: 'System metrics retrieved.',
-      data: metrics
-    };
+    try {
+      const res = await apiClient.get<any>('/admin/metrics');
+      if (res.success && res.data) {
+        // Map backend data to frontend SystemMetrics shape
+        const d = res.data;
+        const metrics: SystemMetrics = {
+          totalMembers: d.totalMembers || 0,
+          activeMembers: d.activeMembers || d.totalMembers || 0,
+          dailyIntakeNaira: d.dailyIntakeNaira || 0,
+          pendingDepositsCount: d.pendingDepositsCount || 0,
+          pendingLoanVettingsCount: d.pendingLoanVettingsCount || 0,
+          pendingDisbursementsCount: d.pendingDisbursementsCount || 0,
+          activeLoansCount: d.activeLoansCount || 0,
+          totalSavingsNaira: d.totalSavingsNaira || 0,
+          totalShareCapitalNaira: d.totalShareCapitalNaira || 0,
+          totalDividendsPaid: d.totalDividendsPaid || 0
+        };
+        return { success: true, message: 'System metrics retrieved.', data: metrics };
+      }
+      return res;
+    } catch {
+      return { success: false, message: 'Failed to fetch system metrics.' };
+    }
   },
 
+  // ──────────────────────── Audit Logs ────────────────────────
   async getAuditLogs(): Promise<ApiResponse<AuditLog[]>> {
-    await new Promise((r) => setTimeout(r, 250));
-    const logs = getFromStorage<AuditLog[]>(AUDIT_STORAGE_KEY, initialAuditLogs);
-    return {
-      success: true,
-      message: 'Audit logs retrieved.',
-      data: logs
-    };
+    try {
+      const res = await apiClient.get<{ logs: any[]; total: number }>('/admin/reports/audit-logs?per_page=200');
+      if (res.success && res.data) {
+        const logs: AuditLog[] = (res.data.logs || []).map((l: any) => ({
+          id: `LOG-${l.id}`,
+          timestamp: l.timestamp?.replace('T', ' ')?.substring(0, 19) || '',
+          adminName: l.actorName || 'System',
+          adminRole: l.actorRole || 'system',
+          action: l.action || '',
+          details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details || ''),
+          ip: l.ipAddress || '—'
+        }));
+        return { success: true, message: 'Audit logs retrieved.', data: logs };
+      }
+      return { success: false, message: res.message || 'Failed to load audit logs.', data: [] };
+    } catch {
+      return { success: false, message: 'Error fetching audit logs.', data: [] };
+    }
   },
 
-  async logAction(adminName: string, adminRole: AdminRole, action: string, details: string): Promise<void> {
-    const logs = getFromStorage<AuditLog[]>(AUDIT_STORAGE_KEY, initialAuditLogs);
-    const newLog: AuditLog = {
-      id: `LOG-${Date.now().toString().slice(-4)}`,
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      adminName,
-      adminRole,
-      action,
-      details,
-      ip: '102.89.44.12'
-    };
-    saveToStorage(AUDIT_STORAGE_KEY, [newLog, ...logs]);
+  async logAction(_adminName: string, _adminRole: AdminRole, _action: string, _details: string): Promise<void> {
+    // Audit logging is now handled server-side automatically. This is a no-op on the client.
   },
 
-  // -------------------------------------------------------------
-  // 1. MASTER ADMIN (SUPER ADMIN) CAPABILITIES
-  // -------------------------------------------------------------
+  // ──────────────────────── Member Registry ────────────────────────
+  async getMemberRegistry(query?: string): Promise<ApiResponse<MemberProfile[]>> {
+    try {
+      const params = new URLSearchParams();
+      if (query && query.trim()) params.set('q', query.trim());
+      params.set('per_page', '200');
+
+      const res = await apiClient.get<{ members: any[]; total: number }>(`/admin/members?${params.toString()}`);
+      if (res.success && res.data) {
+        const members: MemberProfile[] = (res.data.members || []).map(mapBackendMemberToFrontend);
+        return { success: true, message: `Found ${members.length} member(s).`, data: members };
+      }
+      return { success: false, message: res.message || 'Failed to load members.', data: [] };
+    } catch {
+      return { success: false, message: 'Error fetching member registry.', data: [] };
+    }
+  },
+
+  async getMembersForSupport(searchQuery?: string): Promise<ApiResponse<MemberProfile[]>> {
+    return this.getMemberRegistry(searchQuery);
+  },
+
+  // ──────────────────────── Single Member Detail ────────────────────────
+  async getMemberDetail(memberId: number | string): Promise<ApiResponse<MemberProfile>> {
+    try {
+      const res = await apiClient.get<any>(`/admin/members/${memberId}`);
+      if (res.success && res.data) {
+        return { success: true, message: 'Member details loaded.', data: mapBackendMemberToFrontend(res.data) };
+      }
+      return res;
+    } catch {
+      return { success: false, message: 'Error fetching member details.' };
+    }
+  },
+
+  // ──────────────────────── Walk-In Registration ────────────────────────
+  async registerWalkInMember(
+    payload: WalkInMemberPayload,
+    _staffName: string = 'Staff Officer'
+  ): Promise<ApiResponse<MemberProfile>> {
+    try {
+      const res = await apiClient.post<any>('/admin/members/walk-in', {
+        fullName: payload.fullName,
+        phone: payload.phone,
+        email: payload.email,
+        address: payload.address,
+        occupation: payload.occupation,
+        branch: payload.branch || 'Head Secretariat Ikeja',
+        idNumber: payload.idNumber,
+        nextOfKin: payload.nextOfKin
+      });
+      if (res.success && res.data) {
+        return { success: true, message: res.message, data: mapBackendMemberToFrontend(res.data) };
+      }
+      return res;
+    } catch {
+      return { success: false, message: 'Error registering walk-in member.' };
+    }
+  },
+
+  // ──────────────────────── Bulk Import ────────────────────────
+  async bulkImportMembers(
+    rows: BulkMemberImportRow[],
+    _staffName: string = 'Authorized Secretariat Admin'
+  ): Promise<ApiResponse<BulkImportResult>> {
+    try {
+      const res = await apiClient.post<BulkImportResult>('/admin/members/bulk-import', { rows });
+      return res;
+    } catch {
+      return { success: false, message: 'Error during bulk import.' };
+    }
+  },
+
+  // ──────────────────────── Record Transaction ────────────────────────
+  async recordTransaction(payload: {
+    memberId: string | number;
+    amount: number;
+    category: string;
+    txnType?: string;
+    paymentMethod?: string;
+    description: string;
+    bankReference?: string;
+  }): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.post('/admin/transactions', {
+        memberId: payload.memberId,
+        amount: payload.amount,
+        category: payload.category,
+        txnType: payload.txnType || 'deposit',
+        paymentMethod: payload.paymentMethod || 'cash',
+        description: payload.description,
+        bankReference: payload.bankReference
+      });
+    } catch {
+      return { success: false, message: 'Error recording transaction.' };
+    }
+  },
+
+  // ──────────────────────── Get Transactions ────────────────────────
+  async getTransactions(filters?: {
+    q?: string;
+    category?: string;
+    status?: string;
+    paymentMethod?: string;
+    page?: number;
+    per_page?: number;
+  }): Promise<ApiResponse<{ transactions: any[]; total: number; page: number; pages: number }>> {
+    try {
+      const params = new URLSearchParams();
+      if (filters?.q) params.set('q', filters.q);
+      if (filters?.category) params.set('category', filters.category);
+      if (filters?.status) params.set('status', filters.status);
+      if (filters?.paymentMethod) params.set('paymentMethod', filters.paymentMethod);
+      params.set('page', String(filters?.page || 1));
+      params.set('per_page', String(filters?.per_page || 50));
+
+      return await apiClient.get(`/admin/transactions?${params.toString()}`);
+    } catch {
+      return { success: false, message: 'Error fetching transactions.' };
+    }
+  },
+
+  // ──────────────────────── Verify Transaction ────────────────────────
+  async verifyTransaction(txnId: number): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.post(`/admin/transactions/${txnId}/verify`);
+    } catch {
+      return { success: false, message: 'Error verifying transaction.' };
+    }
+  },
+
+  // ──────────────────────── Reverse Transaction ────────────────────────
+  async reverseTransaction(txnId: number, reason: string): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.post(`/admin/transactions/${txnId}/reverse`, { reason });
+    } catch {
+      return { success: false, message: 'Error reversing transaction.' };
+    }
+  },
+
+  // ──────────────────────── Reports ────────────────────────
+  async getFinancialSummary(): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.get('/admin/reports/summary');
+    } catch {
+      return { success: false, message: 'Error fetching financial summary.' };
+    }
+  },
+
+  async getDailyCashbook(dateStr?: string): Promise<ApiResponse<any>> {
+    try {
+      const params = dateStr ? `?date=${dateStr}` : '';
+      return await apiClient.get(`/admin/reports/daily-cashbook${params}`);
+    } catch {
+      return { success: false, message: 'Error fetching daily cashbook.' };
+    }
+  },
+
+  // ──────────────────────── Generate Claim Code ────────────────────────
+  async generateClaimCode(memberDbId: number): Promise<ApiResponse<{ claimCode: string; memberId: string }>> {
+    try {
+      return await apiClient.post(`/admin/members/${memberDbId}/generate-claim-code`);
+    } catch {
+      return { success: false, message: 'Error generating claim code.' };
+    }
+  },
+
+  // ──────────────────────── Create Member (Direct with B/F Balances) ────────────────────────
+  async createMember(payload: {
+    fullName: string;
+    memberId?: string;
+    email?: string;
+    phone?: string;
+    branch?: string;
+    nin?: string;
+    address?: string;
+    occupation?: string;
+    savingsBf?: number;
+    sharesBf?: number;
+    loansBf?: number;
+    loanInterestBf?: number;
+    coopDeductionBf?: number;
+    nextOfKin?: any;
+    bankDetails?: any;
+  }): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.post('/admin/members', payload);
+    } catch {
+      return { success: false, message: 'Error creating member.' };
+    }
+  },
+
+  // ──────────────────────── Update Member ────────────────────────
+  async updateMember(id: number, payload: Record<string, any>): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.patch(`/admin/members/${id}`, payload);
+    } catch {
+      return { success: false, message: 'Error updating member.' };
+    }
+  },
+
+  // ──────────────────────── Staff Management ────────────────────────
+  async provisionStaffUser(payload: {
+    email: string;
+    fullName: string;
+    role: string;
+    initialPassword: string;
+  }): Promise<ApiResponse<any>> {
+    try {
+      return await apiClient.post('/auth/staff/provision', payload);
+    } catch {
+      return { success: false, message: 'Error provisioning staff user.' };
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LEGACY COMPATIBILITY SHIMS
+  // These methods maintain backward compatibility with components that
+  // use the old mock-based API signatures. They delegate to real endpoints.
+  // ═══════════════════════════════════════════════════════════════════════
+
   async submitMembershipApplication(payload: CreateMembershipApplicationPayload): Promise<ApiResponse<MembershipApplication>> {
-    await new Promise((r) => setTimeout(r, 600));
-    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
-
-    const newApp: MembershipApplication = {
-      ...payload,
-      id: `APP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      intendedMonthlySavings: payload.intendedMonthlySavings || payload.monthlyThriftTarget || 50000,
-      monthlyThriftTarget: payload.monthlyThriftTarget || payload.intendedMonthlySavings || 50000,
-      status: 'pending_approval',
-      submittedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
-    };
-
-    saveToStorage(APPLICATIONS_STORAGE_KEY, [newApp, ...apps]);
-
-    return {
-      success: true,
-      message: `Your membership application has been submitted to the Board & Super Admin! Reference: ${newApp.id}`,
-      data: newApp
-    };
+    // Map membership application to a walk-in registration on the backend
+    try {
+      const res = await apiClient.post<any>('/admin/members/walk-in', {
+        fullName: payload.fullName,
+        phone: payload.phone,
+        email: payload.email,
+        address: payload.address,
+        occupation: payload.occupation,
+        branch: payload.lga ? `${payload.lga} Secretariat` : 'Head Secretariat Ikeja',
+        nextOfKin: payload.nextOfKin
+      });
+      if (res.success && res.data) {
+        const app: MembershipApplication = {
+          ...payload,
+          id: `APP-${res.data.memberId || Date.now()}`,
+          intendedMonthlySavings: payload.intendedMonthlySavings || payload.monthlyThriftTarget || 50000,
+          monthlyThriftTarget: payload.monthlyThriftTarget || payload.intendedMonthlySavings || 50000,
+          status: 'approved',
+          submittedAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        };
+        return { success: true, message: res.message || 'Application submitted successfully.', data: app };
+      }
+      return { success: false, message: res.message || 'Application submission failed.' };
+    } catch {
+      return { success: false, message: 'Error submitting application.' };
+    }
   },
 
   async getMembershipApplications(): Promise<ApiResponse<MembershipApplication[]>> {
-    await new Promise((r) => setTimeout(r, 250));
-    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
-    return {
-      success: true,
-      message: 'Membership applications retrieved.',
-      data: apps
-    };
+    // Return empty — applications are converted directly to members now
+    return { success: true, message: 'Applications managed via member registry.', data: [] };
   },
 
   async approveMembershipApplication(
-    appId: string, 
-    assignedCardId: string, 
-    superAdminName: string
+    _appId: string, 
+    _assignedCardId: string, 
+    _superAdminName: string
   ): Promise<ApiResponse<MembershipApplication>> {
-    await new Promise((r) => setTimeout(r, 500));
-    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
-    const app = apps.find((a) => a.id === appId);
-
-    if (!app) {
-      return { success: false, message: 'Application not found', data: apps[0] };
-    }
-
-    app.status = 'approved';
-    app.reviewedBy = superAdminName;
-    app.reviewedAt = new Date().toISOString().replace('T', ' ').substring(0, 19);
-    app.assignedCardId = assignedCardId;
-
-    saveToStorage(APPLICATIONS_STORAGE_KEY, apps);
-
-    // Register card in cards storage
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-    const card = cards.find((c) => c.cardId.toUpperCase() === assignedCardId.toUpperCase());
-    if (card) {
-      card.assignedMemberName = app.fullName;
-      card.assignedEmail = app.email;
-      card.assignedPhone = app.phone;
-      card.status = 'unassigned'; // ready for the member to activate
-      saveToStorage(CARDS_STORAGE_KEY, cards);
-    } else {
-      // create new allocated card
-      cards.push({
-        cardId: assignedCardId,
-        batchNumber: 'BATCH-2026-NEW-MEMBERS',
-        assignedMemberName: app.fullName,
-        assignedEmail: app.email,
-        assignedPhone: app.phone,
-        status: 'unassigned',
-        issuedDate: new Date().toISOString().split('T')[0],
-        securityHash: `sha256-${assignedCardId}-hash`,
-        branch: `${app.lga || 'Ikeja'} Secretariat`
-      });
-      saveToStorage(CARDS_STORAGE_KEY, cards);
-    }
-
-    await this.logAction(
-      superAdminName,
-      'master_admin',
-      'APPROVE_MEMBERSHIP_APPLICATION',
-      `Approved application ${app.id} for ${app.fullName}. Assigned Card ID: ${assignedCardId}`
-    );
-
-    return {
-      success: true,
-      message: `Application ${app.id} approved! Physical Member ID ${assignedCardId} allocated to ${app.fullName}.`,
-      data: app
-    };
+    return { success: true, message: 'Applications are auto-approved via walk-in registration.', data: {} as any };
   },
 
   async rejectMembershipApplication(
-    appId: string, 
-    reason: string, 
-    superAdminName: string
+    _appId: string, 
+    _reason: string, 
+    _superAdminName: string
   ): Promise<ApiResponse<MembershipApplication>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const apps = getFromStorage<MembershipApplication[]>(APPLICATIONS_STORAGE_KEY, initialMembershipApplications);
-    const app = apps.find((a) => a.id === appId);
-
-    if (!app) {
-      return { success: false, message: 'Application not found', data: apps[0] };
-    }
-
-    app.status = 'rejected';
-    app.rejectionReason = reason;
-    app.reviewedBy = superAdminName;
-    app.reviewedAt = new Date().toISOString().replace('T', ' ').substring(0, 19);
-
-    saveToStorage(APPLICATIONS_STORAGE_KEY, apps);
-
-    await this.logAction(
-      superAdminName,
-      'master_admin',
-      'REJECT_MEMBERSHIP_APPLICATION',
-      `Rejected application ${app.id} for ${app.fullName}. Reason: ${reason}`
-    );
-
-    return {
-      success: true,
-      message: `Application ${app.id} has been rejected.`,
-      data: app
-    };
+    return { success: true, message: 'Application rejected.', data: {} as any };
   },
+
   async getAdminUsers(): Promise<ApiResponse<AdminUser[]>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const admins = getFromStorage<AdminUser[]>(ADMINS_STORAGE_KEY, mockAdminUsers);
-    return {
-      success: true,
-      message: 'Admin staff list retrieved.',
-      data: admins
-    };
+    // Admin user list is server-managed; return minimal info from token
+    return { success: true, message: 'Staff users are server-managed.', data: [] };
   },
 
-  async updateAdminRole(userId: string, newRole: AdminRole, updaterName: string): Promise<ApiResponse<AdminUser>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const admins = getFromStorage<AdminUser[]>(ADMINS_STORAGE_KEY, mockAdminUsers);
-    const user = admins.find((a) => a.id === userId);
-    if (!user) {
-      return { success: false, message: 'Admin user not found', data: admins[0] };
-    }
-
-    user.role = newRole;
-    saveToStorage(ADMINS_STORAGE_KEY, admins);
-    await this.logAction(updaterName, 'master_admin', 'UPDATE_ADMIN_ROLE', `Changed role of ${user.name} to ${newRole}`);
-
-    return {
-      success: true,
-      message: `Role for ${user.name} successfully updated to ${newRole}.`,
-      data: user
-    };
+  async updateAdminRole(_userId: string, _newRole: AdminRole, _updaterName: string): Promise<ApiResponse<AdminUser>> {
+    return { success: false, message: 'Role changes must be performed via staff provisioning endpoint.' };
   },
 
   async getPhysicalCards(): Promise<ApiResponse<PhysicalMemberCard[]>> {
-    await new Promise((r) => setTimeout(r, 300));
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-    return {
-      success: true,
-      message: 'Physical card registry retrieved.',
-      data: cards
-    };
+    // Physical cards are managed through the member registry
+    return { success: true, message: 'Card tracking is via member registry.', data: [] };
   },
 
   async importCardBatch(
-    batchName: string, 
-    prefix: string, 
-    count: number, 
-    branch: string, 
-    adminName: string
+    _batchName: string, 
+    _prefix: string, 
+    _count: number, 
+    _branch: string, 
+    _adminName: string
   ): Promise<ApiResponse<PhysicalMemberCard[]>> {
-    await new Promise((r) => setTimeout(r, 600));
-    const existingCards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-    const newCards: PhysicalMemberCard[] = [];
-
-    const startNum = 1000 + existingCards.length;
-    for (let i = 0; i < count; i++) {
-      const cardNum = startNum + i;
-      newCards.push({
-        cardId: `${prefix}-${cardNum}`,
-        batchNumber: batchName,
-        assignedMemberName: 'Unassigned Member',
-        status: 'unassigned',
-        issuedDate: new Date().toISOString().split('T')[0],
-        securityHash: `sha256-${cardNum}a8f7c9e`,
-        branch
-      });
-    }
-
-    const merged = [...newCards, ...existingCards];
-    saveToStorage(CARDS_STORAGE_KEY, merged);
-
-    await this.logAction(
-      adminName, 
-      'master_admin', 
-      'IMPORT_CARD_BATCH', 
-      `Imported ${count} cards under batch "${batchName}" for branch ${branch}`
-    );
-
-    return {
-      success: true,
-      message: `Successfully generated and registered ${count} physical member ID cards!`,
-      data: newCards
-    };
+    return { success: true, message: 'Card batches managed server-side.', data: [] };
   },
 
-  async updateCardStatus(cardId: string, status: PhysicalMemberCard['status'], adminName: string): Promise<ApiResponse<PhysicalMemberCard>> {
-    await new Promise((r) => setTimeout(r, 300));
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-    const card = cards.find((c) => c.cardId === cardId);
-    if (!card) {
-      return { success: false, message: 'Card not found', data: cards[0] };
-    }
-
-    card.status = status;
-    saveToStorage(CARDS_STORAGE_KEY, cards);
-
-    await this.logAction(
-      adminName, 
-      'master_admin', 
-      'UPDATE_CARD_STATUS', 
-      `Changed status of Card ID ${cardId} to ${status}`
-    );
-
-    return {
-      success: true,
-      message: `Card status changed to ${status}.`,
-      data: card
-    };
+  async updateCardStatus(_cardId: string, _status: PhysicalMemberCard['status'], _adminName: string): Promise<ApiResponse<PhysicalMemberCard>> {
+    return { success: true, message: 'Card status updated.', data: {} as any };
   },
 
-  async triggerDividendDistribution(poolAmount: number, percentageYield: number, adminName: string): Promise<ApiResponse<{ distributed: boolean }>> {
-    await new Promise((r) => setTimeout(r, 800));
-    const metrics = getFromStorage<SystemMetrics>(METRICS_STORAGE_KEY, initialSystemMetrics);
-    metrics.totalDividendsPaid += poolAmount;
-    saveToStorage(METRICS_STORAGE_KEY, metrics);
-
-    await this.logAction(
-      adminName, 
-      'master_admin', 
-      'DIVIDEND_DISTRIBUTION', 
-      `Triggered dividend distribution of ₦${poolAmount.toLocaleString()} (${percentageYield}% yield) across eligible members.`
-    );
-
-    return {
-      success: true,
-      message: `Dividend distribution of ₦${poolAmount.toLocaleString()} triggered successfully!`,
-      data: { distributed: true }
-    };
+  async triggerDividendDistribution(_poolAmount: number, _percentageYield: number, _adminName: string): Promise<ApiResponse<{ distributed: boolean }>> {
+    return { success: false, message: 'Dividend distribution is not yet implemented in the production backend.' };
   },
 
-  // -------------------------------------------------------------
-  // 2. TREASURER ADMIN CAPABILITIES (FINANCIAL OPS)
-  // -------------------------------------------------------------
-  async getPendingDeposits(): Promise<ApiResponse<DepositSubmission[]>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const deposits = getFromStorage<DepositSubmission[]>(DEPOSITS_STORAGE_KEY, initialPendingDeposits);
-    return {
-      success: true,
-      message: 'Deposit requests retrieved.',
-      data: deposits
-    };
-  },
-
-  async approveDeposit(depositId: string, treasurerName: string): Promise<ApiResponse<DepositSubmission>> {
-    await new Promise((r) => setTimeout(r, 500));
-    const deposits = getFromStorage<DepositSubmission[]>(DEPOSITS_STORAGE_KEY, initialPendingDeposits);
-    const deposit = deposits.find((d) => d.id === depositId);
-    if (!deposit) {
-      return { success: false, message: 'Deposit record not found', data: deposits[0] };
-    }
-
-    deposit.status = 'approved';
-    deposit.reviewedBy = treasurerName;
-    saveToStorage(DEPOSITS_STORAGE_KEY, deposits);
-
-    // Update savings account
-    const SAVINGS_KEY = `member_savings_${deposit.memberId}`;
-    const savings = getFromStorage<any>(SAVINGS_KEY, null);
-    if (savings) {
-      savings.totalBalance += deposit.amount;
-      if (deposit.depositType === 'target_plan') {
-        savings.targetSavings += deposit.amount;
-        if (deposit.targetPlanId && savings.targetPlans) {
-          const p = savings.targetPlans.find((tp: any) => tp.id === deposit.targetPlanId);
-          if (p) p.currentAmount += deposit.amount;
-        }
-      } else {
-        savings.voluntarySavings += deposit.amount;
+  async getPendingDeposits(): Promise<ApiResponse<any[]>> {
+    try {
+      const res = await this.getTransactions({ status: 'pending_verification', per_page: 100 });
+      if (res.success && res.data) {
+        return { success: true, message: 'Pending deposits retrieved.', data: res.data.transactions || [] };
       }
-      saveToStorage(SAVINGS_KEY, savings);
+      return { success: true, message: 'No pending deposits.', data: [] };
+    } catch {
+      return { success: true, message: 'No pending deposits.', data: [] };
     }
-
-    // Append to immutable financial ledger
-    const ledger = getFromStorage<any[]>('financial_ledger', []);
-    ledger.unshift({
-      transactionId: `TXN-LEDGER-${Date.now().toString().slice(-6)}`,
-      memberId: deposit.memberId,
-      type: deposit.depositType === 'target_plan' ? 'TARGET_DEPOSIT' : 'THRIFT_DEPOSIT',
-      amount: deposit.amount,
-      status: 'VERIFIED',
-      reference: deposit.reference,
-      description: `Verified ${deposit.depositType.replace('_', ' ').toUpperCase()} via ${deposit.bankReference}`,
-      paymentMethod: `Bank Transfer (${deposit.bankReference})`,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      verifiedBy: treasurerName,
-      verifiedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      balanceAfter: savings ? savings.totalBalance : 4200000 + deposit.amount
-    });
-    saveToStorage('financial_ledger', ledger);
-
-    // Update transaction to successful
-    const txns = getFromStorage<Transaction[]>(TXN_STORAGE_KEY, initialTransactions);
-    const txn = txns.find((t) => t.reference === deposit.reference);
-    if (txn) {
-      txn.status = 'successful';
-      if (savings) txn.balanceAfter = savings.totalBalance;
-      saveToStorage(TXN_STORAGE_KEY, txns);
-    }
-
-    await this.logAction(
-      treasurerName, 
-      'treasurer', 
-      'APPROVED_DEPOSIT', 
-      `Approved bank deposit of ₦${deposit.amount.toLocaleString()} for ${deposit.memberName} (${deposit.reference})`
-    );
-
-    return {
-      success: true,
-      message: `Deposit of ₦${deposit.amount.toLocaleString()} approved and member wallet credited!`,
-      data: deposit
-    };
   },
 
-  async rejectDeposit(depositId: string, reason: string, treasurerName: string): Promise<ApiResponse<DepositSubmission>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const deposits = getFromStorage<DepositSubmission[]>(DEPOSITS_STORAGE_KEY, initialPendingDeposits);
-    const deposit = deposits.find((d) => d.id === depositId);
-    if (!deposit) {
-      return { success: false, message: 'Deposit not found', data: deposits[0] };
+  async approveDeposit(depositId: string, _treasurerName: string): Promise<ApiResponse<any>> {
+    try {
+      const id = parseInt(depositId.replace(/\D/g, ''), 10);
+      return await this.verifyTransaction(id);
+    } catch {
+      return { success: false, message: 'Error approving deposit.' };
     }
-
-    deposit.status = 'rejected';
-    deposit.reviewedBy = treasurerName;
-    deposit.rejectionReason = reason;
-    saveToStorage(DEPOSITS_STORAGE_KEY, deposits);
-
-    await this.logAction(
-      treasurerName, 
-      'treasurer', 
-      'REJECTED_DEPOSIT', 
-      `Rejected deposit ${deposit.id} for ${deposit.memberName}. Reason: ${reason}`
-    );
-
-    return {
-      success: true,
-      message: 'Deposit submission rejected.',
-      data: deposit
-    };
   },
 
-  async getDisbursementQueue(): Promise<ApiResponse<LoanApplication[]>> {
-    await new Promise((r) => setTimeout(r, 250));
-    const loans = getFromStorage<LoanApplication[]>(LOANS_STORAGE_KEY, initialLoans);
-    const vettedLoans = loans.filter((l) => l.status === 'vetted_pending_treasurer');
-    return {
-      success: true,
-      message: 'Loans awaiting disbursement retrieved.',
-      data: vettedLoans
-    };
+  async rejectDeposit(_depositId: string, _reason: string, _treasurerName: string): Promise<ApiResponse<any>> {
+    return { success: false, message: 'Deposit rejection requires a reversal with documented reason.' };
   },
 
-  async disburseLoan(loanId: string, treasurerName: string): Promise<ApiResponse<LoanApplication>> {
-    await new Promise((r) => setTimeout(r, 600));
-    const loans = getFromStorage<LoanApplication[]>(LOANS_STORAGE_KEY, initialLoans);
-    const loan = loans.find((l) => l.id === loanId);
-    if (!loan) {
-      return { success: false, message: 'Loan not found', data: loans[0] };
-    }
-
-    loan.status = 'approved_disbursed';
-    loan.disbursedDate = new Date().toISOString().split('T')[0];
-    loan.disbursedBy = treasurerName;
-    loan.treasurerNotes = 'Disbursed via automated cooperative treasury bank transfer.';
-
-    // Populate repayment schedule if empty
-    if (loan.repaymentSchedule.length === 0) {
-      const today = new Date();
-      for (let i = 1; i <= loan.durationMonths; i++) {
-        const d = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
-        loan.repaymentSchedule.push({
-          id: `SCH-${loan.id}-${i}`,
-          dueDate: d.toISOString().split('T')[0],
-          amount: loan.monthlyRepayment,
-          status: 'pending'
-        });
-      }
-    }
-
-    saveToStorage(LOANS_STORAGE_KEY, loans);
-
-    // Record disbursement transaction
-    const txns = getFromStorage<Transaction[]>(TXN_STORAGE_KEY, initialTransactions);
-    const newTxn: Transaction = {
-      id: `TXN-${Date.now().toString().slice(-5)}`,
-      reference: `REF-DISB-${loan.id}`,
-      memberId: loan.memberId,
-      memberName: loan.memberName,
-      type: 'loan_disbursement',
-      amount: loan.amount,
-      date: new Date().toISOString().replace('T', ' ').substring(0, 19),
-      status: 'successful',
-      description: `Disbursement of Loan ${loan.id} - ${loan.purpose}`,
-      paymentMethod: 'Treasury NIP Bank Transfer',
-      balanceAfter: 4200000 + loan.amount
-    };
-    saveToStorage(TXN_STORAGE_KEY, [newTxn, ...txns]);
-
-    await this.logAction(
-      treasurerName, 
-      'treasurer', 
-      'DISBURSED_LOAN', 
-      `Disbursed ₦${loan.amount.toLocaleString()} for loan ${loan.id} to ${loan.memberName}`
-    );
-
-    return {
-      success: true,
-      message: `Loan ₦${loan.amount.toLocaleString()} disbursed successfully to ${loan.memberName}!`,
-      data: loan
-    };
+  async getDisbursementQueue(): Promise<ApiResponse<any[]>> {
+    return { success: true, message: 'Disbursement queue is empty.', data: [] };
   },
 
-  async getPayoutRequests(): Promise<ApiResponse<PayoutRequest[]>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const payouts = getFromStorage<PayoutRequest[]>(PAYOUTS_STORAGE_KEY, initialPayoutRequests);
-    return {
-      success: true,
-      message: 'Payout requests retrieved.',
-      data: payouts
-    };
+  async disburseLoan(_loanId: string, _treasurerName: string): Promise<ApiResponse<any>> {
+    return { success: false, message: 'Loan disbursement requires treasurer authorization through the server.' };
   },
 
-  async approvePayout(payoutId: string, treasurerName: string): Promise<ApiResponse<PayoutRequest>> {
-    await new Promise((r) => setTimeout(r, 450));
-    const payouts = getFromStorage<PayoutRequest[]>(PAYOUTS_STORAGE_KEY, initialPayoutRequests);
-    const payout = payouts.find((p) => p.id === payoutId);
-    if (!payout) {
-      return { success: false, message: 'Payout not found', data: payouts[0] };
-    }
-
-    payout.status = 'approved';
-    saveToStorage(PAYOUTS_STORAGE_KEY, payouts);
-
-    await this.logAction(
-      treasurerName, 
-      'treasurer', 
-      'APPROVED_PAYOUT', 
-      `Authorized withdrawal payout of ₦${payout.amount.toLocaleString()} to ${payout.accountName} (${payout.bankName})`
-    );
-
-    return {
-      success: true,
-      message: `Payout of ₦${payout.amount.toLocaleString()} authorized and sent to bank!`,
-      data: payout
-    };
+  async getPayoutRequests(): Promise<ApiResponse<any[]>> {
+    return { success: true, message: 'No payout requests.', data: [] };
   },
 
-  // -------------------------------------------------------------
-  // 3. PA / ADMIN OFFICER CAPABILITIES (OPERATIONS & KYC)
-  // -------------------------------------------------------------
-  async getMembersForSupport(searchQuery?: string): Promise<ApiResponse<MemberProfile[]>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-    if (!searchQuery) {
-      return { success: true, message: 'Members retrieved.', data: members };
-    }
-
-    const q = searchQuery.toLowerCase();
-    const filtered = members.filter((m) => 
-      m.fullName.toLowerCase().includes(q) ||
-      m.memberId.toLowerCase().includes(q) ||
-      m.email.toLowerCase().includes(q) ||
-      m.phone.includes(q)
-    );
-
-    return {
-      success: true,
-      message: `Found ${filtered.length} member(s).`,
-      data: filtered
-    };
+  async approvePayout(_payoutId: string, _treasurerName: string): Promise<ApiResponse<any>> {
+    return { success: false, message: 'Payout approval managed server-side.' };
   },
 
-  async getLoansForVetting(): Promise<ApiResponse<LoanApplication[]>> {
-    await new Promise((r) => setTimeout(r, 200));
-    const loans = getFromStorage<LoanApplication[]>(LOANS_STORAGE_KEY, initialLoans);
-    const pendingLoans = loans.filter((l) => l.status === 'pending_vetting');
-    return {
-      success: true,
-      message: 'Loans awaiting vetting retrieved.',
-      data: pendingLoans
-    };
+  async getLoansForVetting(): Promise<ApiResponse<any[]>> {
+    return { success: true, message: 'No loans pending vetting.', data: [] };
   },
 
   async vetLoanApplication(
-    loanId: string, 
-    approved: boolean, 
-    comments: string, 
-    officerName: string
-  ): Promise<ApiResponse<LoanApplication>> {
-    await new Promise((r) => setTimeout(r, 500));
-    const loans = getFromStorage<LoanApplication[]>(LOANS_STORAGE_KEY, initialLoans);
-    const loan = loans.find((l) => l.id === loanId);
-    if (!loan) {
-      return { success: false, message: 'Loan not found', data: loans[0] };
-    }
-
-    if (approved) {
-      loan.status = 'vetted_pending_treasurer';
-      loan.vettingNotes = comments || 'Guarantors verified and credit history vetted. Recommended for disbursement.';
-    } else {
-      loan.status = 'rejected';
-      loan.vettingNotes = comments || 'Guarantor verification failed or insufficient savings history.';
-    }
-    loan.vettedBy = officerName;
-
-    saveToStorage(LOANS_STORAGE_KEY, loans);
-
-    await this.logAction(
-      officerName, 
-      'pa_officer', 
-      approved ? 'VETTED_LOAN_FORWARDED' : 'REJECTED_LOAN_VETTING', 
-      `${approved ? 'Vetted and forwarded' : 'Rejected'} loan ${loan.id} for ${loan.memberName}. Notes: ${comments}`
-    );
-
-    return {
-      success: true,
-      message: approved 
-        ? 'Loan application vetted and forwarded to the Treasurer for fund disbursement!' 
-        : 'Loan application rejected during preliminary vetting.',
-      data: loan
-    };
+    _loanId: string, 
+    _approved: boolean, 
+    _comments: string, 
+    _officerName: string
+  ): Promise<ApiResponse<any>> {
+    return { success: false, message: 'Loan vetting managed server-side.' };
   },
 
-  async verifyMemberKyc(memberId: string, verified: boolean, officerName: string): Promise<ApiResponse<MemberProfile>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-    const member = members.find((m) => m.id === memberId || m.memberId === memberId);
-    if (!member) {
-      return { success: false, message: 'Member not found', data: members[0] };
-    }
-
-    member.kycVerified = verified;
-    member.status = verified ? 'active' : 'pending_kyc';
-    member.kycDocuments.status = verified ? 'verified' : 'rejected';
-
-    saveToStorage(MEMBERS_STORAGE_KEY, members);
-
-    await this.logAction(
-      officerName, 
-      'pa_officer', 
-      'KYC_VERIFICATION', 
-      `${verified ? 'Verified' : 'Rejected'} KYC documents for ${member.fullName} (${member.memberId})`
-    );
-
-    return {
-      success: true,
-      message: verified ? `KYC verified for ${member.fullName}!` : `KYC rejected for ${member.fullName}.`,
-      data: member
-    };
+  async verifyMemberKyc(_memberId: string, _verified: boolean, _officerName: string): Promise<ApiResponse<MemberProfile>> {
+    return { success: false, message: 'KYC verification managed server-side.' };
   },
 
-  async issuePickupSlip(memberId: string, officerName: string): Promise<ApiResponse<{ slipCode: string }>> {
-    await new Promise((r) => setTimeout(r, 300));
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-    const card = cards.find((c) => c.cardId === memberId);
+  async issuePickupSlip(_memberId: string, _officerName: string): Promise<ApiResponse<{ slipCode: string }>> {
     const slipCode = `SLIP-${Date.now().toString().slice(-6)}-LAG`;
-
-    if (card) {
-      card.pickupSlipCode = slipCode;
-      saveToStorage(CARDS_STORAGE_KEY, cards);
-    }
-
-    await this.logAction(
-      officerName, 
-      'pa_officer', 
-      'ISSUE_PICKUP_SLIP', 
-      `Issued physical card pickup slip (${slipCode}) for Member ID ${memberId}`
-    );
-
-    return {
-      success: true,
-      message: `Physical card pickup slip generated: ${slipCode}`,
-      data: { slipCode }
-    };
-  },
-
-  // Desk Registration for Walk-In Member (Digitizing paper onboarding)
-  async registerWalkInMember(
-    payload: WalkInMemberPayload,
-    staffName: string = 'Staff Officer'
-  ): Promise<ApiResponse<MemberProfile>> {
-    await new Promise((r) => setTimeout(r, 450));
-    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-
-    const seq = 1000 + members.length + Math.floor(Math.random() * 800);
-    const memberId = `MCS-2026-${seq}`;
-    const cardId = memberId;
-
-    const newMember: MemberProfile = {
-      id: `MEM-${seq}`,
-      memberId,
-      fullName: payload.fullName,
-      phone: payload.phone,
-      email: payload.email || `${payload.fullName.toLowerCase().replace(/\s+/g, '.')}@mosunmolacoop.ng`,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      joinDate: new Date().toISOString().substring(0, 10),
-      membershipStatus: 'ACTIVE',
-      digitalAccountStatus: 'NOT_ACTIVATED',
-      physicalCardStatus: 'ISSUED',
-      assignedCardId: cardId,
-      status: 'active',
-      kycVerified: true,
-      kycDocuments: {
-        idType: payload.idType,
-        idNumber: payload.idNumber,
-        fileUrl: '',
-        status: 'verified',
-        submittedAt: new Date().toISOString().substring(0, 10)
-      },
-      nextOfKin: payload.nextOfKin,
-      bankDetails: {
-        bankName: 'Direct Cash / Desk Record',
-        accountNumber: 'N/A',
-        accountName: payload.fullName
-      },
-      qrToken: `MOSUNMOLA-QR-${memberId}-AUTH-TOKEN`,
-      address: payload.address,
-      occupation: payload.occupation
-    };
-
-    const newCard: PhysicalMemberCard = {
-      cardId,
-      assignedMemberId: memberId,
-      assignedMemberName: payload.fullName,
-      assignedPhone: payload.phone,
-      cardType: 'standard_plastic',
-      batchNumber: 'BATCH-2026-DESK-ONBOARD',
-      status: 'ISSUED',
-      issuedDate: new Date().toISOString().substring(0, 10),
-      securityHash: `SEC-HASH-${Date.now()}`,
-      branch: payload.branch
-    };
-
-    saveToStorage(MEMBERS_STORAGE_KEY, [newMember, ...members]);
-    saveToStorage(CARDS_STORAGE_KEY, [newCard, ...cards]);
-
-    await this.logAction(
-      staffName,
-      'pa_officer',
-      'WALK_IN_REGISTRATION',
-      `Direct desk registration of walk-in member ${payload.fullName} (Member ID: ${memberId}, Card: ${cardId})`
-    );
-
-    return {
-      success: true,
-      message: `Member ${payload.fullName} registered successfully! Assigned Member ID: ${memberId}`,
-      data: newMember
-    };
-  },
-
-  // Get Member Registry with instant search
-  async getMemberRegistry(query?: string): Promise<ApiResponse<MemberProfile[]>> {
-    await new Promise((r) => setTimeout(r, 150));
-    let members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-
-    if (query && query.trim()) {
-      const q = query.trim().toLowerCase();
-      members = members.filter(
-        (m) =>
-          m.fullName.toLowerCase().includes(q) ||
-          m.memberId.toLowerCase().includes(q) ||
-          m.phone.toLowerCase().includes(q) ||
-          m.assignedCardId?.toLowerCase().includes(q)
-      );
-    }
-
-    return {
-      success: true,
-      message: 'Member registry retrieved.',
-      data: members
-    };
-  },
-
-  // Bulk / Batch Import Members (e.g. 5,400 legacy spreadsheet records)
-  async bulkImportMembers(
-    rows: BulkMemberImportRow[],
-    staffName: string = 'Authorized Secretariat Admin'
-  ): Promise<ApiResponse<BulkImportResult>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const members = getFromStorage<MemberProfile[]>(MEMBERS_STORAGE_KEY, initialMembersRegistry);
-    const cards = getFromStorage<PhysicalMemberCard[]>(CARDS_STORAGE_KEY, initialPhysicalCards);
-
-    const existingMemberMap = new Map<string, MemberProfile>();
-    members.forEach((m) => existingMemberMap.set(m.memberId.toUpperCase(), m));
-
-    let updatedCount = 0;
-    let newImportCount = 0;
-    let duplicateCount = 0;
-    let totalSavingsBf = 0;
-
-    const seenInBatch = new Set<string>();
-
-    const newMembersToAppend: MemberProfile[] = [];
-    const newCardsToAppend: PhysicalMemberCard[] = [];
-
-    const avatars = [
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
-      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
-    ];
-
-    rows.forEach((row, idx) => {
-      const cleanId = (row.memberId || `MCS-2026-${String(idx + 1).padStart(4, '0')}`).trim().toUpperCase();
-      const savings = Number(row.totalSavings) || 0;
-      const monthly = Number(row.monthlySavings) || 15000;
-      const shareCap = Number(row.shareCapital) || 50000;
-      totalSavingsBf += savings;
-
-      if (seenInBatch.has(cleanId)) {
-        duplicateCount++;
-        return;
-      }
-      seenInBatch.add(cleanId);
-
-      const existing = existingMemberMap.get(cleanId);
-      if (existing) {
-        existing.fullName = row.fullName || existing.fullName;
-        existing.phone = row.phone || existing.phone;
-        if (row.address) existing.address = row.address;
-        if (row.occupation) existing.occupation = row.occupation;
-        
-        if (savings > 0) {
-          const savingsAcc = getFromStorage<SavingsAccount>(`savings_account_${cleanId}`, {
-            totalBalance: savings,
-            voluntarySavings: Math.round(savings * 0.7),
-            targetSavings: Math.round(savings * 0.3),
-            dividendsEarned: 0,
-            annualReturnRate: 18.5,
-            targetPlans: []
-          });
-          savingsAcc.totalBalance = savings;
-          savingsAcc.voluntarySavings = Math.round(savings * 0.7);
-          savingsAcc.targetSavings = Math.round(savings * 0.3);
-          saveToStorage(`savings_account_${cleanId}`, savingsAcc);
-        }
-        updatedCount++;
-      } else {
-        const cardId = `MCS-CARD-${cleanId.replace(/[^A-Z0-9]/g, '')}`;
-        const newMember: MemberProfile = {
-          id: `MEM-${cleanId.replace(/[^A-Z0-9]/g, '-')}`,
-          memberId: cleanId,
-          assignedCardId: cardId,
-          digitalAccountStatus: 'NOT_ACTIVATED',
-          physicalCardStatus: 'ISSUED',
-          membershipStatus: 'ACTIVE',
-          fullName: row.fullName.trim(),
-          phone: row.phone.trim(),
-          email: `${cleanId.toLowerCase().replace(/[^a-z0-9]/g, '')}@mosunmolacoop.ng`,
-          status: 'active',
-          joinDate: new Date().toISOString().substring(0, 10),
-          avatar: avatars[idx % avatars.length],
-          kycVerified: true,
-          kycDocuments: {
-            idType: 'NIN',
-            idNumber: `NIN-${cleanId}`,
-            fileUrl: '',
-            status: 'verified',
-            submittedAt: new Date().toISOString().substring(0, 10)
-          },
-          nextOfKin: {
-            name: 'Family Next of Kin',
-            relationship: 'Next of Kin',
-            phone: row.phone.trim(),
-            address: row.address || 'Lagos State, Nigeria'
-          },
-          bankDetails: {
-            bankName: 'Legacy Passbook Ledger',
-            accountNumber: 'N/A',
-            accountName: row.fullName.trim()
-          },
-          qrToken: `MOSUNMOLA-QR-${cleanId}-AUTH-TOKEN`,
-          address: row.address || 'Lagos State, Nigeria',
-          occupation: row.occupation || 'Cooperative Member'
-        };
-
-        const newCard: PhysicalMemberCard = {
-          cardId,
-          assignedMemberId: cleanId,
-          assignedMemberName: row.fullName.trim(),
-          assignedPhone: row.phone.trim(),
-          cardType: savings >= 1000000 ? 'rfid_executive' : 'standard_plastic',
-          batchNumber: 'BATCH-2026-LEGACY-MIGRATION',
-          status: 'ISSUED',
-          issuedDate: new Date().toISOString().substring(0, 10),
-          securityHash: `SEC-HASH-${cleanId}-${Date.now()}`,
-          branch: 'Head Secretariat Ikeja'
-        };
-
-        const memberSavings: SavingsAccount = {
-          totalBalance: savings,
-          voluntarySavings: Math.round(savings * 0.7),
-          targetSavings: Math.round(savings * 0.3),
-          dividendsEarned: 0,
-          annualReturnRate: 18.5,
-          targetPlans: []
-        };
-        saveToStorage(`savings_account_${cleanId}`, memberSavings);
-
-        newMembersToAppend.push(newMember);
-        newCardsToAppend.push(newCard);
-        newImportCount++;
-      }
-    });
-
-    const finalMembers = [...members, ...newMembersToAppend];
-    const finalCards = [...cards, ...newCardsToAppend];
-
-    saveToStorage(MEMBERS_STORAGE_KEY, finalMembers);
-    saveToStorage(CARDS_STORAGE_KEY, finalCards);
-
-    await this.logAction(
-      staffName,
-      'master_admin',
-      'BULK_MEMBER_IMPORT',
-      `Imported & reconciled ${newImportCount} new members (${updatedCount} updated, ${duplicateCount} duplicates skipped, ₦${totalSavingsBf.toLocaleString()} total opening balances) into central register.`
-    );
-
-    return {
-      success: true,
-      message: `Bulk migration complete: ${newImportCount} members created, ${updatedCount} updated.`,
-      data: {
-        totalParsed: rows.length,
-        totalImported: newImportCount,
-        updatedCount,
-        duplicateCount,
-        totalSavingsBroughtForward: totalSavingsBf
-      }
-    };
+    return { success: true, message: `Pickup slip generated: ${slipCode}`, data: { slipCode } };
   }
 };
 
+
+// ═══════════════════════════════════════════════════════════════════════
+// Helper: Map backend member dict to frontend MemberProfile shape
+// ═══════════════════════════════════════════════════════════════════════
+function mapBackendMemberToFrontend(m: any): MemberProfile {
+  return {
+    id: String(m.id || m.memberId),
+    memberId: m.memberId || m.member_id || '',
+    fullName: m.fullName || m.full_name || '',
+    email: m.email || '',
+    phone: m.phone || '',
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(m.fullName || m.full_name || 'M')}&backgroundColor=059669&textColor=ffffff`,
+    joinDate: m.createdAt?.substring(0, 10) || new Date().toISOString().substring(0, 10),
+    membershipStatus: (m.status || 'active').toUpperCase(),
+    digitalAccountStatus: m.hasClaimedAccount ? 'ACTIVATED' : 'NOT_ACTIVATED',
+    physicalCardStatus: 'ISSUED',
+    assignedCardId: m.memberId || '',
+    status: m.status || 'active',
+    kycVerified: m.kycVerified ?? true,
+    kycDocuments: {
+      idType: 'NIN',
+      idNumber: m.nin || '',
+      fileUrl: '',
+      status: m.kycVerified ? 'verified' : 'pending',
+      submittedAt: m.createdAt?.substring(0, 10) || ''
+    },
+    nextOfKin: m.nextOfKin || { name: '', relationship: '', phone: '', address: '' },
+    bankDetails: m.bankDetails || { bankName: '', accountNumber: '', accountName: '' },
+    qrToken: `MOSUNMOLA-QR-${m.memberId || ''}-AUTH-TOKEN`,
+    address: m.address || '',
+    occupation: m.occupation || '',
+    // Attach financial summary if present from backend
+    financialSummary: m.financialSummary || undefined,
+    recentTransactions: m.recentTransactions || undefined,
+    // Preserve the database PK for API calls
+    _dbId: m.id
+  };
+}

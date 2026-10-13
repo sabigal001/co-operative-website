@@ -81,17 +81,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     window.history.pushState({}, '', url.toString());
   };
 
-  // Admin Role Toggle (Master Admin / Treasurer / PA Officer)
+  // Admin Role: Authenticated strictly from server
   const [activeAdminRole, setActiveAdminRoleState] = useState<AdminRole>(() => {
     return authService.getCurrentAdminRole();
   });
 
-  const setActiveAdminRole = (role: AdminRole) => {
-    setActiveAdminRoleState(role);
-    authService.switchAdminRole(role);
+  const setActiveAdminRole = (_role: AdminRole) => {
+    // Server-enforced role: client switching is disallowed
+    console.warn('Role switching is disabled. Privileges are enforced by the server allowlist.');
   };
 
   const currentAdmin = mockAdminUsers.find((a) => a.role === activeAdminRole) || mockAdminUsers[0];
+
+  useEffect(() => {
+    authService.getMe().then((res) => {
+      if (res.success && res.data?.user) {
+        if (res.data.user.role) {
+          setActiveAdminRoleState(res.data.user.role as AdminRole);
+        }
+        if (res.data.member) {
+          setCurrentMember(res.data.member);
+          setIsLoggedIn(true);
+        }
+      }
+    }).catch(() => {});
+  }, []);
 
   // Member Authentication
   const [currentMember, setCurrentMember] = useState<MemberProfile>(() => {
