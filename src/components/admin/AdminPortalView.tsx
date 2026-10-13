@@ -17,6 +17,18 @@ export const AdminPortalView: React.FC = () => {
     });
   }, [dataVersion]);
 
+  // Safely render workspace by role, with MasterAdminView as the robust default
+  const renderRoleWorkspace = () => {
+    if (activeAdminRole === 'treasurer') {
+      return <TreasurerView />;
+    }
+    if (activeAdminRole === 'pa_officer') {
+      return <PaOfficerView />;
+    }
+    // Default for master_admin, secretary, super_admin, staff, or fallback
+    return <MasterAdminView metrics={metrics} />;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 pb-20 transition-colors duration-300">
       {/* Admin Identity & Metrics Header */}
@@ -25,9 +37,7 @@ export const AdminPortalView: React.FC = () => {
       {/* Main Dynamic Workspace by Role */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="animate-slide-up">
-          {activeAdminRole === 'master_admin' && <MasterAdminView metrics={metrics} />}
-          {activeAdminRole === 'treasurer' && <TreasurerView />}
-          {activeAdminRole === 'pa_officer' && <PaOfficerView />}
+          {renderRoleWorkspace()}
         </div>
       </div>
     </div>

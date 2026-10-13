@@ -19,6 +19,18 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
       badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40',
       icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
     },
+    super_admin: {
+      title: 'Master Administrator',
+      badge: 'Master Admin • System Oversight',
+      badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40',
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+    },
+    admin: {
+      title: 'Master Administrator',
+      badge: 'Admin • Operations & Secretariat',
+      badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40',
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+    },
     treasurer: {
       title: 'Cooperative Treasurer',
       badge: 'Treasurer • Financial Operations & Ledger',
@@ -38,10 +50,10 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
       icon: <UserCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
     }
   }[activeAdminRole] || {
-    title: 'Staff Officer',
-    badge: 'Authenticated Staff',
-    badgeStyle: 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700',
-    icon: <Lock className="w-3.5 h-3.5" />
+    title: 'Master Administrator',
+    badge: 'Master Admin • System Oversight',
+    badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40',
+    icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
   };
 
   return (
