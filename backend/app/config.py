@@ -18,12 +18,13 @@ class Config:
     BOOTSTRAP_SECRET = os.environ.get('BOOTSTRAP_SECRET', 'MOSUNMOLA_INIT_BOOTSTRAP_2026')
     
     # Authorised Staff Emails (Environment allowlist)
-    MASTER_ADMIN_EMAIL = os.environ.get('MASTER_ADMIN_EMAIL', 'admin@mosunmolacoop.ng').strip().lower()
+    MASTER_ADMIN_EMAIL = os.environ.get('MASTER_ADMIN_EMAIL', 'bhassannosimot@gmail.com').strip().lower()
     TREASURER_EMAIL = os.environ.get('TREASURER_EMAIL', 'treasurer@mosunmolacoop.ng').strip().lower()
     SECRETARY_EMAIL = os.environ.get('SECRETARY_EMAIL', 'secretary@mosunmolacoop.ng').strip().lower()
 
 class TestConfig(Config):
     TESTING = True
+    MASTER_ADMIN_EMAIL = 'admin@mosunmolacoop.ng'
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SQLALCHEMY_ENGINE_OPTIONS = {
         'poolclass': StaticPool,

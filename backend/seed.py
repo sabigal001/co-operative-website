@@ -14,7 +14,7 @@ def seed_database():
         db.create_all()
 
         # 1. Check if Master Admin exists
-        master_email = app.config.get('MASTER_ADMIN_EMAIL', 'admin@mosunmolacoop.ng')
+        master_email = app.config.get('MASTER_ADMIN_EMAIL', 'bhassannosimot@gmail.com')
         treasurer_email = app.config.get('TREASURER_EMAIL', 'treasurer@mosunmolacoop.ng')
         secretary_email = app.config.get('SECRETARY_EMAIL', 'secretary@mosunmolacoop.ng')
 

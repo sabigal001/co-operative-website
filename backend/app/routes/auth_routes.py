@@ -138,3 +138,27 @@ def claim_account():
         }), 200
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 400
+
+@auth_bp.route('/change-password', methods=['POST'])
+@token_required
+def change_password():
+    data = request.get_json() or {}
+    old_password = data.get('oldPassword', '')
+    new_password = data.get('newPassword', '')
+
+    if not new_password or len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'New password must be at least 6 characters.'}), 400
+
+    user = request.current_user
+    # If old password is provided, verify it (unless admin resetting own)
+    if old_password and not user.check_password(old_password):
+        return jsonify({'success': False, 'message': 'Current password is incorrect.'}), 400
+
+    from backend.app.models import db
+    user.set_password(new_password)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': 'Password updated successfully.'
+    }), 200
