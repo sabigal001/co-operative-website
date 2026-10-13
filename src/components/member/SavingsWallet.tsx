@@ -214,62 +214,6 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
         </div>
       </div>
 
-      {/* Target Savings Goals (Read-Only) */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
-            Target Savings & Thrift Goals
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Disciplined contributions locked towards designated asset acquisitions.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {savings.targetPlans.map((plan) => {
-            const percent = Math.min(100, Math.round((plan.currentAmount / plan.targetAmount) * 100));
-            return (
-              <div
-                key={plan.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                      {plan.category}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      {percent}%
-                    </span>
-                  </div>
-
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug">
-                    {plan.title}
-                  </h4>
-                </div>
-
-                <div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-2">
-                    <div
-                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs font-mono">
-                    <span className="text-slate-500 dark:text-slate-400">
-                      ₦{plan.currentAmount.toLocaleString()}
-                    </span>
-                    <span className="font-bold text-slate-900 dark:text-white">
-                      Target: ₦{plan.targetAmount.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* SAVINGS PASSBOOK STATEMENT LIST */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">

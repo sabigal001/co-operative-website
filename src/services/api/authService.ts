@@ -55,6 +55,21 @@ export const authService = {
     return res;
   },
 
+  // Bootstrap Master Admin (first-time setup)
+  async bootstrapMasterAdmin(
+    email: string,
+    password: string,
+    fullName: string,
+    bootstrapSecret: string
+  ): Promise<ApiResponse<any>> {
+    return apiClient.post<any>('/auth/bootstrap', {
+      email,
+      password,
+      fullName,
+      bootstrapSecret
+    });
+  },
+
   // Get current authenticated user profile from backend
   async getMe(): Promise<ApiResponse<{ user: any; member?: any }>> {
     return apiClient.get<{ user: any; member?: any }>('/auth/me');

@@ -169,14 +169,6 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
             Credit facility records, approved amortizations, and verified repayment receipts.
           </p>
         </div>
-
-        <button
-          onClick={() => setShowApplyModal(true)}
-          className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Submit Loan Application</span>
-        </button>
       </div>
 
       {/* Loans List */}
@@ -186,14 +178,8 @@ export const LoanHub: React.FC<LoanHubProps> = ({ member }) => {
             <Coins className="w-12 h-12 text-slate-400 mx-auto" />
             <h3 className="font-bold text-slate-900 dark:text-white text-base">No Active Loans Found</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-              As an active member with verified physical card ID, you are eligible for up to ₦5,000,000 credit at 5% flat interest.
+              Any loan facility approved and disbursed by the Secretariat will appear here automatically.
             </p>
-            <button
-              onClick={() => setShowApplyModal(true)}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm"
-            >
-              Apply for Loan
-            </button>
           </div>
         ) : (
           loans.map((loan) => {

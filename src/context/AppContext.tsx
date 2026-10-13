@@ -22,6 +22,11 @@ interface AppContextType {
   loginMember: (member: MemberProfile) => void;
   logoutMember: () => void;
 
+  // Admin Authentication
+  isAdminLoggedIn: boolean;
+  loginAdmin: (admin: AdminUser) => void;
+  logoutAdmin: () => void;
+
   // Registration & Card Verification Modal
   isRegisterModalOpen: boolean;
   openRegisterModal: (prefillCardId?: string) => void;
@@ -91,20 +96,75 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     console.warn('Role switching is disabled. Privileges are enforced by the server allowlist.');
   };
 
-  const currentAdmin = mockAdminUsers.find((a) => a.role === activeAdminRole) || mockAdminUsers[0];
+  const [currentAdminState, setCurrentAdminState] = useState<AdminUser>(
+    mockAdminUsers.find((a) => a.role === activeAdminRole) || mockAdminUsers[0]
+  );
+  const currentAdmin = currentAdminState;
+
+  // Admin Authentication State
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
+    try {
+      const token = localStorage.getItem('mosunmola_auth_token');
+      const adminFlag = localStorage.getItem('mosunmola_admin_logged_in');
+      return !!token && adminFlag === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const loginAdmin = (admin: AdminUser) => {
+    setCurrentAdminState(admin);
+    setActiveAdminRoleState(admin.role);
+    setIsAdminLoggedIn(true);
+    try {
+      localStorage.setItem('mosunmola_admin_logged_in', 'true');
+      localStorage.setItem('current_admin_role', admin.role);
+    } catch {}
+  };
+
+  const logoutAdmin = async () => {
+    setIsAdminLoggedIn(false);
+    try {
+      localStorage.removeItem('mosunmola_admin_logged_in');
+      localStorage.removeItem('current_admin_role');
+      localStorage.removeItem('mosunmola_auth_token');
+    } catch {}
+    try {
+      await authService.logout();
+    } catch {}
+    showToast('You have been securely signed out of the admin console.', 'info');
+  };
 
   useEffect(() => {
+    const token = localStorage.getItem('mosunmola_auth_token');
+    if (!token) return;
     authService.getMe().then((res) => {
       if (res.success && res.data?.user) {
-        if (res.data.user.role) {
-          setActiveAdminRoleState(res.data.user.role as AdminRole);
+        const u = res.data.user;
+        if (u.role) {
+          setActiveAdminRoleState(u.role as AdminRole);
+          setCurrentAdminState(prev => ({
+            ...prev,
+            id: u.id?.toString() || prev.id,
+            name: u.fullName || u.full_name || prev.name,
+            email: u.email || prev.email,
+            role: u.role || prev.role
+          }));
+          setIsAdminLoggedIn(true);
+          try { localStorage.setItem('mosunmola_admin_logged_in', 'true'); } catch {}
         }
         if (res.data.member) {
           setCurrentMember(res.data.member);
           setIsLoggedIn(true);
         }
+      } else {
+        // Token invalid/expired — clear admin session
+        setIsAdminLoggedIn(false);
+        try { localStorage.removeItem('mosunmola_admin_logged_in'); } catch {}
       }
-    }).catch(() => {});
+    }).catch(() => {
+      // Network error — keep existing state
+    });
   }, []);
 
   // Member Authentication
@@ -357,6 +417,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isLoggedIn,
         loginMember,
         logoutMember,
+        isAdminLoggedIn,
+        loginAdmin,
+        logoutAdmin,
         isRegisterModalOpen,
         openRegisterModal,
         closeRegisterModal,

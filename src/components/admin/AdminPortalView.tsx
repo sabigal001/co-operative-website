@@ -6,16 +6,23 @@ import { AdminHeader } from './AdminHeader';
 import { MasterAdminView } from './MasterAdminView';
 import { TreasurerView } from './TreasurerView';
 import { PaOfficerView } from './PaOfficerView';
+import { AdminLoginView } from './AdminLoginView';
 
 export const AdminPortalView: React.FC = () => {
-  const { activeAdminRole, dataVersion } = useApp();
+  const { activeAdminRole, dataVersion, isAdminLoggedIn } = useApp();
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
 
   useEffect(() => {
+    if (!isAdminLoggedIn) return;
     adminService.getSystemMetrics().then((res) => {
       if (res.success) setMetrics(res.data);
     });
-  }, [dataVersion]);
+  }, [dataVersion, isAdminLoggedIn]);
+
+  // Gate: Show login if not authenticated
+  if (!isAdminLoggedIn) {
+    return <AdminLoginView />;
+  }
 
   // Safely render workspace by role, with MasterAdminView as the robust default
   const renderRoleWorkspace = () => {

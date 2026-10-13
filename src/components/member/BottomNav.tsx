@@ -1,10 +1,10 @@
 import React from 'react';
-import { CreditCard, PiggyBank, Coins, Building2, User, Clock } from 'lucide-react';
+import { CreditCard, PiggyBank, Coins, User, Clock } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 
 interface BottomNavProps {
-  activeTab: 'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile';
-  setActiveTab: (tab: 'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile') => void;
+  activeTab: 'card' | 'savings' | 'loans' | 'history' | 'profile';
+  setActiveTab: (tab: 'card' | 'savings' | 'loans' | 'history' | 'profile') => void;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab }) => {
@@ -26,12 +26,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
       label: 'Loans', 
       icon: <Coins className="w-5 h-5" />,
       toast: '5% Low-Interest Loan Hub'
-    },
-    { 
-      id: 'assets', 
-      label: 'Assets', 
-      icon: <Building2 className="w-5 h-5" />,
-      toast: 'Real Estate & Agro Co-Ownership'
     },
     { 
       id: 'history', 

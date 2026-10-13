@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { ShieldCheck, Coins, UserCheck, ExternalLink, Lock } from 'lucide-react';
+import { ShieldCheck, Coins, UserCheck, ExternalLink, Lock, LogOut } from 'lucide-react';
 import type { SystemMetrics } from '../../types';
 import { navigateToService } from '../../utils/subdomainRouter';
 import { CurtainPullCord } from '../common/CurtainThemeSwitch';
@@ -10,7 +10,7 @@ interface AdminHeaderProps {
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
-  const { activeAdminRole, currentAdmin, theme } = useApp();
+  const { activeAdminRole, currentAdmin, theme, logoutAdmin } = useApp();
 
   const roleInfo = {
     master_admin: {
@@ -83,6 +83,15 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ metrics }) => {
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Public Website</span>
+            </button>
+
+            <button
+              onClick={logoutAdmin}
+              className="text-xs font-medium text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 flex items-center gap-1.5 transition-colors"
+              title="Sign out of admin console"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign Out</span>
             </button>
 
             <div className="pl-3 border-l border-slate-200 dark:border-slate-800 flex items-center">

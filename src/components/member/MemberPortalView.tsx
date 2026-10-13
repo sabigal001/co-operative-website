@@ -3,7 +3,6 @@ import { useApp } from '../../context/AppContext';
 import { DigitalMemberCard } from './DigitalMemberCard';
 import { SavingsWallet } from './SavingsWallet';
 import { LoanHub } from './LoanHub';
-import { AssetPortfolio } from './AssetPortfolio';
 import { TransactionHistory } from './TransactionHistory';
 import { ProfileSettings } from './ProfileSettings';
 import { BottomNav } from './BottomNav';
@@ -12,7 +11,6 @@ import {
   CreditCard,
   PiggyBank,
   Coins,
-  Building2,
   Clock,
   User,
   ShieldCheck,
@@ -29,7 +27,7 @@ import { triggerHaptic } from '../../utils/haptics';
 export const MemberPortalView: React.FC = () => {
   const { currentMember, logoutMember, openRegisterModal, theme, isLoggedIn, isAppInstalled, openInstallBanner } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'card' | 'savings' | 'loans' | 'assets' | 'history' | 'profile'>('card');
+  const [activeTab, setActiveTab] = useState<'card' | 'savings' | 'loans' | 'history' | 'profile'>('card');
 
   // If unauthenticated, display Member Login View
   if (!isLoggedIn) {
@@ -40,7 +38,6 @@ export const MemberPortalView: React.FC = () => {
     { id: 'card', label: 'Digital ID Pass', icon: <CreditCard className="w-3.5 h-3.5" /> },
     { id: 'savings', label: 'Savings & Goals', icon: <PiggyBank className="w-3.5 h-3.5" /> },
     { id: 'loans', label: 'Loan Hub', icon: <Coins className="w-3.5 h-3.5" /> },
-    { id: 'assets', label: 'Asset Portfolio', icon: <Building2 className="w-3.5 h-3.5" /> },
     { id: 'history', label: 'Transactions', icon: <Clock className="w-3.5 h-3.5" /> },
     { id: 'profile', label: 'Settings', icon: <User className="w-3.5 h-3.5" /> },
   ] as const;
@@ -176,7 +173,6 @@ export const MemberPortalView: React.FC = () => {
           {activeTab === 'card' && <DigitalMemberCard member={currentMember} />}
           {activeTab === 'savings' && <SavingsWallet member={currentMember} />}
           {activeTab === 'loans' && <LoanHub member={currentMember} />}
-          {activeTab === 'assets' && <AssetPortfolio member={currentMember} />}
           {activeTab === 'history' && <TransactionHistory member={currentMember} />}
           {activeTab === 'profile' && <ProfileSettings member={currentMember} />}
         </div>
