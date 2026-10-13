@@ -7,20 +7,21 @@ from backend.app.services.financial_service import FinancialService, naira_to_ko
 admin_transactions_bp = Blueprint('admin_transactions', __name__, url_prefix='/api/admin/transactions')
 
 @admin_transactions_bp.route('', methods=['GET'])
+@admin_transactions_bp.route('/', methods=['GET'])
 @roles_required('master_admin', 'treasurer', 'secretary')
 def list_transactions():
     q = request.args.get('q', '').strip()
-    category = request.args.get('category', '').strip()
-    status = request.args.get('status', '').strip()
+    status_filter = request.args.get('status', '').strip()
     payment_method = request.args.get('paymentMethod', '').strip()
+    category = request.args.get('category', '').strip()
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 50))
 
     query = Transaction.query
     if category:
         query = query.filter_by(category=category)
-    if status:
-        query = query.filter_by(status=status)
+    if status_filter:
+        query = query.filter_by(status=status_filter)
     if payment_method:
         query = query.filter_by(payment_method=payment_method)
     if q:
@@ -45,6 +46,7 @@ def list_transactions():
     }), 200
 
 @admin_transactions_bp.route('', methods=['POST'])
+@admin_transactions_bp.route('/', methods=['POST'])
 @roles_required('master_admin', 'treasurer')
 def record_transaction():
     data = request.get_json() or {}

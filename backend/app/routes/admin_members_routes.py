@@ -7,6 +7,7 @@ from backend.app.services.financial_service import FinancialService
 admin_members_bp = Blueprint('admin_members', __name__, url_prefix='/api/admin/members')
 
 @admin_members_bp.route('', methods=['GET'])
+@admin_members_bp.route('/', methods=['GET'])
 @roles_required('master_admin', 'secretary', 'treasurer')
 def list_members():
     q = request.args.get('q', '').strip()
@@ -46,7 +47,8 @@ def list_members():
     }), 200
 
 @admin_members_bp.route('', methods=['POST'])
-@roles_required('master_admin', 'secretary')
+@admin_members_bp.route('/', methods=['POST'])
+@roles_required('master_admin', 'secretary', 'treasurer')
 def create_member():
     data = request.get_json() or {}
     full_name = data.get('fullName', '').strip()

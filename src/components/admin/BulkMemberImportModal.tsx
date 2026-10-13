@@ -487,7 +487,7 @@ export const BulkMemberImportModal: React.FC<BulkMemberImportModalProps> = ({
                     <input
                       type="number"
                       min="0"
-                      step="1000"
+                      step="any"
                       value={savingsBf || ''}
                       placeholder="0"
                       onChange={(e) => setSavingsBf(parseFloat(e.target.value) || 0)}
@@ -509,7 +509,7 @@ export const BulkMemberImportModal: React.FC<BulkMemberImportModalProps> = ({
                     <input
                       type="number"
                       min="0"
-                      step="1000"
+                      step="any"
                       value={sharesBf || ''}
                       placeholder="0"
                       onChange={(e) => setSharesBf(parseFloat(e.target.value) || 0)}
@@ -531,7 +531,7 @@ export const BulkMemberImportModal: React.FC<BulkMemberImportModalProps> = ({
                     <input
                       type="number"
                       min="0"
-                      step="1000"
+                      step="any"
                       value={loansBf || ''}
                       placeholder="0"
                       onChange={(e) => setLoansBf(parseFloat(e.target.value) || 0)}
@@ -553,7 +553,7 @@ export const BulkMemberImportModal: React.FC<BulkMemberImportModalProps> = ({
                     <input
                       type="number"
                       min="0"
-                      step="500"
+                      step="any"
                       value={loanInterestBf || ''}
                       placeholder="0"
                       onChange={(e) => setLoanInterestBf(parseFloat(e.target.value) || 0)}
@@ -575,7 +575,7 @@ export const BulkMemberImportModal: React.FC<BulkMemberImportModalProps> = ({
                     <input
                       type="number"
                       min="0"
-                      step="100"
+                      step="any"
                       value={coopDeductionBf || ''}
                       placeholder="0"
                       onChange={(e) => setCoopDeductionBf(parseFloat(e.target.value) || 0)}

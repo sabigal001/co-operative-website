@@ -30,7 +30,9 @@ class ApiClient {
   }
 
   public async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const cleanBase = (API_BASE_URL || '/api').replace(/\/+$/, '');
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${cleanBase}${cleanEndpoint}`;
     const token = this.getAuthToken();
 
     const headers: Record<string, string> = {
