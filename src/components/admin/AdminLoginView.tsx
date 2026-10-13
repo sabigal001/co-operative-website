@@ -8,7 +8,9 @@ import {
   Loader2,
   ExternalLink,
   KeyRound,
-  Sparkles
+  Sparkles,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { authService } from '../../services/api/authService';
@@ -24,14 +26,17 @@ export const AdminLoginView: React.FC = () => {
   // Login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   // Bootstrap state (first-time setup)
   const [bsEmail, setBsEmail] = useState('');
   const [bsPassword, setBsPassword] = useState('');
+  const [showBsPassword, setShowBsPassword] = useState(false);
   const [bsFullName, setBsFullName] = useState('');
   const [bsSecret, setBsSecret] = useState('');
+  const [showBsSecret, setShowBsSecret] = useState(false);
   const [bsSuccess, setBsSuccess] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -218,13 +223,21 @@ export const AdminLoginView: React.FC = () => {
                   <div className="relative">
                     <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
+                      className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
                       autoComplete="current-password"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -303,25 +316,45 @@ export const AdminLoginView: React.FC = () => {
                       <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Choose Password
                       </label>
-                      <input
-                        type="password"
-                        value={bsPassword}
-                        onChange={(e) => setBsPassword(e.target.value)}
-                        placeholder="Min. 6 characters"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showBsPassword ? 'text' : 'password'}
+                          value={bsPassword}
+                          onChange={(e) => setBsPassword(e.target.value)}
+                          placeholder="Min. 6 characters"
+                          className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowBsPassword(!showBsPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md"
+                          title={showBsPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showBsPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Bootstrap Secret
                       </label>
-                      <input
-                        type="password"
-                        value={bsSecret}
-                        onChange={(e) => setBsSecret(e.target.value)}
-                        placeholder="From BOOTSTRAP_SECRET env variable"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showBsSecret ? 'text' : 'password'}
+                          value={bsSecret}
+                          onChange={(e) => setBsSecret(e.target.value)}
+                          placeholder="From BOOTSTRAP_SECRET env variable"
+                          className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 outline-none transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowBsSecret(!showBsSecret)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md"
+                          title={showBsSecret ? 'Hide secret' : 'Show secret'}
+                        >
+                          {showBsSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 

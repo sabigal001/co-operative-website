@@ -80,18 +80,7 @@ export const MemberPortalView: React.FC = () => {
               </button>
             )}
 
-            {/* Activate Physical Card - Laptop only (hidden on mobile) */}
-            <div className="hidden md:flex items-center">
-              <button
-                onClick={() => openRegisterModal()}
-                className="liquid-btn liquid-btn-white text-black font-bold py-1.5 px-3 text-xs flex items-center gap-1.5"
-                title="Activate newly acquired physical RFID plastic card"
-              >
-                <CreditCard className="w-3.5 h-3.5 text-black shrink-0" />
-                <span>Activate Physical Card</span>
-              </button>
-            </div>
-
+            {/* Public Site Link */}
             <button
               onClick={() => navigateToService('landing')}
               className="liquid-btn liquid-btn-default py-1.5 px-2 sm:px-3 text-xs flex items-center gap-1.5"

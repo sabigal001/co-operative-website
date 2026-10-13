@@ -116,13 +116,13 @@ export const Navbar: React.FC = () => {
               <span>Install App</span>
             </button>
 
-            {/* Activate Physical Card Button */}
+            {/* Member Sign In Button */}
             <button
-              onClick={() => openRegisterModal()}
+              onClick={() => setCurrentPortal('member')}
               className="px-4 py-2.5 bg-gradient-to-r from-brand-500 to-emerald-400 text-slate-950 font-bold text-xs rounded-2xl flex items-center gap-2 hover:shadow-glow transition-all hover:scale-105 active:scale-95 shadow-md"
             >
               <CreditCard className="w-4 h-4 text-slate-950" />
-              <span>Activate Physical Card</span>
+              <span>Member Sign In</span>
             </button>
 
             {/* Member Profile Avatar or Quick Switch */}
@@ -147,11 +147,11 @@ export const Navbar: React.FC = () => {
           {/* Mobile Menu Hamburger */}
           <div className="flex md:hidden items-center gap-2">
             <button
-              onClick={() => openRegisterModal()}
+              onClick={() => setCurrentPortal('member')}
               className="px-3 py-1.5 bg-brand-500 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1"
             >
               <CreditCard className="w-3.5 h-3.5" />
-              <span>Activate</span>
+              <span>Sign In</span>
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -214,11 +214,11 @@ export const Navbar: React.FC = () => {
 
           <div className="pt-2 border-t border-white/10 space-y-2">
             <button
-              onClick={() => { openRegisterModal(); setMobileMenuOpen(false); }}
+              onClick={() => { setCurrentPortal('member'); setMobileMenuOpen(false); }}
               className="w-full py-3 bg-brand-500 text-slate-950 font-bold rounded-2xl text-center flex items-center justify-center gap-2"
             >
               <CreditCard className="w-4 h-4" />
-              <span>Activate Physical Member ID</span>
+              <span>Sign In to Member Portal</span>
             </button>
 
             <button
