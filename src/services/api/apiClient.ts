@@ -70,7 +70,7 @@ class ApiClient {
       console.error(`API Error on ${url}:`, err);
       return {
         success: false,
-        message: err.message || 'Network error communicating with cooperative backend server.'
+        message: err.message || 'Network error connecting to cooperative secure server.'
       };
     }
   }

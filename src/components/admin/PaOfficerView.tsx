@@ -7,7 +7,6 @@ import { FluidPillBar } from '../common/FluidPillBar';
 import { RecordPaymentModal } from './RecordPaymentModal';
 import { ReceiptVoucherModal } from './ReceiptVoucherModal';
 import { MemberPassbookDrawer } from './MemberPassbookDrawer';
-import { WalkInRegistrationModal } from './WalkInRegistrationModal';
 import { BulkMemberImportModal } from './BulkMemberImportModal';
 import { 
   UserCheck, 
@@ -36,7 +35,6 @@ export const PaOfficerView: React.FC = () => {
 
   // Desk Finance Modals State
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
-  const [showWalkInModal, setShowWalkInModal] = useState(false);
   const [selectedPassbookMember, setSelectedPassbookMember] = useState<MemberProfile | null>(null);
   const [selectedVoucher, setSelectedVoucher] = useState<DeskPaymentRecord | null>(null);
   const [preselectedPaymentMember, setPreselectedPaymentMember] = useState<MemberProfile | null>(null);
@@ -174,16 +172,7 @@ export const PaOfficerView: React.FC = () => {
             <span>+ Record Payment</span>
           </button>
 
-          <button
-            onClick={() => {
-              triggerHaptic('selection');
-              setShowWalkInModal(true);
-            }}
-            className="py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[38px] shrink-0"
-          >
-            <UserPlus className="w-3.5 h-3.5 text-slate-400" />
-            <span>Onboard Walk-In</span>
-          </button>
+
 
           <button
             onClick={() => {
@@ -624,14 +613,7 @@ export const PaOfficerView: React.FC = () => {
         onViewVoucher={(pmt) => setSelectedVoucher(pmt)}
       />
 
-      {/* Walk-In Desk Member Registration Modal */}
-      <WalkInRegistrationModal
-        isOpen={showWalkInModal}
-        onClose={() => setShowWalkInModal(false)}
-        onRegisteredSuccess={(newMem) => {
-          setSelectedPassbookMember(newMem);
-        }}
-      />
+
 
       {/* Bulk Member Migration Modal (5,400+ Members) */}
       <BulkMemberImportModal

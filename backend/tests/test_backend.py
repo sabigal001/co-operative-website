@@ -88,40 +88,44 @@ def seeded_users(app):
             'member_token': generate_token(member_user),
         }
 
-# 1. AUTHENTICATION & BOOTSTRAP TESTS
-def test_bootstrap_master_admin_allowlist(client, app):
-    res = client.post('/api/auth/bootstrap', json={
+# 1. AUTHENTICATION & MASTER ADMIN INITIALIZATION TESTS
+def test_initialize_master_admin_allowlist(client, app):
+    # Wrong secret should be rejected
+    res = client.post('/api/auth/initialize-master-admin', json={
         'email': 'admin@mosunmolacoop.ng',
         'password': 'NewPassword123',
         'fullName': 'Super Admin',
-        'bootstrapSecret': 'WRONG_SECRET'
+        'masterSecret': 'WRONG_SECRET'
     })
     assert res.status_code == 403
 
-    res = client.post('/api/auth/bootstrap', json={
+    # Non-designated email should be rejected
+    res = client.post('/api/auth/initialize-master-admin', json={
         'email': 'hacker@random.com',
         'password': 'NewPassword123',
         'fullName': 'Super Admin',
-        'bootstrapSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
+        'masterSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
     })
     assert res.status_code == 400
 
-    res = client.post('/api/auth/bootstrap', json={
+    # Correct credentials should succeed
+    res = client.post('/api/auth/initialize-master-admin', json={
         'email': 'admin@mosunmolacoop.ng',
         'password': 'SecurePassword123',
         'fullName': 'Honourable President',
-        'bootstrapSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
+        'masterSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
     })
     assert res.status_code == 201
     data = res.get_json()
     assert data['success'] is True
     assert data['data']['role'] == 'master_admin'
 
-    res2 = client.post('/api/auth/bootstrap', json={
+    # Second attempt should be blocked (one-time only)
+    res2 = client.post('/api/auth/initialize-master-admin', json={
         'email': 'admin@mosunmolacoop.ng',
         'password': 'AnotherPassword123',
         'fullName': 'Honourable President',
-        'bootstrapSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
+        'masterSecret': 'MOSUNMOLA_INIT_BOOTSTRAP_2026'
     })
     assert res2.status_code == 403
 

@@ -4,19 +4,20 @@ from backend.app.services.jwt_auth import token_required, roles_required
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
+@auth_bp.route('/initialize-master-admin', methods=['POST'])
 @auth_bp.route('/bootstrap', methods=['POST'])
-def bootstrap():
+def initialize_master_admin():
     data = request.get_json() or {}
     email = data.get('email', '')
     password = data.get('password', '')
     full_name = data.get('fullName', '')
-    bootstrap_secret = data.get('bootstrapSecret', '')
+    master_secret = data.get('masterSecret') or data.get('bootstrapSecret') or ''
 
     try:
-        user = AuthService.bootstrap_master_admin(email, password, full_name, bootstrap_secret)
+        user = AuthService.initialize_master_admin(email, password, full_name, master_secret)
         return jsonify({
             'success': True,
-            'message': 'Master Admin account initialized successfully. Initial setup is now closed.',
+            'message': 'Master Admin account initialized successfully. First-time setup is now closed.',
             'data': user.to_dict()
         }), 201
     except PermissionError as pe:
@@ -24,7 +25,7 @@ def bootstrap():
     except ValueError as ve:
         return jsonify({'success': False, 'message': str(ve)}), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': 'Bootstrap error occurred.'}), 500
+        return jsonify({'success': False, 'message': 'Master Admin setup error occurred.'}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

@@ -246,7 +246,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch {
       authService.logoutMember();
     }
-    showToast('You have signed out. Please sign in or activate your card.', 'info');
+    showToast('You have signed out. Please sign in to access your passbook.', 'info');
   };
 
   // Registration Modal with Physical Card verification

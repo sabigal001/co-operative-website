@@ -14,8 +14,9 @@ class Config:
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', SECRET_KEY)
     JWT_EXPIRY_HOURS = int(os.environ.get('JWT_EXPIRY_HOURS', '24'))
     
-    # One-time bootstrap secret for Master Admin initialization
-    BOOTSTRAP_SECRET = os.environ.get('BOOTSTRAP_SECRET', 'MOSUNMOLA_INIT_BOOTSTRAP_2026')
+    # One-time authorization key for Master Admin initialization
+    MASTER_AUTH_KEY = os.environ.get('MASTER_AUTH_KEY') or os.environ.get('BOOTSTRAP_SECRET', 'MOSUNMOLA_INIT_BOOTSTRAP_2026')
+    BOOTSTRAP_SECRET = MASTER_AUTH_KEY
     
     # Authorised Staff Emails (Environment allowlist)
     MASTER_ADMIN_EMAIL = os.environ.get('MASTER_ADMIN_EMAIL', 'bhassannosimot@gmail.com').strip().lower()

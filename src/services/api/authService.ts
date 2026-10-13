@@ -55,19 +55,30 @@ export const authService = {
     return res;
   },
 
-  // Bootstrap Master Admin (first-time setup)
+  // Initialize Master Admin (first-time society setup)
+  async initializeMasterAdmin(
+    email: string,
+    password: string,
+    fullName: string,
+    masterSecret: string
+  ): Promise<ApiResponse<any>> {
+    return apiClient.post<any>('/auth/initialize-master-admin', {
+      email,
+      password,
+      fullName,
+      masterSecret,
+      bootstrapSecret: masterSecret
+    });
+  },
+
+  // Backwards compatible alias
   async bootstrapMasterAdmin(
     email: string,
     password: string,
     fullName: string,
     bootstrapSecret: string
   ): Promise<ApiResponse<any>> {
-    return apiClient.post<any>('/auth/bootstrap', {
-      email,
-      password,
-      fullName,
-      bootstrapSecret
-    });
+    return this.initializeMasterAdmin(email, password, fullName, bootstrapSecret);
   },
 
   // Get current authenticated user profile from backend

@@ -3,7 +3,6 @@ import type {
   AdminRole, 
   AdminUser, 
   AuditLog, 
-  PhysicalMemberCard, 
   SystemMetrics,
   MembershipApplication,
   MemberProfile,
@@ -11,21 +10,19 @@ import type {
 } from '../../types';
 import { adminService } from '../../services/api/adminService';
 import { applicationService } from '../../services/api/applicationService';
-import { cardService } from '../../services/api/cardService';
 import { useApp } from '../../context/AppContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { FluidPillBar } from '../common/FluidPillBar';
 import { RecordPaymentModal } from './RecordPaymentModal';
 import { ReceiptVoucherModal } from './ReceiptVoucherModal';
 import { MemberPassbookDrawer } from './MemberPassbookDrawer';
-import { WalkInRegistrationModal } from './WalkInRegistrationModal';
 import { BulkMemberImportModal } from './BulkMemberImportModal';
 import { DailyCashbookView } from './DailyCashbookView';
+import { MemberTrialBalanceView } from './MemberTrialBalanceView';
 import { 
-  CreditCard, 
   Users, 
   TrendingUp, 
-  Upload, 
+  Scale,
   UploadCloud,
   Sparkles, 
   Search, 
@@ -55,13 +52,11 @@ interface MasterAdminViewProps {
 export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => {
   const { currentAdmin, showToast, fireConfetti, dataVersion, refreshData } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'payments' | 'registry' | 'applications' | 'cards' | 'roles' | 'dividends' | 'audit'>('payments');
-  const [cards, setCards] = useState<PhysicalMemberCard[]>([]);
+  const [activeTab, setActiveTab] = useState<'payments' | 'registry' | 'applications' | 'roles' | 'trial_balance' | 'audit'>('payments');
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [applications, setApplications] = useState<MembershipApplication[]>([]);
   const [members, setMembers] = useState<MemberProfile[]>([]);
-  const [cardSearch, setCardSearch] = useState('');
   const [appSearch, setAppSearch] = useState('');
   const [memberSearch, setMemberSearch] = useState('');
   const [appStatusFilter, setAppStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
@@ -69,16 +64,12 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
 
   // Desk Finance Modals State
   const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
-  const [showWalkInModal, setShowWalkInModal] = useState(false);
   const [selectedPassbookMember, setSelectedPassbookMember] = useState<MemberProfile | null>(null);
   const [selectedVoucher, setSelectedVoucher] = useState<DeskPaymentRecord | null>(null);
   const [preselectedPaymentMember, setPreselectedPaymentMember] = useState<MemberProfile | null>(null);
   const [showBulkImportModal, setShowBulkImportModal] = useState(false);
 
-  // Modals
-  const [showBatchModal, setShowBatchModal] = useState(false);
-  const [showDividendModal, setShowDividendModal] = useState(false);
-  const [showIssueCardModal, setShowIssueCardModal] = useState(false);
+
   
   // Application Review & Approval States
   const [selectedAppDetail, setSelectedAppDetail] = useState<MembershipApplication | null>(null);
@@ -88,33 +79,16 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
   const [rejectionReasonInput, setRejectionReasonInput] = useState('');
   const [showRejectPrompt, setShowRejectPrompt] = useState(false);
 
-  // Direct Card Issuance Form
-  const [issueMemberIdInput, setIssueMemberIdInput] = useState('MCS-2026-');
-  const [issueCardIdInput, setIssueCardIdInput] = useState('MCS-2026-');
-  const [issueCardType, setIssueCardType] = useState<'standard_plastic' | 'rfid_executive' | 'gold_fiduciary'>('standard_plastic');
-  const [issueBranch, setIssueBranch] = useState('Ikeja Central Secretariat');
 
-  // Batch Form
-  const [batchName, setBatchName] = useState('BATCH-2026-Q3-LAGOS');
-  const [prefix, setPrefix] = useState('MCS-2026');
-  const [batchCount, setBatchCount] = useState<number>(25);
-  const [branch, setBranch] = useState('Ikeja Central Secretariat');
-
-  // Dividend Form
-  const [dividendPool, setDividendPool] = useState<number>(45000000);
-  const [dividendPercent, setDividendPercent] = useState<number>(18.5);
 
   const loadAll = async () => {
     try {
-      const [cardsRes, adminsRes, logsRes, appsRes, membersRes] = await Promise.all([
-        adminService.getPhysicalCards(),
+      const [adminsRes, logsRes, appsRes, membersRes] = await Promise.all([
         adminService.getAdminUsers(),
         adminService.getAuditLogs(),
         applicationService.getApplications(),
         adminService.getMemberRegistry()
       ]);
-
-      if (cardsRes.success) setCards(cardsRes.data);
       if (adminsRes.success) setAdmins(adminsRes.data);
       if (logsRes.success) setAuditLogs(logsRes.data);
       if (appsRes.success) setApplications(appsRes.data);
@@ -130,57 +104,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     loadAll();
   }, [dataVersion]);
 
-  // Handle Card Batch Import (CSV Simulation)
-  const handleImportBatch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await adminService.importCardBatch(batchName, prefix, batchCount, branch, currentAdmin.name);
-      if (res.success) {
-        triggerHaptic('success');
-        showToast(res.message, 'success');
-        fireConfetti();
-        setShowBatchModal(false);
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error importing batch', 'error');
-    }
-  };
 
-  // Handle Direct Card Issuance
-  const handleIssueCardSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await cardService.issueCard(
-        issueMemberIdInput.trim().toUpperCase(),
-        issueCardIdInput.trim().toUpperCase(),
-        issueCardType,
-        issueBranch,
-        currentAdmin.name
-      );
-      if (res.success) {
-        triggerHaptic('success');
-        showToast(res.message, 'success');
-        fireConfetti();
-        setShowIssueCardModal(false);
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error issuing card', 'error');
-    }
-  };
-
-  // Handle Status Update (e.g. Lost / Replaced / Active)
-  const handleStatusChange = async (cardId: string, status: PhysicalMemberCard['status']) => {
-    triggerHaptic('medium');
-    const res = await adminService.updateCardStatus(cardId, status, currentAdmin.name);
-    if (res.success) {
-      showToast(`Card ${cardId} status set to ${status}`, 'info');
-      refreshData();
-    }
-  };
 
   // Handle Admin Role Promotion / Demotion
   const handleRoleChange = async (userId: string, newRole: AdminRole) => {
@@ -189,24 +113,6 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     if (res.success) {
       showToast(res.message, 'success');
       refreshData();
-    }
-  };
-
-  // Trigger Dividend Distribution
-  const handleTriggerDividends = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await adminService.triggerDividendDistribution(dividendPool, dividendPercent, currentAdmin.name);
-      if (res.success) {
-        triggerHaptic('success');
-        showToast(res.message, 'success');
-        fireConfetti();
-        setShowDividendModal(false);
-        refreshData();
-      }
-    } catch (err: any) {
-      triggerHaptic('error');
-      showToast(err.message || 'Error triggering dividends', 'error');
     }
   };
 
@@ -305,11 +211,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
     a.status === 'SUBMITTED' || a.status === 'UNDER_REVIEW' || a.status === 'pending_approval'
   ).length;
 
-  const filteredCards = cards.filter((c) => 
-    c.cardId.toLowerCase().includes(cardSearch.toLowerCase()) ||
-    c.assignedMemberName.toLowerCase().includes(cardSearch.toLowerCase()) ||
-    c.batchNumber.toLowerCase().includes(cardSearch.toLowerCase())
-  );
+
 
   return (
     <div className="space-y-8">
@@ -323,9 +225,8 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
               { id: 'payments', label: 'Cashbook & Collections', icon: <Coins className="w-4 h-4 text-emerald-400" /> },
               { id: 'registry', label: `Members & Passbooks (${members.length})`, icon: <Users className="w-4 h-4" /> },
               { id: 'applications', label: `Applications (${pendingAppsCount})`, icon: <UserPlus className="w-4 h-4" /> },
-              { id: 'cards', label: 'Physical Cards', icon: <CreditCard className="w-4 h-4" /> },
               { id: 'roles', label: 'Staff Roles (RBAC)', icon: <ShieldCheck className="w-4 h-4" /> },
-              { id: 'dividends', label: 'Financial Master', icon: <TrendingUp className="w-4 h-4" /> },
+              { id: 'trial_balance', label: 'Member Trial Balance & Ledgers', icon: <Scale className="w-4 h-4 text-emerald-400" /> },
               { id: 'audit', label: 'Audit Trail', icon: <Clock className="w-4 h-4" /> },
             ]}
             activeId={activeTab}
@@ -347,16 +248,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             <span>+ Record Payment</span>
           </button>
 
-          <button
-            onClick={() => {
-              triggerHaptic('selection');
-              setShowWalkInModal(true);
-            }}
-            className="py-2 px-3.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 tap-spring min-h-[40px] shrink-0"
-          >
-            <UserPlus className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Onboard Walk-In</span>
-          </button>
+
 
           <button
             onClick={() => {
@@ -370,43 +262,9 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
             <span>+ Onboard Member (B/F Balances)</span>
           </button>
 
-          {activeTab === 'cards' && (
-            <>
-              <button
-                onClick={() => {
-                  triggerHaptic('selection');
-                  setShowIssueCardModal(true);
-                }}
-                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring shrink-0 min-h-[40px]"
-              >
-                <CreditCard className="w-4 h-4" />
-                <span>Issue Card</span>
-              </button>
-              <button
-                onClick={() => {
-                  triggerHaptic('selection');
-                  setShowBatchModal(true);
-                }}
-                className="px-3 py-2 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring shrink-0 min-h-[40px]"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Import Batch</span>
-              </button>
-            </>
-          )}
 
-          {activeTab === 'dividends' && (
-            <button
-              onClick={() => {
-                triggerHaptic('selection');
-                setShowDividendModal(true);
-              }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm tap-spring min-h-[40px] shrink-0"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Trigger Dividend Pool</span>
-            </button>
-          )}
+
+
         </div>
       </div>
 
@@ -450,16 +308,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
                 />
               </div>
 
-              <button
-                onClick={() => {
-                  triggerHaptic('selection');
-                  setShowWalkInModal(true);
-                }}
-                className="liquid-btn liquid-btn-white py-2 px-3 text-xs font-bold flex items-center gap-1.5 shrink-0"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>+ Walk-In</span>
-              </button>
+
 
               <button
                 onClick={() => {
@@ -860,102 +709,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 1: PHYSICAL CARD BATCH MANAGER & CONTROL                              */}
-      {/* ========================================================================= */}
-      {activeTab === 'cards' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white font-display">
-                Physical Member Card Inventory & Batch Control
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Track pre-printed RFID plastic cards, member allocations, and lost/replacement records.
-              </p>
-            </div>
 
-            <div className="relative w-full sm:max-w-xs">
-              <input
-                type="text"
-                value={cardSearch}
-                onChange={(e) => setCardSearch(e.target.value)}
-                placeholder="Search card ID, holder, batch..."
-                className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-black rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs min-w-[650px]">
-                <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/10 text-[10px] uppercase">
-                  <tr>
-                    <th className="py-3 px-4">Card ID Number</th>
-                    <th className="py-3 px-4">Card Type</th>
-                    <th className="py-3 px-4">Allocated Member</th>
-                    <th className="py-3 px-4">Issuing Branch</th>
-                    <th className="py-3 px-4">Card Status</th>
-                    <th className="py-3 px-4 text-right">Card Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
-                  {filteredCards.map((card) => (
-                    <tr key={card.cardId} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
-                        {card.cardId}
-                      </td>
-                      <td className="py-3.5 px-4 font-sans text-slate-500 dark:text-slate-400 text-[11px] capitalize">
-                        {card.cardType ? card.cardType.replace('_', ' ') : 'Standard Plastic'}
-                      </td>
-                      <td className="py-3.5 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">
-                        {card.assignedMemberName}
-                        {card.assignedMemberId && (
-                          <span className="block font-mono text-[10px] text-slate-400 font-normal">
-                            ID: {card.assignedMemberId}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4 font-sans text-slate-600 dark:text-slate-300 text-[11px]">
-                        {card.branch}
-                      </td>
-                      <td className="py-3.5 px-4 font-sans">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          card.status === 'ACTIVATED' || card.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-500/20' :
-                          card.status === 'ISSUED' || card.status === 'unassigned' ? 'bg-blue-100 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 border border-blue-500/20' :
-                          'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border border-rose-500/20'
-                        }`}>
-                          {card.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right font-sans">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {card.status !== 'BLOCKED' && card.status !== 'lost' ? (
-                            <button
-                              onClick={() => handleStatusChange(card.cardId, 'BLOCKED')}
-                              className="px-2 py-1 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 rounded text-[10px] font-bold"
-                            >
-                              Block Card
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleStatusChange(card.cardId, 'ISSUED')}
-                              className="px-2 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 rounded text-[10px] font-bold"
-                            >
-                              Unblock
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* TAB 2: STAFF ROLE MANAGEMENT                                              */}
@@ -1004,38 +758,10 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: FINANCIAL MASTER & DIVIDENDS                                       */}
+      {/* TAB 3: MEMBER TRIAL BALANCE & PERSONAL LEDGERS                             */}
       {/* ========================================================================= */}
-      {activeTab === 'dividends' && (
-        <div className="space-y-4">
-          <div className="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 text-slate-900 dark:text-white space-y-3">
-            <h4 className="font-bold text-base flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-              <span>Statutory AGM Dividend Allocation Engine</span>
-            </h4>
-            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xl">
-              Annual General Meeting (AGM) surplus is distributed pro-rata based on members' thrift savings balance and share capital equity.
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
-                <span className="text-[10px] text-slate-400 block">Current Dividend Pool</span>
-                <strong className="text-sm font-mono text-emerald-600 dark:text-emerald-400">₦45,000,000</strong>
-              </div>
-              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
-                <span className="text-[10px] text-slate-400 block">Declared Yield Rate</span>
-                <strong className="text-sm font-mono text-emerald-600 dark:text-emerald-400">18.5% p.a.</strong>
-              </div>
-              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
-                <span className="text-[10px] text-slate-400 block">Eligible Members</span>
-                <strong className="text-sm font-mono text-slate-900 dark:text-white">14,850+</strong>
-              </div>
-              <div className="p-3 rounded-2xl bg-white dark:bg-black/60 border border-slate-200 dark:border-white/10">
-                <span className="text-[10px] text-slate-400 block">Audit Sign-off</span>
-                <strong className="text-sm font-mono text-slate-900 dark:text-white">LSCS Verified</strong>
-              </div>
-            </div>
-          </div>
-        </div>
+      {activeTab === 'trial_balance' && (
+        <MemberTrialBalanceView initialMembers={members} />
       )}
 
       {/* ========================================================================= */}
@@ -1297,217 +1023,9 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL: DIRECT PHYSICAL CARD ISSUANCE                                      */}
-      {/* ========================================================================= */}
-      {showIssueCardModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">
-                Issue Physical Plastic RFID Card
-              </h3>
-              <button onClick={() => setShowIssueCardModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <form onSubmit={handleIssueCardSubmit} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Approved Member ID *</label>
-                <input
-                  type="text"
-                  value={issueMemberIdInput}
-                  onChange={(e) => setIssueMemberIdInput(e.target.value)}
-                  placeholder="e.g. MCS-2026-8942"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
-                  required
-                />
-              </div>
 
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Physical Card ID *</label>
-                <input
-                  type="text"
-                  value={issueCardIdInput}
-                  onChange={(e) => setIssueCardIdInput(e.target.value)}
-                  placeholder="e.g. MCS-2026-8942 or CARD-2026-77821"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none"
-                  required
-                />
-              </div>
 
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Card Credential Type</label>
-                <select
-                  value={issueCardType}
-                  onChange={(e) => setIssueCardType(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none"
-                >
-                  <option value="standard_plastic">Standard Plastic Card</option>
-                  <option value="rfid_executive">Executive RFID Card</option>
-                  <option value="gold_fiduciary">Gold Fiduciary Card</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Issuing Branch</label>
-                <input
-                  type="text"
-                  value={issueBranch}
-                  onChange={(e) => setIssueBranch(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowIssueCardModal(false)}
-                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl min-h-[42px] flex items-center justify-center"
-                >
-                  Issue Card
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL: CARD BATCH IMPORT                                                  */}
-      {/* ========================================================================= */}
-      {showBatchModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">Import Card Batch (CSV)</h3>
-              <button onClick={() => setShowBatchModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleImportBatch} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Batch Code</label>
-                <input
-                  type="text"
-                  value={batchName}
-                  onChange={(e) => setBatchName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Card Prefix</label>
-                <input
-                  type="text"
-                  value={prefix}
-                  onChange={(e) => setPrefix(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Number of Cards</label>
-                <input
-                  type="number"
-                  min="5"
-                  max="500"
-                  value={batchCount}
-                  onChange={(e) => setBatchCount(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowBatchModal(false)}
-                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-slate-900 text-white dark:bg-white dark:text-black font-bold rounded-xl min-h-[42px] flex items-center justify-center"
-                >
-                  Generate Batch
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL: DIVIDEND ALLOCATION                                                */}
-      {/* ========================================================================= */}
-      {showDividendModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white w-full max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-white/15 shadow-2xl animate-slide-up space-y-4 my-auto max-h-[94vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-white/10">
-              <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">Trigger Dividend Pool</h3>
-              <button onClick={() => setShowDividendModal(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleTriggerDividends} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Total Pool to Allocate (₦)</label>
-                <input
-                  type="number"
-                  min="1000000"
-                  step="500000"
-                  value={dividendPool}
-                  onChange={(e) => setDividendPool(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Effective Annual Yield (% p.a.)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={dividendPercent}
-                  onChange={(e) => setDividendPercent(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-black/60 border border-slate-300 dark:border-white/15 text-base sm:text-xs font-mono font-bold text-slate-900 dark:text-white"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setShowDividendModal(false)}
-                  className="px-4 py-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white min-h-[42px] flex items-center justify-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl min-h-[42px] flex items-center justify-center"
-                >
-                  Authorize Allocation
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* ------------------------------------------------------------- */}
       {/* DESK FINANCE & MEMBERSHIP MODALS                              */}
@@ -1549,14 +1067,7 @@ export const MasterAdminView: React.FC<MasterAdminViewProps> = ({ metrics }) => 
         onViewVoucher={(pmt) => setSelectedVoucher(pmt)}
       />
 
-      {/* Walk-In Desk Member Registration Modal */}
-      <WalkInRegistrationModal
-        isOpen={showWalkInModal}
-        onClose={() => setShowWalkInModal(false)}
-        onRegisteredSuccess={(newMem) => {
-          setSelectedPassbookMember(newMem);
-        }}
-      />
+
 
       {/* Bulk Member Migration Modal (5,400+ Members) */}
       <BulkMemberImportModal

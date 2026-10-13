@@ -113,10 +113,7 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Total Consolidated Savings Balance
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
-                18.5% p.a. ROI
+                Total Savings Balance
               </span>
             </div>
             <div className="text-3xl sm:text-5xl font-extrabold font-display text-white tracking-tight">
@@ -133,33 +130,6 @@ export const SavingsWallet: React.FC<SavingsWalletProps> = ({ member }) => {
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>Passbook Status: Active</span>
             </div>
-          </div>
-        </div>
-
-        {/* 3 Metric Pills: Voluntary vs Target vs Dividend */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10 text-xs">
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-            <span className="text-slate-400 block text-[11px]">Voluntary Regular Thrift</span>
-            <span className="text-lg font-bold text-white font-mono">
-              ₦{savings.voluntarySavings.toLocaleString()}
-            </span>
-            <span className="text-[10px] text-emerald-400 block mt-0.5">Liquid savings balance</span>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-            <span className="text-slate-400 block text-[11px]">Target Goal Thrift</span>
-            <span className="text-lg font-bold text-white font-mono">
-              ₦{savings.targetSavings.toLocaleString()}
-            </span>
-            <span className="text-[10px] text-slate-300 block mt-0.5">Asset co-ownership allocation</span>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-            <span className="text-slate-400 block text-[11px]">Accrued AGM Dividends</span>
-            <span className="text-lg font-bold text-emerald-400 font-mono">
-              ₦{savings.dividendsEarned.toLocaleString()}
-            </span>
-            <span className="text-[10px] text-slate-400 block mt-0.5">Credited annually</span>
           </div>
         </div>
       </div>

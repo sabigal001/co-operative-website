@@ -31,16 +31,16 @@ def _phones_match(entered: str, stored: str) -> bool:
 class AuthService:
 
     @staticmethod
-    def bootstrap_master_admin(email: str, password: str, full_name: str, bootstrap_secret: str) -> User:
+    def initialize_master_admin(email: str, password: str, full_name: str, master_secret: str) -> User:
         """
-        One-time bootstrap process for the designated Master Admin.
-        Can only be executed once, using the configured BOOTSTRAP_SECRET and MASTER_ADMIN_EMAIL.
+        One-time initialization process for the designated Master Admin.
+        Can only be executed once, using the configured MASTER_AUTH_KEY and MASTER_ADMIN_EMAIL.
         """
-        configured_secret = current_app.config.get('BOOTSTRAP_SECRET')
+        configured_secret = current_app.config.get('MASTER_AUTH_KEY') or current_app.config.get('BOOTSTRAP_SECRET')
         configured_email = current_app.config.get('MASTER_ADMIN_EMAIL')
 
-        if not bootstrap_secret or bootstrap_secret != configured_secret:
-            raise PermissionError("Invalid bootstrap authorization secret.")
+        if not master_secret or master_secret != configured_secret:
+            raise PermissionError("Invalid cooperative authorization key.")
 
         clean_email = email.strip().lower()
         if clean_email != configured_email:
@@ -49,7 +49,7 @@ class AuthService:
         # Check if master admin already exists
         existing_master = User.query.filter_by(role='master_admin').first()
         if existing_master:
-            raise PermissionError("Master Admin account has already been bootstrapped. Setup is disabled.")
+            raise PermissionError("Master Admin account has already been initialized. First-time setup is closed.")
 
         user = User(
             email=clean_email,
@@ -61,7 +61,7 @@ class AuthService:
         db.session.add(user)
 
         audit = AuditLog(
-            action='MASTER_ADMIN_BOOTSTRAPPED',
+            action='MASTER_ADMIN_INITIALIZED',
             target_type='user',
             target_id=clean_email,
             details={'email': clean_email, 'role': 'master_admin'}
@@ -69,6 +69,9 @@ class AuthService:
         db.session.add(audit)
         db.session.commit()
         return user
+
+    # Backwards compatible alias
+    bootstrap_master_admin = initialize_master_admin
 
     @staticmethod
     def provision_staff_user(actor_user: User, email: str, full_name: str, role: str, initial_password: str) -> User:
