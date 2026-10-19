@@ -1,32 +1,32 @@
-# React + TypeScript + Vite
+# Chemistry Made Easy — Organic Chemistry Naming Coach
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A beginner-friendly, visual, interactive web application designed to teach secondary-school, JAMB, WAEC, NECO, and IJMB students how to name organic compounds using IUPAC rules step-by-step.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Learn Organic Nomenclature**: Step-by-step interactive lessons from fundamental longest chains to functional groups and polyfunctional compounds.
+- **Nomenclature Engine**: Interactive 7-step builder breaking down parent chains, functional groups, locants, prefixes, and suffixes with visual 2D molecular structures.
+- **Isomer Visualizer**: Side-by-side structural and stereoisomerism visualizer.
+- **Interactive Practice Drills**: Instant feedback drills covering chain numbering, substituent naming, and priority rules.
+- **WAEC / JAMB / IJMB Exam Bank**: Real past exam questions with step-by-step explanations, time limit simulations, and detailed score breakdown.
+- **My Mistakes**: Intelligent mistake tracker that highlights weak topics and offers targeted revision.
+- **Pedagogical "Why?" Modals**: Explains the underlying chemical rules and reasoning behind every answer.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript + Vite
+- Tailwind CSS
+- Lucide React Icons
+- Canvas Confetti
 
-## Expanding the Oxlint configuration
+## Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Build for production:
+```bash
+npm run build
+```

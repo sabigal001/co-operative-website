@@ -1,14 +1,14 @@
 {
-  "name": "Mosunmola Cooperative Multipurpose Society",
-  "short_name": "Mosunmola Coop",
-  "description": "Empowering members through target thrift, asset financing, zero-collateral loans, and agricultural investments.",
+  "name": "Chemistry Made Easy - Organic Chemistry Naming Coach",
+  "short_name": "Chemistry Made Easy",
+  "description": "Learn to build IUPAC organic chemistry names step-by-step with interactive nomenclature lessons, isomer visualization, and WAEC, JAMB, NECO & IJMB practice questions.",
   "start_url": "/",
   "id": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
-  "theme_color": "#00C853",
-  "categories": ["finance", "business", "productivity"],
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "categories": ["education", "science", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-192.png",

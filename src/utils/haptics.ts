@@ -1,5 +1,5 @@
 /**
- * Universal Haptic Feedback Utility for Mosunmola Cooperative Platform
+ * Universal Haptic Feedback Utility for Chemistry Made Easy Platform
  * Provides native tactile vibration feedback across Mobile PWA & responsive browsers.
  * Integrates Web Audio API mechanical micro-clicks for iOS (Safari & Chrome on iPhone/iPad)
  * and physical navigator.vibrate for Android & supported devices.

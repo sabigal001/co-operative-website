@@ -1,66 +1,75 @@
-import React, { useEffect } from 'react';
-import { AppProvider, useApp } from './context/AppContext';
-import { ToastContainer } from './components/common/ToastContainer';
-import { RegisterCardModal } from './components/common/RegisterCardModal';
-import { PwaInstallBanner } from './components/common/PwaInstallBanner';
-import { LandingPageView } from './components/landing/LandingPageView';
-import { MemberPortalView } from './components/member/MemberPortalView';
-import { AdminPortalView } from './components/admin/AdminPortalView';
+import React from 'react';
+import { ChemistryProvider, useChemistry } from './context/ChemistryContext';
+import { Header } from './components/common/Header';
+import { WhyModal } from './components/common/WhyModal';
+import { HomeView } from './components/home/HomeView';
+import { LearnView } from './components/learn/LearnView';
+import { NomenclatureView } from './components/nomenclature/NomenclatureView';
+import { IsomersView } from './components/isomers/IsomersView';
+import { PracticeView } from './components/practice/PracticeView';
+import { ExamQuizView } from './components/quiz/ExamQuizView';
+import { MistakesView } from './components/quiz/MistakesView';
+import { ProgressView } from './components/progress/ProgressView';
+import { Atom, BookOpen, GraduationCap, Heart } from 'lucide-react';
+import type { ExamQuestion } from './types/chemistry';
 
-import { CurtainThemeSwitch } from './components/common/CurtainThemeSwitch';
+const MainAppContent: React.FC = () => {
+  const { activeTab, setActiveTab } = useChemistry();
 
-const AppContent: React.FC = () => {
-  const { currentPortal } = useApp();
-
-  // Dynamic Specular Glow Tracking on Liquid Glass Cards
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      const target = (e.target as HTMLElement)?.closest?.('.liquid-glass-card') as HTMLElement | null;
-      if (!target) return;
-      const rect = target.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      const angle = Math.atan2(y, x) * (180 / Math.PI) + 90;
-      target.style.setProperty('--card-sheen-angle', `${angle.toFixed(1)}deg`);
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    return () => window.removeEventListener('pointermove', handlePointerMove);
-  }, []);
+  const handleStartMistakesQuiz = (questions: ExamQuestion[]) => {
+    setActiveTab('quiz');
+  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white font-sans flex flex-col selection:bg-brand-500 selection:text-white transition-colors duration-300">
-      {/* Interactive Top Curtain Theme Switch (Drag or Click) */}
-      <CurtainThemeSwitch />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200 selection:bg-emerald-500 selection:text-white">
+      {/* Sticky Header with Navigation, Streak, and Theme Switch */}
+      <Header />
 
-      {/* Dynamic Portal Body based on isolated service / subdomain */}
-      <div className="flex-1">
-        {/* 1. PUBLIC LANDING SERVICE (mosunmolacoop.com) */}
-        {currentPortal === 'landing' && <LandingPageView />}
+      {/* Main View Container */}
+      <main className="flex-1">
+        {activeTab === 'home' && <HomeView />}
+        {activeTab === 'learn' && <LearnView />}
+        {activeTab === 'nomenclature' && <NomenclatureView />}
+        {activeTab === 'isomers' && <IsomersView />}
+        {activeTab === 'practice' && <PracticeView />}
+        {activeTab === 'quiz' && <ExamQuizView />}
+        {activeTab === 'mistakes' && <MistakesView onStartMistakeQuiz={handleStartMistakesQuiz} />}
+        {activeTab === 'progress' && <ProgressView />}
+      </main>
 
-        {/* 2. MEMBER PORTAL PWA SERVICE (members.mosunmolacoop.com) */}
-        {currentPortal === 'member' && (
-          <>
-            <MemberPortalView />
-            <RegisterCardModal />
-            <PwaInstallBanner />
-          </>
-        )}
+      {/* Interactive Global "Why?" Modal */}
+      <WhyModal />
 
-        {/* 3. SUPER ADMIN CONSOLE SERVICE (admin.mosunmolacoop.com) */}
-        {currentPortal === 'admin' && <AdminPortalView />}
-      </div>
+      {/* Footer */}
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8 mt-12 transition-colors">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
+              <Atom className="w-4 h-4" />
+            </div>
+            <span className="font-bold text-slate-800 dark:text-slate-200">
+              Chemistry Made Easy — Organic Chemistry Naming Coach
+            </span>
+            <span>• Based on standard IUPAC Blue Book Nomenclature</span>
+          </div>
 
-      {/* Global Notifications */}
-      <ToastContainer />
+          <div className="flex flex-wrap items-center gap-4 text-slate-500 dark:text-slate-400">
+            <span>Aligned with WAEC, NECO, JAMB/UTME & IJMB syllabuses</span>
+            <span>•</span>
+            <span className="font-medium text-emerald-600 dark:text-emerald-400">
+              See → Identify → Reason → Build → Practice
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <ChemistryProvider>
+      <MainAppContent />
+    </ChemistryProvider>
   );
 }
